@@ -1,0 +1,23 @@
+services:
+  postgres:
+    container_name: postgres-sql-halley
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2334
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: halley_ecommerce
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5433:5432
+    networks:
+      - spring-demo
+    restart: unless-stopped
+      
+volumes:
+  postgres:
+    driver: local
+networks:
+  spring-demo:
+    driver: bridge
