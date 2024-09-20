@@ -34,7 +34,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
     private boolean accountLocked;
-
     @Column(nullable = false, updatable = false)
     @CreationTimestamp()
     private LocalDate creationDate;
