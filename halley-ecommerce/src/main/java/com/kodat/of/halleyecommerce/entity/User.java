@@ -18,8 +18,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(unique = true, nullable = false)
-    private String username;
     @Column(nullable = false)
     private String password;
     private String firstName;
@@ -29,7 +27,6 @@ public class User {
     private String email;
     private boolean enabled;
     private String phone;
-    private LocalDate birthDate;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
