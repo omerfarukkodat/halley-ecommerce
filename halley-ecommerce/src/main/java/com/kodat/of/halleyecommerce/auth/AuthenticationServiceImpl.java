@@ -7,6 +7,7 @@ import com.kodat.of.halleyecommerce.entity.CustomUserDetails;
 import com.kodat.of.halleyecommerce.entity.User;
 import com.kodat.of.halleyecommerce.entity.enums.Role;
 import com.kodat.of.halleyecommerce.exception.UserAlreadyExistsException;
+import com.kodat.of.halleyecommerce.exception.UserNotFoundException;
 import com.kodat.of.halleyecommerce.repository.UserRepository;
 import com.kodat.of.halleyecommerce.security.JwtService;
 import org.slf4j.Logger;
@@ -59,6 +60,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponse login(
             LoginRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isEmpty()) {
+            throw new UserNotFoundException("User Email: " + request.getEmail() + " address does not exist.");
+        }
     try {
         var auth = authenticationManager
                 .authenticate(
