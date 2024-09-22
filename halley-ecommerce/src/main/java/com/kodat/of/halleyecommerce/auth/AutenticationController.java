@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("auth")
 public class AutenticationController {
 
-    private final AutenticationService service;
+    private final AuthenticationService service;
 
-    public AutenticationController(AutenticationService service) {
+    public AutenticationController(AuthenticationService service) {
         this.service = service;
     }
 
@@ -21,7 +21,8 @@ public class AutenticationController {
     public ResponseEntity<?> register(
             @RequestBody @Valid RegistrationRequest request
     ){
-
+    service.register(request);
+    return ResponseEntity.accepted().build();
     }
 
 

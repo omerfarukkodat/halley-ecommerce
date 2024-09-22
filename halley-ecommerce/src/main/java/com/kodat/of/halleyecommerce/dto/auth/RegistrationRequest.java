@@ -16,7 +16,6 @@ public class RegistrationRequest {
 
     @NotBlank(message = "First name is mandatory")
     private String firstName;
-    private String middleName;  // Optional not mandatory
     @NotBlank(message = "Last name is mandatory")
     private String lastName;
     @Email(message = "Email is not formatted")
