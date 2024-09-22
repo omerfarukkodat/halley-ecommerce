@@ -1,5 +1,7 @@
 package com.kodat.of.halleyecommerce.auth;
 
+import com.kodat.of.halleyecommerce.dto.auth.AuthenticationResponse;
+import com.kodat.of.halleyecommerce.dto.auth.LoginRequest;
 import com.kodat.of.halleyecommerce.dto.auth.RegistrationRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -8,15 +10,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("auth")
-public class AutenticationController {
+public class AuthenticationController {
 
     private final AuthenticationService service;
 
-    public AutenticationController(AuthenticationService service) {
+    public AuthenticationController(AuthenticationService service) {
         this.service = service;
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<?> register(
             @RequestBody @Valid RegistrationRequest request
@@ -24,6 +26,14 @@ public class AutenticationController {
     service.register(request);
     return ResponseEntity.accepted().build();
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> login(
+           @RequestBody @Valid LoginRequest request
+    ){
+        return ResponseEntity.ok(service.login(request));
+    }
+
 
 
 
