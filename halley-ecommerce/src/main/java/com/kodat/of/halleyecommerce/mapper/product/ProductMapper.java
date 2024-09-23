@@ -1,9 +1,11 @@
 package com.kodat.of.halleyecommerce.mapper.product;
 
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
-import com.kodat.of.halleyecommerce.product.entity.Category;
-import com.kodat.of.halleyecommerce.product.entity.Product;
+import com.kodat.of.halleyecommerce.category.Category;
+import com.kodat.of.halleyecommerce.product.Product;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ProductMapper {
     public static Product toProduct(ProductDto productDto , Category category) {
         return Product.builder()

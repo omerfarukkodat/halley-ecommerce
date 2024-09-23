@@ -1,6 +1,7 @@
-package com.kodat.of.halleyecommerce.product.entity;
+package com.kodat.of.halleyecommerce.product;
 
 
+import com.kodat.of.halleyecommerce.category.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

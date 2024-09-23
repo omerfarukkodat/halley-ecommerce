@@ -1,4 +1,4 @@
-package com.kodat.of.halleyecommerce.dto.product;
+package com.kodat.of.halleyecommerce.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

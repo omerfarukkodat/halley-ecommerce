@@ -1,6 +1,5 @@
 package com.kodat.of.halleyecommerce.dto.product;
 
-import com.kodat.of.halleyecommerce.product.entity.Category;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
