@@ -73,7 +73,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             claims.put("email", user.getEmail());
             var customUserDetails = (CustomUserDetails) auth.getPrincipal();
             return jwtService.generateToken(claims,customUserDetails);
-        }catch (AuthenticationException e) {
+        }
+        catch (AuthenticationException e) {
             LOGGER.error("Authentication error user id: {}: {}",loginRequest.getEmail(), e.getMessage());
             throw new RuntimeException("Authentication failed"+ e.getMessage());
         }
