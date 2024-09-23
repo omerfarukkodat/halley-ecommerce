@@ -1,7 +1,7 @@
 package com.kodat.of.halleyecommerce.security;
 
-import com.kodat.of.halleyecommerce.entity.CustomUserDetails;
-import com.kodat.of.halleyecommerce.repository.UserRepository;
+import com.kodat.of.halleyecommerce.user.CustomUserDetails;
+import com.kodat.of.halleyecommerce.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

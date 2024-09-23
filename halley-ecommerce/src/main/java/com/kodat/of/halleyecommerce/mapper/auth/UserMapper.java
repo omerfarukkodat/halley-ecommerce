@@ -1,8 +1,8 @@
 package com.kodat.of.halleyecommerce.mapper.auth;
 
 import com.kodat.of.halleyecommerce.dto.auth.RegistrationRequest;
-import com.kodat.of.halleyecommerce.entity.User;
-import com.kodat.of.halleyecommerce.entity.enums.Role;
+import com.kodat.of.halleyecommerce.user.User;
+import com.kodat.of.halleyecommerce.user.enums.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

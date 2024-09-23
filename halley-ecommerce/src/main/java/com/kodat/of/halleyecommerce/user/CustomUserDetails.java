@@ -1,4 +1,4 @@
-package com.kodat.of.halleyecommerce.entity;
+package com.kodat.of.halleyecommerce.user;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

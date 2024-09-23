@@ -1,4 +1,4 @@
-package com.kodat.of.halleyecommerce.entity;
+package com.kodat.of.halleyecommerce.product.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,6 +1,5 @@
-package com.kodat.of.halleyecommerce.repository;
+package com.kodat.of.halleyecommerce.user;
 
-import com.kodat.of.halleyecommerce.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

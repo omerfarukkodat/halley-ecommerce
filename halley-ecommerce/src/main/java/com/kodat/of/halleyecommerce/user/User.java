@@ -1,6 +1,6 @@
-package com.kodat.of.halleyecommerce.entity;
+package com.kodat.of.halleyecommerce.user;
 
-import com.kodat.of.halleyecommerce.entity.enums.Role;
+import com.kodat.of.halleyecommerce.user.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
