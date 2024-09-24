@@ -14,4 +14,6 @@ public class CategoryDto {
     private Long categoryId;
     @NotBlank(message = "Category name is mandatory")
     private String categoryName;
+
+    private Long parentId; // Upper category id
 }
