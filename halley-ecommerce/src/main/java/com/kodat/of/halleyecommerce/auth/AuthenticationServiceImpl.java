@@ -44,7 +44,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private void checkIfUserExists(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
-            LOGGER.warn("User with email {} already exists", email);
             throw new UserAlreadyExistsException("Email already exists");
         }
     }

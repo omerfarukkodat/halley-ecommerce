@@ -10,7 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CategoryDto {
-    @NotNull(message = "Category id is mandatory")
     private Long categoryId;
     @NotBlank(message = "Category name is mandatory")
     private String categoryName;

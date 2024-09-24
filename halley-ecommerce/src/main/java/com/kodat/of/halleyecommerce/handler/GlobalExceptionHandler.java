@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleEntityNotFoundException(EntityNotFoundException e) {
-        LOGGER.warn("Entity not found: {}", e.getMessage());
+        LOGGER.error("Entity not found: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(
@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
-        LOGGER.warn("User {} already exists", e.getMessage());
+        LOGGER.warn(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(
