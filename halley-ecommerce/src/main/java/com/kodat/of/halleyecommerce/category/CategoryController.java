@@ -23,5 +23,14 @@ public class CategoryController {
             Authentication connectedAdmin) {
         return new ResponseEntity<>(service.addParentCategory(categoryDto , connectedAdmin), HttpStatus.CREATED);
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{anaKategori}/altKategoriEkle")
+    public ResponseEntity<CategoryDto> addChildCategory(
+            @PathVariable("anaKategori") String parentCategoryName,
+            @RequestBody @Valid CategoryDto categoryDto ,
+            Authentication connectedAdmin
+    ){
+        return new ResponseEntity<>(service.addChildCategory(parentCategoryName,categoryDto,connectedAdmin),HttpStatus.CREATED);
+    }
 
 }

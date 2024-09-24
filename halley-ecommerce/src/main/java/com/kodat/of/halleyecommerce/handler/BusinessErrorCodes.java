@@ -13,7 +13,8 @@ public enum BusinessErrorCodes {
     DATA_INTEGRITY_VIOLATION(409, HttpStatus.CONFLICT, "Data Integrity Violation"),
     VALIDATION_ERROR(400, HttpStatus.BAD_REQUEST, "Validation Error"),
     USER_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "User already Exists"),
-    UNAUTHORIZED_ADMIN_ACCESS(403,HttpStatus.FORBIDDEN,"Unauthorized access attempt by non-admin user")
+    UNAUTHORIZED_ADMIN_ACCESS(403,HttpStatus.FORBIDDEN,"Unauthorized access attempt by non-admin user"),
+    PARENT_CATEGORY_DOES_NOT_EXISTS(404,HttpStatus.NOT_FOUND,"Parent Category does not exists.")
             {
     };
 

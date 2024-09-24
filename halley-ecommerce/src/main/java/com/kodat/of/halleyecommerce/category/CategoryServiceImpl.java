@@ -1,6 +1,9 @@
 package com.kodat.of.halleyecommerce.category;
 
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
+import com.kodat.of.halleyecommerce.exception.CategoryAlreadyExistsException;
+import com.kodat.of.halleyecommerce.exception.ParentCategoryDoesNotExistsException;
+import com.kodat.of.halleyecommerce.exception.UnauthorizedAdminAccessException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +33,22 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
     }
 
+    @Override
+    public CategoryDto addChildCategory(String parentCategoryName, CategoryDto categoryDto, Authentication connectedAdmin) {
+        LOGGER.info("Adding child category with name: {}", categoryDto.getCategoryName());
+        verifyAdminRole(connectedAdmin);
+        validateCategoryName(categoryDto.getCategoryName());
+        Category parentCategory = categoryRepository.findByCategoryName(parentCategoryName)
+                .orElseThrow(() -> new ParentCategoryDoesNotExistsException("Parent category: " + parentCategoryName + " does not exist."));
+        Category childCategory = categoryRepository.save(CategoryMapper.toCategory(categoryDto,parentCategory));
+        LOGGER.info("Child category added successfully with ID: {}", childCategory.getId());
+        return CategoryMapper.toCategoryDto(childCategory);
+    }
+
     private void verifyAdminRole(Authentication connectedAdmin) {
         if (connectedAdmin.getAuthorities().stream()
                 .noneMatch(authority -> authority.getAuthority().equals("ADMIN"))){
-            LOGGER.error("Unauthorized access attempt by user: {}", connectedAdmin.getName());
-            throw new SecurityException("You are not an admin");
+            throw new UnauthorizedAdminAccessException("You are not an admin");
         }
         LOGGER.info("Admin role verified for user: {}", connectedAdmin.getName());
 
@@ -42,8 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private void validateCategoryName(String categoryName) {
         if (categoryRepository.existsByCategoryName(categoryName)){
-            LOGGER.warn("Attempt to add existing category: {}", categoryName);
-            throw new RuntimeException("Category: "+ categoryName + " already exists");
+            throw new CategoryAlreadyExistsException("Category: "+ categoryName + " already exists");
         }
         LOGGER.info("Category name validation passed for: {}", categoryName);
 

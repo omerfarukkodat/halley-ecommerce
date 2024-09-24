@@ -5,4 +5,6 @@ import org.springframework.security.core.Authentication;
 
 public interface CategoryService {
     CategoryDto addParentCategory(CategoryDto categoryDto, Authentication connectedAdmin);
+
+    CategoryDto addChildCategory(String parentCategoryName, CategoryDto categoryDto, Authentication connectedAdmin);
 }
