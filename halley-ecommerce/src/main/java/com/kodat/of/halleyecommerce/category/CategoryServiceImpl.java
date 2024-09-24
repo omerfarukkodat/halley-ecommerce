@@ -38,8 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
         verifyAdminRole(connectedAdmin);
         validateCategoryName(categoryDto.getCategoryName());
         Category parentCategory = findParentCategory(parentCategoryName);
-        Category childCategory = CategoryMapper.toCategory(categoryDto,parentCategory);
-        childCategory = categoryRepository.save(childCategory);
+        Category childCategory = categoryRepository.save(CategoryMapper.toCategory(categoryDto,parentCategory));
         LOGGER.info("Child category added successfully with name: {}", childCategory.getCategoryName());
         return CategoryMapper.toCategoryDto(childCategory);
     }
