@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.util;
 
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.category.CategoryRepository;
+import com.kodat.of.halleyecommerce.exception.CategoryDoesNotExistsException;
 import com.kodat.of.halleyecommerce.exception.ParentCategoryDoesNotExistsException;
 import org.springframework.stereotype.Component;
 

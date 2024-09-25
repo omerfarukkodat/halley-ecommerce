@@ -105,6 +105,22 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(CategoryDoesNotExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleCategoryDoesNotExistsException(CategoryDoesNotExistsException e) {
+        LOGGER.warn("Category does not exists: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.CATEGORY_DOES_NOT_EXISTS.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.CATEGORY_DOES_NOT_EXISTS.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+    
+
+
 
 
 
