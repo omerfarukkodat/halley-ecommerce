@@ -28,4 +28,14 @@ public class ProductMapper {
                 .categoryId(product.getCategory().getId())
                 .build();
     }
+    public static Product updateProductFromDto(ProductDto productDto, Product existingProduct , Category category) {
+        existingProduct.setName(productDto.getName());
+        existingProduct.setDescription(productDto.getDescription());
+        existingProduct.setPrice(productDto.getPrice());
+        existingProduct.setStock(productDto.getStock());
+        existingProduct.setProductCode(productDto.getProductCode());
+        existingProduct.setImageUrl(productDto.getImageUrl());
+        existingProduct.setCategory(category);
+        return existingProduct;
+    }
 }

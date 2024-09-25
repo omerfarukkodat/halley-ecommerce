@@ -26,7 +26,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProduct(productDto , connectedUser));
     }
     @Secured("ADMIN")
-    @PutMapping("/id")
+    @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(
             @PathVariable Long id,
             @RequestBody @Valid ProductDto productDto,

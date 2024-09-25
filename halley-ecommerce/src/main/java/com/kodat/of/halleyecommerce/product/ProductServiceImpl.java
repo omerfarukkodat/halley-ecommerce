@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.product;
 
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
+import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.product.ProductMapper;
 import com.kodat.of.halleyecommerce.util.CategoryUtils;
 import com.kodat.of.halleyecommerce.validator.CategoryValidator;
@@ -32,11 +33,8 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public ProductDto addProduct(ProductDto productDto , Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser); //Check the user role(admin or not)
-        LOGGER.debug("User: {} has admin role", connectedUser.getName());
         categoryValidator.validateCategoryId(productDto.getCategoryId()); // check category exists or not?
-        LOGGER.debug("Category ID: {} is valid", productDto.getCategoryId());
         productValidator.validateProductCode(productDto.getProductCode()); // check product added before or not?
-        LOGGER.debug("Product code: {} is valid", productDto.getProductCode());
         Category category = categoryUtils.findCategoryById(productDto.getCategoryId());
         Product product = productRepository.save(ProductMapper.toProduct(productDto , category));
         LOGGER.info("Product: {} added successfully with product code: {}", productDto.getName(), product.getProductCode());
@@ -46,13 +44,15 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public ProductDto updateProduct(Long id, ProductDto productDto, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
-        LOGGER.debug("User: {} has admin role", connectedUser.getName());
         categoryValidator.validateCategoryId(productDto.getCategoryId());
-        LOGGER.debug("Category ID: {} is valid", productDto.getCategoryId());
-        productValidator.validateProductCode(productDto.getProductCode());
-        LOGGER.debug("Product code: {} is valid", productDto.getProductCode());
-        Product product = productRepository.findById(id)
-                .orElseThrow(()-> new Product)
+        productValidator.validateProductCode(productDto.getProductCode(), id);
+        Product exsistingProduct = productRepository.findById(id)
+                .orElseThrow(()-> new ProductNotFoundException("Product not found with id: " + id));
+        Category category = categoryUtils.findCategoryById(productDto.getCategoryId());
+        Product updatedProduct = ProductMapper.updateProductFromDto(productDto, exsistingProduct, category);
+        productRepository.save(updatedProduct);
+        LOGGER.info("Product with ID: {} updated successfully",id);
+        return ProductMapper.toProductDto(updatedProduct);
     }
 
 }

@@ -6,5 +6,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
     boolean existsByProductCode(String productCode);
+
+    Product findByProductCode(String productCode);
 }
 
