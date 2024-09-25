@@ -3,6 +3,7 @@ package com.kodat.of.halleyecommerce.category;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
 import com.kodat.of.halleyecommerce.exception.ParentCategoryDoesNotExistsException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
+import com.kodat.of.halleyecommerce.util.CategoryUtils;
 import com.kodat.of.halleyecommerce.validator.CategoryValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
 import org.slf4j.Logger;
@@ -18,11 +19,13 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryValidator categoryValidator;
     private final RoleValidator roleValidator;
+    private final CategoryUtils categoryUtils;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryValidator categoryValidator, RoleValidator roleValidator) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryValidator categoryValidator, RoleValidator roleValidator, CategoryUtils categoryUtils) {
         this.categoryRepository = categoryRepository;
         this.categoryValidator = categoryValidator;
         this.roleValidator = roleValidator;
+        this.categoryUtils = categoryUtils;
     }
 
     @Override
@@ -41,17 +44,10 @@ public class CategoryServiceImpl implements CategoryService {
         LOGGER.info("Adding child category with name: {}", categoryDto.getCategoryName());
        roleValidator.verifyAdminRole(connectedAdmin);
        categoryValidator.validateCategoryName(categoryDto.getCategoryName());
-        Category parentCategory = findParentCategory(parentCategoryName);
+        Category parentCategory = categoryUtils.findParentCategory(parentCategoryName);
         Category childCategory = categoryRepository.save(CategoryMapper.toCategory(categoryDto,parentCategory));
         LOGGER.info("Child category added successfully with name: {}", childCategory.getCategoryName());
         return CategoryMapper.toCategoryDto(childCategory);
     }
-
-    private Category findParentCategory(String parentCategoryName) {
-        return categoryRepository.findByCategoryName(parentCategoryName)
-                .orElseThrow(() -> new ParentCategoryDoesNotExistsException("Parent category: " + parentCategoryName + " does not exist."));
-    }
-
-
 
 }

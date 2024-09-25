@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.dto.product;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -15,13 +16,13 @@ public class ProductDto {
     private String name;
     @NotBlank(message = "Product description required")
     private String description;
-    @NotBlank(message = "Product price required")
+    @NotNull(message = "Product price required")
     private BigDecimal price;
-    @NotBlank(message = "Product stock required")
+    @NotNull(message = "Product stock required")
     private Integer stock;
     @NotBlank(message = "Product code is mandatory")
     private String productCode;
     private String imageUrl;
-    @NotBlank(message = "Category Id is mandatory")
+    @NotNull(message = "Category Id is mandatory")
     private Long categoryId;
 }
