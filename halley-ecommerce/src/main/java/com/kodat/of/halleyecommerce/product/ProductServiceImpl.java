@@ -29,22 +29,30 @@ public class ProductServiceImpl implements ProductService{
         this.categoryUtils = categoryUtils;
     }
 
-
     @Override
     public ProductDto addProduct(ProductDto productDto , Authentication connectedUser) {
-        //Check the user role(admin or not)
-        roleValidator.verifyAdminRole(connectedUser);
-        LOGGER.debug("User {} has admin role", connectedUser.getName());
-        // check category exists or not?
-        categoryValidator.validateCategoryId(productDto.getCategoryId());
-        LOGGER.debug("Category ID {} is valid", productDto.getCategoryId());
-        // check product added before or not?
-        productValidator.validateProductCode(productDto.getProductCode());
-        LOGGER.debug("Product code {} is valid", productDto.getProductCode());
+        roleValidator.verifyAdminRole(connectedUser); //Check the user role(admin or not)
+        LOGGER.debug("User: {} has admin role", connectedUser.getName());
+        categoryValidator.validateCategoryId(productDto.getCategoryId()); // check category exists or not?
+        LOGGER.debug("Category ID: {} is valid", productDto.getCategoryId());
+        productValidator.validateProductCode(productDto.getProductCode()); // check product added before or not?
+        LOGGER.debug("Product code: {} is valid", productDto.getProductCode());
         Category category = categoryUtils.findCategoryById(productDto.getCategoryId());
         Product product = productRepository.save(ProductMapper.toProduct(productDto , category));
         LOGGER.info("Product: {} added successfully with product code: {}", productDto.getName(), product.getProductCode());
-
         return ProductMapper.toProductDto(product);
     }
+
+    @Override
+    public ProductDto updateProduct(Long id, ProductDto productDto, Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        LOGGER.debug("User: {} has admin role", connectedUser.getName());
+        categoryValidator.validateCategoryId(productDto.getCategoryId());
+        LOGGER.debug("Category ID: {} is valid", productDto.getCategoryId());
+        productValidator.validateProductCode(productDto.getProductCode());
+        LOGGER.debug("Product code: {} is valid", productDto.getProductCode());
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new Product)
+    }
+
 }

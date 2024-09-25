@@ -5,4 +5,7 @@ import org.springframework.security.core.Authentication;
 
 public interface ProductService {
     ProductDto addProduct(ProductDto productDto , Authentication connectedUser);
+
+    ProductDto updateProduct(Long id, ProductDto productDto, Authentication connectedUser);
+
 }
