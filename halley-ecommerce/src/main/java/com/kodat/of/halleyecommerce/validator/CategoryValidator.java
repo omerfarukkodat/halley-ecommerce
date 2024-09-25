@@ -21,6 +21,12 @@ public class CategoryValidator {
         }
         LOGGER.info("Category name validation passed for: {}" , categoryName);
     }
+    public void validateCategoryId(Long categoryId) {
+        if (categoryRepository.existsById(categoryId)){
+            throw new CategoryAlreadyExistsException("Category: " + categoryId + " already exists");
+        }
+        LOGGER.info("Category id validation passed for: {}" , categoryId);
+    }
 
 
 

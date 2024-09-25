@@ -19,6 +19,8 @@ public class ProductDto {
     private BigDecimal price;
     @NotBlank(message = "Product stock required")
     private Integer stock;
+    @NotBlank(message = "Product code is mandatory")
+    private String productCode;
     private String imageUrl;
     @NotBlank(message = "Category Id is mandatory")
     private Long categoryId;
