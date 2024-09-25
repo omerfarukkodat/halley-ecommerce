@@ -5,6 +5,7 @@ import com.kodat.of.halleyecommerce.exception.CategoryAlreadyExistsException;
 import com.kodat.of.halleyecommerce.exception.ParentCategoryDoesNotExistsException;
 import com.kodat.of.halleyecommerce.exception.UnauthorizedAdminAccessException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
+import com.kodat.of.halleyecommerce.validator.CategoryValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -16,9 +17,11 @@ public class CategoryServiceImpl implements CategoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     private final CategoryRepository categoryRepository;
+    private final CategoryValidator categoryValidator;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryValidator categoryValidator) {
         this.categoryRepository = categoryRepository;
+        this.categoryValidator = categoryValidator;
     }
 
     @Override
@@ -26,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
         LOGGER.info("Adding parent category with name: {}", categoryDto.getCategoryName());
 
         verifyAdminRole(connectedAdmin); // Check admin role
-        validateCategoryName(categoryDto.getCategoryName()); // Check categoryName added before , null or empty?
+        categoryValidator.validateCategoryName(categoryDto.getCategoryName()); // Check categoryName added before , null or empty?
         Category category = CategoryMapper.toCategory(categoryDto,null);
         LOGGER.info("Parent category added successfully with ID: {}", category.getId());
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
@@ -36,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto addChildCategory(String parentCategoryName, CategoryDto categoryDto, Authentication connectedAdmin) {
         LOGGER.info("Adding child category with name: {}", categoryDto.getCategoryName());
         verifyAdminRole(connectedAdmin);
-        validateCategoryName(categoryDto.getCategoryName());
+       categoryValidator.validateCategoryName(categoryDto.getCategoryName());
         Category parentCategory = findParentCategory(parentCategoryName);
         Category childCategory = categoryRepository.save(CategoryMapper.toCategory(categoryDto,parentCategory));
         LOGGER.info("Child category added successfully with name: {}", childCategory.getCategoryName());
@@ -49,14 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         LOGGER.info("Admin role verified for user: {}", connectedAdmin.getName());
     }
-
-    private void validateCategoryName(String categoryName) {
-        if (categoryRepository.existsByCategoryName(categoryName)){
-            throw new CategoryAlreadyExistsException("Category: "+ categoryName + " already exists");
-        }
-        LOGGER.info("Category name validation passed for: {}", categoryName);
-    }
-
+    
     private Category findParentCategory(String parentCategoryName) {
         return categoryRepository.findByCategoryName(parentCategoryName)
                 .orElseThrow(() -> new ParentCategoryDoesNotExistsException("Parent category: " + parentCategoryName + " does not exist."));

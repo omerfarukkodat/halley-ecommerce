@@ -25,7 +25,7 @@ public class ProductController {
             @RequestBody @Valid ProductDto productDto,
             Authentication connectedUser
     ){
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProduct(productDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProduct(productDto , connectedUser));
     }
 
 

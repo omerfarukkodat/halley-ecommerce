@@ -23,7 +23,7 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> addParentCategory(
             @RequestBody @Valid CategoryDto categoryDto,
             Authentication connectedAdmin) {
-        return new ResponseEntity<>(service.addParentCategory(categoryDto , connectedAdmin), HttpStatus.CREATED);
+        return  ResponseEntity.status(HttpStatus.CREATED).body(service.addParentCategory(categoryDto , connectedAdmin));
     }
     @Secured("ADMIN")
     @PostMapping("/{parentCategory}/addChildCategory")
@@ -32,7 +32,7 @@ public class CategoryController {
             @RequestBody @Valid CategoryDto categoryDto,
             Authentication connectedAdmin
     ){
-        return new ResponseEntity<>(service.addChildCategory(parentCategoryName,categoryDto,connectedAdmin),HttpStatus.CREATED);
+        return  ResponseEntity.status(HttpStatus.CREATED).body(service.addChildCategory(parentCategoryName,categoryDto,connectedAdmin));
     }
 
 }

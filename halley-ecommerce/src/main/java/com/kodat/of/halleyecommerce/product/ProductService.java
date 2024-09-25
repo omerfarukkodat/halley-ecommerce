@@ -1,9 +1,8 @@
 package com.kodat.of.halleyecommerce.product;
 
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
-
-import java.net.URI;
+import org.springframework.security.core.Authentication;
 
 public interface ProductService {
-    ProductDto addProduct(ProductDto productDto);
+    ProductDto addProduct(ProductDto productDto , Authentication connectedUser);
 }
