@@ -1,9 +1,7 @@
 package com.kodat.of.halleyecommerce.category;
 
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
-import com.kodat.of.halleyecommerce.exception.CategoryAlreadyExistsException;
 import com.kodat.of.halleyecommerce.exception.ParentCategoryDoesNotExistsException;
-import com.kodat.of.halleyecommerce.exception.UnauthorizedAdminAccessException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
 import com.kodat.of.halleyecommerce.validator.CategoryValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
@@ -48,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
         LOGGER.info("Child category added successfully with name: {}", childCategory.getCategoryName());
         return CategoryMapper.toCategoryDto(childCategory);
     }
-    
+
     private Category findParentCategory(String parentCategoryName) {
         return categoryRepository.findByCategoryName(parentCategoryName)
                 .orElseThrow(() -> new ParentCategoryDoesNotExistsException("Parent category: " + parentCategoryName + " does not exist."));
