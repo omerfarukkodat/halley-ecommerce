@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.validator;
 
+import com.kodat.of.halleyecommerce.exception.ProductAlreadyExistsException;
 import com.kodat.of.halleyecommerce.product.ProductRepository;
 import org.springframework.stereotype.Component;
 

@@ -92,6 +92,19 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(ProductAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleProductAlreadyExistsException(ProductAlreadyExistsException e) {
+        LOGGER.warn("Product already exists: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.PRODUCT_ALREADY_EXISTS.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.PRODUCT_ALREADY_EXISTS.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
 
 
 

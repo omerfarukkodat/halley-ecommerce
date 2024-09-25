@@ -14,7 +14,8 @@ public enum BusinessErrorCodes {
     VALIDATION_ERROR(400, HttpStatus.BAD_REQUEST, "Validation error"),
     USER_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "User already exist"),
     UNAUTHORIZED_ADMIN_ACCESS(403,HttpStatus.FORBIDDEN,"Unauthorized access attempt by non-admin user"),
-    PARENT_CATEGORY_DOES_NOT_EXISTS(404,HttpStatus.NOT_FOUND,"Parent category does not exists.")
+    PARENT_CATEGORY_DOES_NOT_EXISTS(404,HttpStatus.NOT_FOUND,"Parent category does not exists."),
+    PRODUCT_ALREADY_EXISTS(409,HttpStatus.CONFLICT,"Product already exists.")
             {
     };
 
