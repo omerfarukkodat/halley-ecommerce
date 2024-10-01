@@ -61,12 +61,22 @@ public class ProductController {
 
     @Secured("ADMIN")
     @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> deleteProduct(
+    public ResponseEntity<Void> deleteProductById(
             @PathVariable Long productId,
             Authentication connectedUser
     ){
-        productService.deleteProduct(productId , connectedUser);
+        productService.deleteProductById(productId , connectedUser);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<PageResponse<ProductDto>> findProductsBySearch(
+            @RequestParam String searchTerm,
+          //  @RequestParam(defaultValue = "10") int maxDistance,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ResponseEntity.ok(productService.findProductsBySearch(searchTerm,page,size));
     }
 
 

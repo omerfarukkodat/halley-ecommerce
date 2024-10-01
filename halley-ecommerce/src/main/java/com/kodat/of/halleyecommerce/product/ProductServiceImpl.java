@@ -18,7 +18,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -28,13 +30,15 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryValidator categoryValidator;
     private final ProductValidator productValidator;
     private final CategoryUtils categoryUtils;
+   private final FuzzySearchService fuzzySearchService;
 
-    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils) {
+    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, FuzzySearchService fuzzySearchService) {
         this.productRepository = productRepository;
         this.roleValidator = roleValidator;
         this.categoryValidator = categoryValidator;
         this.productValidator = productValidator;
         this.categoryUtils = categoryUtils;
+        this.fuzzySearchService = fuzzySearchService;
     }
 
     @Override
@@ -108,10 +112,34 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(Long productId , Authentication connectedUser) {
+    public void deleteProductById(Long productId , Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
         productValidator.validateProductId(productId);
         LOGGER.info("Product with ID: {} deleted successfully", productId);
+    }
+
+    @Override
+    public PageResponse<ProductDto> findProductsBySearch(String searchTerm, int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+       // Find results with FuzzySearchService
+        Page<Product> combinedResults = fuzzySearchService.fuzzySearch(searchTerm , pageable);
+
+        List<ProductDto> productDtos = combinedResults.stream()
+                .map(ProductMapper::toProductDto)
+                .toList();
+
+        int totalElements = Math.toIntExact(combinedResults.getTotalElements());
+        int totalPages = combinedResults.getTotalPages();
+
+        return new PageResponse<>(
+                productDtos,
+                page,
+                size,
+                totalElements,
+                totalPages,
+                page == 0 ,
+                page + 1 >= totalPages
+        );
     }
 
 }
