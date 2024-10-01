@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.product;
 
 import com.kodat.of.halleyecommerce.category.Category;
+import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.product.ProductMapper;
@@ -10,8 +11,14 @@ import com.kodat.of.halleyecommerce.validator.ProductValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -53,6 +60,24 @@ public class ProductServiceImpl implements ProductService{
         productRepository.save(updatedProduct);
         LOGGER.info("Product with ID: {} updated successfully",id);
         return ProductMapper.toProductDto(updatedProduct);
+    }
+
+    @Override
+    public PageResponse<ProductDto> findAllProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size , Sort.by("productCode").descending());
+        Page<Product> products = productRepository.findAll(pageable);
+        List<ProductDto> productDtos = products.stream()
+                .map(ProductMapper::toProductDto)
+                .toList();
+        return new PageResponse<>(
+                productDtos,
+                products.getNumber(),
+                products.getSize(),
+                products.getTotalElements(),
+                products.getTotalPages(),
+                products.isFirst(),
+                products.isLast()
+        );
     }
 
 }

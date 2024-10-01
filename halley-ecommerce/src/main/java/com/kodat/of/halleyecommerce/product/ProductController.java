@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.product;
 
+import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,8 @@ public class ProductController {
             @RequestBody @Valid ProductDto productDto,
             Authentication connectedUser
     ){
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProduct(productDto , connectedUser));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.addProduct(productDto , connectedUser));
     }
     @Secured("ADMIN")
     @PutMapping("/{id}")
@@ -35,6 +37,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProduct(id , productDto , connectedUser));
     }
 
+    @GetMapping
+    public ResponseEntity<PageResponse<ProductDto>> findAllProducts(
+          @RequestParam(name = "page" , defaultValue = "0" , required = false) int page,
+          @RequestParam(name = "size" , defaultValue = "10" , required = false) int size
+    ){
+        return ResponseEntity.ok(productService.findAllProducts(page,size));
+    }
 
 
 
