@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
     private final ProductRepository productRepository;
     private final RoleValidator roleValidator;
@@ -38,33 +38,33 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public ProductDto addProduct(ProductDto productDto , Authentication connectedUser) {
+    public ProductDto addProduct(ProductDto productDto, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser); //Check the user role(admin or not)
         categoryValidator.validateCategoryId(productDto.getCategoryId()); // check category exists or not?
         productValidator.validateProductCode(productDto.getProductCode()); // check product added before or not?
         Category category = categoryUtils.findCategoryById(productDto.getCategoryId());
-        Product product = productRepository.save(ProductMapper.toProduct(productDto , category));
+        Product product = productRepository.save(ProductMapper.toProduct(productDto, category));
         LOGGER.info("Product: {} added successfully with product code: {}", productDto.getName(), product.getProductCode());
         return ProductMapper.toProductDto(product);
     }
 
     @Override
-    public ProductDto updateProduct(Long id, ProductDto productDto, Authentication connectedUser) {
+    public ProductDto updateProduct(Long productId, ProductDto productDto, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
         categoryValidator.validateCategoryId(productDto.getCategoryId());
-        productValidator.validateProductCode(productDto.getProductCode(), id);
-        Product exsistingProduct = productRepository.findById(id)
-                .orElseThrow(()-> new ProductNotFoundException("Product not found with id: " + id));
+        productValidator.validateProductCode(productDto.getProductCode(), productId);
+        Product exsistingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + productId));
         Category category = categoryUtils.findCategoryById(productDto.getCategoryId());
         Product updatedProduct = ProductMapper.updateProductFromDto(productDto, exsistingProduct, category);
         productRepository.save(updatedProduct);
-        LOGGER.info("Product with ID: {} updated successfully",id);
+        LOGGER.info("Product with ID: {} updated successfully", productId);
         return ProductMapper.toProductDto(updatedProduct);
     }
 
     @Override
     public PageResponse<ProductDto> findAllProducts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size , Sort.by("productCode").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("productCode").descending());
         Page<Product> products = productRepository.findAll(pageable);
         List<ProductDto> productDtos = products.stream()
                 .map(ProductMapper::toProductDto)
@@ -78,6 +78,14 @@ public class ProductServiceImpl implements ProductService{
                 products.isFirst(),
                 products.isLast()
         );
+    }
+
+    @Override
+    public ProductDto findProductById(Long productId) {
+        return productRepository.findById(productId)
+                .map(ProductMapper::toProductDto)
+                .orElseThrow(() ->
+                        new ProductNotFoundException("Product with id" + productId + " not found"));
     }
 
 }

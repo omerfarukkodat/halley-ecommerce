@@ -28,13 +28,13 @@ public class ProductController {
                 .body(productService.addProduct(productDto , connectedUser));
     }
     @Secured("ADMIN")
-    @PutMapping("/{id}")
+    @PutMapping("/{productId}")
     public ResponseEntity<ProductDto> updateProduct(
-            @PathVariable Long id,
+            @PathVariable Long productId,
             @RequestBody @Valid ProductDto productDto,
             Authentication connectedUser
     ){
-        return ResponseEntity.ok(productService.updateProduct(id , productDto , connectedUser));
+        return ResponseEntity.ok(productService.updateProduct(productId , productDto , connectedUser));
     }
 
     @GetMapping
@@ -43,6 +43,12 @@ public class ProductController {
           @RequestParam(name = "size" , defaultValue = "10" , required = false) int size
     ){
         return ResponseEntity.ok(productService.findAllProducts(page,size));
+    }
+    @GetMapping("{productId}")
+    public ResponseEntity<ProductDto> findProductById(
+            @PathVariable Long productId
+    ){
+        return ResponseEntity.ok(productService.findProductById(productId));
     }
 
 

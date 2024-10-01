@@ -10,4 +10,7 @@ public interface ProductService {
     ProductDto updateProduct(Long id, ProductDto productDto, Authentication connectedUser);
 
     PageResponse<ProductDto> findAllProducts(int page, int size);
+
+    ProductDto findProductById(Long productId);
+
 }
