@@ -44,11 +44,19 @@ public class ProductController {
     ){
         return ResponseEntity.ok(productService.findAllProducts(page,size));
     }
-    @GetMapping("{productId}")
+    @GetMapping("/{productId}")
     public ResponseEntity<ProductDto> findProductById(
             @PathVariable Long productId
     ){
         return ResponseEntity.ok(productService.findProductById(productId));
+    }
+    @GetMapping("/{categoryId}/products")
+    public ResponseEntity<PageResponse<ProductDto>> findProductsByCategoryId(
+            @RequestParam(name = "page" , defaultValue = "0" , required = false) int page,
+            @RequestParam(name = "size" , defaultValue = "10" , required = false) int size,
+            @PathVariable Long categoryId
+    ){
+        return ResponseEntity.ok(productService.findProductsByCategoryId(page,size,categoryId));
     }
 
 

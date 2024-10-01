@@ -85,7 +85,26 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(productId)
                 .map(ProductMapper::toProductDto)
                 .orElseThrow(() ->
-                        new ProductNotFoundException("Product with id" + productId + " not found"));
+                        new ProductNotFoundException("Product with id:" + productId + " not found"));
+    }
+
+    @Override
+    public PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId) {
+        Pageable pageable = PageRequest.of(page,size,Sort.by("productCode").descending());
+        Page<Product> products = productRepository.findByCategoryId(categoryId , pageable);
+        List<ProductDto> productDtos = products.stream()
+                .map(ProductMapper::toProductDto)
+                .toList();
+        return new PageResponse<>(
+                productDtos,
+                products.getNumber(),
+                products.getSize(),
+                products.getTotalElements(),
+                products.getTotalPages(),
+                products.isFirst(),
+                products.isLast()
+        );
+
     }
 
 }
