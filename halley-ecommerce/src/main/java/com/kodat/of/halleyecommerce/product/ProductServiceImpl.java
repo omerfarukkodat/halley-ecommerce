@@ -107,4 +107,11 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    @Override
+    public void deleteProduct(Long productId , Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        productValidator.validateProductId(productId);
+        LOGGER.info("Product with ID: {} deleted successfully", productId);
+    }
+
 }

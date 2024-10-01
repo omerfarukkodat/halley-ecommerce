@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.validator;
 
 import com.kodat.of.halleyecommerce.exception.ProductAlreadyExistsException;
+import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
 import com.kodat.of.halleyecommerce.product.Product;
 import com.kodat.of.halleyecommerce.product.ProductRepository;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,13 @@ public class ProductValidator {
         if (existingProduct != null && !existingProduct.getId().equals(productId)) {
             throw new ProductAlreadyExistsException("Product with code " + productCode + " already exists");
         }
+    }
+
+    public void validateProductId(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ProductNotFoundException("Product with id " + productId + " does not exist.");
+        }
+        productRepository.deleteById(productId);
     }
 
 

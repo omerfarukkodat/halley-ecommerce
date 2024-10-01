@@ -14,4 +14,9 @@ public interface ProductService {
     ProductDto findProductById(Long productId);
 
     PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId);
+
+    void deleteProduct(Long productId , Authentication connectedUser);
+
+
+
 }

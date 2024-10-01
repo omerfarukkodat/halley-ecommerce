@@ -59,6 +59,16 @@ public class ProductController {
         return ResponseEntity.ok(productService.findProductsByCategoryId(page,size,categoryId));
     }
 
+    @Secured("ADMIN")
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable Long productId,
+            Authentication connectedUser
+    ){
+        productService.deleteProduct(productId , connectedUser);
+        return ResponseEntity.noContent().build();
+    }
+
 
 
 
