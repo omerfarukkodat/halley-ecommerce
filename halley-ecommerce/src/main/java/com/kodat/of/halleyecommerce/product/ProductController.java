@@ -40,9 +40,11 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<PageResponse<ProductDto>> findAllProducts(
           @RequestParam(name = "page" , defaultValue = "0" , required = false) int page,
-          @RequestParam(name = "size" , defaultValue = "10" , required = false) int size
+          @RequestParam(name = "size" , defaultValue = "10" , required = false) int size,
+          @RequestParam(name = "sort" , defaultValue = "productCode") String sort,
+          @RequestParam(name = "order", defaultValue = "desc") String order
     ){
-        return ResponseEntity.ok(productService.findAllProducts(page,size));
+        return ResponseEntity.ok(productService.findAllProducts(page,size , sort , order));
     }
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDto> findProductById(

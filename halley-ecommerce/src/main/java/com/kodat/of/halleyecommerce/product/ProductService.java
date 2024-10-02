@@ -9,7 +9,7 @@ public interface ProductService {
 
     ProductDto updateProduct(Long id, ProductDto productDto, Authentication connectedUser);
 
-    PageResponse<ProductDto> findAllProducts(int page, int size);
+    PageResponse<ProductDto> findAllProducts(int page, int size,String sort , String order);
 
     ProductDto findProductById(Long productId);
 
