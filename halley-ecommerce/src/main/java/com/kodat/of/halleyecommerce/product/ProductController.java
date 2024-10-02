@@ -41,10 +41,10 @@ public class ProductController {
     public ResponseEntity<PageResponse<ProductDto>> findAllProducts(
           @RequestParam(name = "page" , defaultValue = "0" , required = false) int page,
           @RequestParam(name = "size" , defaultValue = "10" , required = false) int size,
-          @RequestParam(name = "sort" , defaultValue = "productCode") String sort,
-          @RequestParam(name = "order", defaultValue = "desc") String order
+          @RequestParam(name = "sortBy" , defaultValue = "productCode") String sortBy,
+          @RequestParam(name = "sortDirection", defaultValue = "desc") String sortDirection
     ){
-        return ResponseEntity.ok(productService.findAllProducts(page,size , sort , order));
+        return ResponseEntity.ok(productService.findAllProducts(page,size , sortBy , sortDirection));
     }
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDto> findProductById(
@@ -56,9 +56,11 @@ public class ProductController {
     public ResponseEntity<PageResponse<ProductDto>> findProductsByCategoryId(
             @RequestParam(name = "page" , defaultValue = "0" , required = false) int page,
             @RequestParam(name = "size" , defaultValue = "10" , required = false) int size,
+            @RequestParam(name = "sortBy" , defaultValue = "productCode",required = false) String sortBy,
+            @RequestParam(name = "sortDirection" , defaultValue = "desc" , required = false) String sortDirection,
             @PathVariable Long categoryId
     ){
-        return ResponseEntity.ok(productService.findProductsByCategoryId(page,size,categoryId));
+        return ResponseEntity.ok(productService.findProductsByCategoryId(page,size,categoryId , sortBy , sortDirection));
     }
 
     @Secured("ADMIN")

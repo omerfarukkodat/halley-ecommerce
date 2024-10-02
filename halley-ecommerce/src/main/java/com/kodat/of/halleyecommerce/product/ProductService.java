@@ -9,11 +9,11 @@ public interface ProductService {
 
     ProductDto updateProduct(Long id, ProductDto productDto, Authentication connectedUser);
 
-    PageResponse<ProductDto> findAllProducts(int page, int size,String sort , String order);
+    PageResponse<ProductDto> findAllProducts(int page, int size,String sortBy , String sortDirection);
 
     ProductDto findProductById(Long productId);
 
-    PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId);
+    PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId , String sortBy , String sortDirection);
 
     void deleteProductById(Long productId , Authentication connectedUser);
 

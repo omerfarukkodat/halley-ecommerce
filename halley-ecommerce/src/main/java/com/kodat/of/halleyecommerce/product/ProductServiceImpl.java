@@ -65,9 +65,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageResponse<ProductDto> findAllProducts(int page, int size , String sort , String order) {
-        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+    public PageResponse<ProductDto> findAllProducts(int page, int size , String sortBy , String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         Page<Product> products = productRepository.findAll(pageable);
         List<ProductDto> productDtos = products.stream()
                 .map(ProductMapper::toProductDto)
@@ -92,8 +92,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("productCode").descending());
+    public PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId , String sortBy , String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         Page<Product> products = productRepository.findByCategoryId(categoryId, pageable);
         List<ProductDto> productDtos = products.stream()
                 .map(ProductMapper::toProductDto)
