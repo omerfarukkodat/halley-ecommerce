@@ -72,7 +72,6 @@ public class ProductController {
     @GetMapping("/search")
     public ResponseEntity<PageResponse<ProductDto>> findProductsBySearch(
             @RequestParam String searchTerm,
-          //  @RequestParam(defaultValue = "10") int maxDistance,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ){

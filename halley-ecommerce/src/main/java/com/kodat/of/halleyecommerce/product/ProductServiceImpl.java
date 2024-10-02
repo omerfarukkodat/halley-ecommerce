@@ -18,9 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -30,15 +28,15 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryValidator categoryValidator;
     private final ProductValidator productValidator;
     private final CategoryUtils categoryUtils;
-   private final FuzzySearchService fuzzySearchService;
+    private final SearchService searchService;
 
-    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, FuzzySearchService fuzzySearchService) {
+    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, SearchService searchService) {
         this.productRepository = productRepository;
         this.roleValidator = roleValidator;
         this.categoryValidator = categoryValidator;
         this.productValidator = productValidator;
         this.categoryUtils = categoryUtils;
-        this.fuzzySearchService = fuzzySearchService;
+        this.searchService = searchService;
     }
 
     @Override
@@ -94,8 +92,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId) {
-        Pageable pageable = PageRequest.of(page,size,Sort.by("productCode").descending());
-        Page<Product> products = productRepository.findByCategoryId(categoryId , pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("productCode").descending());
+        Page<Product> products = productRepository.findByCategoryId(categoryId, pageable);
         List<ProductDto> productDtos = products.stream()
                 .map(ProductMapper::toProductDto)
                 .toList();
@@ -112,7 +110,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductById(Long productId , Authentication connectedUser) {
+    public void deleteProductById(Long productId, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
         productValidator.validateProductId(productId);
         LOGGER.info("Product with ID: {} deleted successfully", productId);
@@ -120,25 +118,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageResponse<ProductDto> findProductsBySearch(String searchTerm, int page, int size) {
-        Pageable pageable = PageRequest.of(page,size);
-       // Find results with FuzzySearchService
-        Page<Product> combinedResults = fuzzySearchService.fuzzySearch(searchTerm , pageable);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productsPage = searchService.searchProducts(searchTerm, pageable);
 
-        List<ProductDto> productDtos = combinedResults.stream()
+        List<ProductDto> productDtos = productsPage
+                .getContent()
+                .stream()
                 .map(ProductMapper::toProductDto)
                 .toList();
 
-        int totalElements = Math.toIntExact(combinedResults.getTotalElements());
-        int totalPages = combinedResults.getTotalPages();
-
         return new PageResponse<>(
                 productDtos,
-                page,
-                size,
-                totalElements,
-                totalPages,
-                page == 0 ,
-                page + 1 >= totalPages
+                productsPage.getNumber(),
+                productsPage.getSize(),
+                productsPage.getTotalElements(),
+                productsPage.getTotalPages(),
+                productsPage.isFirst(),
+                productsPage.isLast()
         );
     }
 

@@ -9,7 +9,6 @@ services:
       POSTGRES_DB: halley_ecommerce
     volumes:
       - postgres:/data/postgres
-      - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql
     ports:
       - 5433:5432
     networks:

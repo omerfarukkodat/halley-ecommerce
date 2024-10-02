@@ -16,14 +16,42 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
 
-    // Applying fuzzy search using trigram
-    // Basit LIKE ile Fuzzy Search
-    @Query("SELECT p FROM Product p WHERE lower(p.name) LIKE lower(concat('%', :searchTerm, '%'))")
-    Page<Product> fuzzySearchByName(@Param("searchTerm") String searchTerm, Pageable pageable);
+    // Levenshtein Search
+//    @Query(value = "SELECT p.*, (1.0 / (1 + levenshtein(p.name, :searchTerm))) AS relevance " +
+//            "FROM products p " +
+//            "WHERE levenshtein(p.name, :searchTerm) < 20 " +
+//            "ORDER BY relevance DESC",
+//            countQuery = "SELECT COUNT(*) " +
+//                    "FROM products p " +
+//                    "WHERE levenshtein(p.name, :searchTerm) < 20",
+//            nativeQuery = true)
+//    Page<Product> findProductsByLevenshteinSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    // Applying fuzzy search with Levenshtein distance
-    @Query("SELECT p FROM Product p WHERE lower(p.name) LIKE %:searchTerm%")
-    Page<Product> fuzzySearchByNameWithWildcard(@Param("searchTerm") String searchTerm, Pageable pageable);
+    //Full-text Search
+    @Query(value = "SELECT p.*, " +
+            "ts_rank_cd(to_tsvector('turkish', p.name), plainto_tsquery('turkish', :searchTerm)) AS relevance " +
+            "FROM products p " +
+            "WHERE to_tsvector('turkish', p.name) @@ plainto_tsquery('turkish', :searchTerm) " +
+            "OR p.name ILIKE CONCAT('%', :searchTerm, '%') " +
+            "ORDER BY relevance DESC",
+            countQuery = "SELECT COUNT(*) " +
+                    "FROM products p " +
+                    "WHERE to_tsvector('turkish', p.name) @@ plainto_tsquery('turkish', :searchTerm) " +
+                    "OR p.name ILIKE CONCAT('%', :searchTerm, '%')",
+            nativeQuery = true)
+    Page<Product> findProductsByFullTextSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
+    // Trigram Search
+//    @Query(value = "SELECT p.*, similarity(p.name, :searchTerm) AS relevance " +
+//            "FROM products p " +
+//            "WHERE similarity(p.name, :searchTerm) > 0.2 " +
+//            "ORDER BY relevance DESC",
+//            countQuery = "SELECT COUNT(*) " +
+//                    "FROM products p " +
+//                    "WHERE similarity(p.name, :searchTerm) > 0.2",
+//            nativeQuery = true)
+//    Page<Product> findProductsByTrigramSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+
 
 }
 
