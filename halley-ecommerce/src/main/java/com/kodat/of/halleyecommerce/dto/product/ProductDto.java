@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -23,6 +24,6 @@ public class ProductDto {
     @NotBlank(message = "Product code is mandatory")
     private String productCode;
     private String imageUrl;
-    @NotNull(message = "Category Id is mandatory")
-    private Long categoryId;
+    @NotNull(message = "At least one category Id is mandatory")
+    private Set<Long> categoryIds;
 }

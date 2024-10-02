@@ -4,9 +4,12 @@ import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.product.Product;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 
 public class ProductMapper {
-    public static Product toProduct(ProductDto productDto , Category category) {
+    public static Product toProduct(ProductDto productDto , Set<Category> categories) {
         return Product.builder()
                 .name(productDto.getName())
                 .description(productDto.getDescription())
@@ -14,7 +17,7 @@ public class ProductMapper {
                 .stock(productDto.getStock())
                 .productCode(productDto.getProductCode())
                 .imageUrl(productDto.getImageUrl())
-                .category(category)
+                .categories(categories)
                 .build();
     }
     public static ProductDto toProductDto(Product product) {
@@ -25,17 +28,17 @@ public class ProductMapper {
                 .stock(product.getStock())
                 .productCode(product.getProductCode())
                 .imageUrl(product.getImageUrl())
-                .categoryId(product.getCategory().getId())
+                .categoryIds(product.getCategories().stream().map(Category::getId).collect(Collectors.toSet()))
                 .build();
     }
-    public static Product updateProductFromDto(ProductDto productDto, Product existingProduct , Category category) {
+    public static Product updateProductFromDto(ProductDto productDto, Product existingProduct , Set<Category> categories) {
         existingProduct.setName(productDto.getName());
         existingProduct.setDescription(productDto.getDescription());
         existingProduct.setPrice(productDto.getPrice());
         existingProduct.setStock(productDto.getStock());
         existingProduct.setProductCode(productDto.getProductCode());
         existingProduct.setImageUrl(productDto.getImageUrl());
-        existingProduct.setCategory(category);
+        existingProduct.setCategories(categories);
         return existingProduct;
     }
 }

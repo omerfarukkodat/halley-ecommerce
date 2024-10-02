@@ -77,9 +77,11 @@ public class ProductController {
     public ResponseEntity<PageResponse<ProductDto>> findProductsBySearch(
             @RequestParam String searchTerm,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "productCode") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection
     ){
-        return ResponseEntity.ok(productService.findProductsBySearch(searchTerm,page,size));
+        return ResponseEntity.ok(productService.findProductsBySearch(searchTerm,page,size,sortBy, sortDirection));
     }
 
 

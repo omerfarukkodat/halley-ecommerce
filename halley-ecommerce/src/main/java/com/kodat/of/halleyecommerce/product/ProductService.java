@@ -18,5 +18,5 @@ public interface ProductService {
     void deleteProductById(Long productId , Authentication connectedUser);
 
 
-    PageResponse<ProductDto> findProductsBySearch(String searchTerm,  int page, int size);
+    PageResponse<ProductDto> findProductsBySearch(String searchTerm,  int page, int size , String sortBy , String sortDirection);
 }

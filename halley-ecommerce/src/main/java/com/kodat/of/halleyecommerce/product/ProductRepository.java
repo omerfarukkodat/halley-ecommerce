@@ -14,7 +14,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Product findByProductCode(String productCode);
 
-    Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
+    Page<Product> findByCategories_Id(Long categoryId, Pageable pageable);
 
     // Levenshtein Search
 //    @Query(value = "SELECT p.*, (1.0 / (1 + levenshtein(p.name, :searchTerm))) AS relevance " +

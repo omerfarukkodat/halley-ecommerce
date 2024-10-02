@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Component
 public class CategoryValidator {
     private static final Logger LOGGER = LoggerFactory.getLogger(CategoryValidator.class);
@@ -22,11 +24,13 @@ public class CategoryValidator {
         }
         LOGGER.info("Category name validation passed for: {}" , categoryName);
     }
-    public void validateCategoryId(Long categoryId) {
-        if (!categoryRepository.existsById(categoryId)){
-            throw new CategoryDoesNotExistsException("Category: " + categoryId + " does not exists");
+    public void validateCategoryIds(Set<Long> categoryIds) {
+        for (Long categoryId: categoryIds){
+            if (!categoryRepository.existsById(categoryId)){
+                throw new CategoryDoesNotExistsException("Category: " + categoryId + " does not exists");
         }
-        LOGGER.info("Category id validation passed for: {}" , categoryId);
+        }
+        LOGGER.info("Category id validation passed for: {}" , categoryIds);
     }
 
 

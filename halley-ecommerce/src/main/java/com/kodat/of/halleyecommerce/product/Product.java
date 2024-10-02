@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -34,9 +35,12 @@ public class Product {
     private BigDecimal price;
     @Column(nullable = false)
     private Integer stock;
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @ManyToMany
+   @JoinTable(name = "product_category",
+           joinColumns = @JoinColumn(name = "product_id"),
+           inverseJoinColumns = @JoinColumn(name = "category_id")
+   )
+    private Set<Category> categories;
     private String imageUrl;
     @CreationTimestamp()
     @Column(updatable = false , nullable = false)

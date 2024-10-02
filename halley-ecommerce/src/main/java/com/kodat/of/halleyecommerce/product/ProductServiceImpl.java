@@ -19,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -42,10 +44,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto addProduct(ProductDto productDto, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser); //Check the user role(admin or not)
-        categoryValidator.validateCategoryId(productDto.getCategoryId()); // check category exists or not?
+        categoryValidator.validateCategoryIds(productDto.getCategoryIds()); // check category exists or not?
         productValidator.validateProductCode(productDto.getProductCode()); // check product added before or not?
-        Category category = categoryUtils.findCategoryById(productDto.getCategoryId());
-        Product product = productRepository.save(ProductMapper.toProduct(productDto, category));
+        Set<Category> categories = productDto.getCategoryIds().stream()
+                .map(categoryUtils::findCategoryById)
+                .collect(Collectors.toSet());
+        Product product = productRepository.save(ProductMapper.toProduct(productDto, categories));
         LOGGER.info("Product: {} added successfully with product code: {}", productDto.getName(), product.getProductCode());
         return ProductMapper.toProductDto(product);
     }
@@ -53,11 +57,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto updateProduct(Long productId, ProductDto productDto, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
-        categoryValidator.validateCategoryId(productDto.getCategoryId());
+        categoryValidator.validateCategoryIds(productDto.getCategoryIds());
         productValidator.validateProductCode(productDto.getProductCode(), productId);
         Product exsistingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + productId));
-        Category category = categoryUtils.findCategoryById(productDto.getCategoryId());
+        Set<Category> category = productDto.getCategoryIds().stream()
+                .map(categoryUtils::findCategoryById)
+                .collect(Collectors.toSet());
         Product updatedProduct = ProductMapper.updateProductFromDto(productDto, exsistingProduct, category);
         productRepository.save(updatedProduct);
         LOGGER.info("Product with ID: {} updated successfully", productId);
@@ -93,9 +99,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId , String sortBy , String sortDirection) {
+        categoryValidator.validateCategoryIds(Set.of(categoryId));
         Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-        Page<Product> products = productRepository.findByCategoryId(categoryId, pageable);
+        Page<Product> products = productRepository.findByCategories_Id(categoryId, pageable);
         List<ProductDto> productDtos = products.stream()
                 .map(ProductMapper::toProductDto)
                 .toList();
@@ -106,8 +113,7 @@ public class ProductServiceImpl implements ProductService {
                 products.getTotalElements(),
                 products.getTotalPages(),
                 products.isFirst(),
-                products.isLast()
-        );
+                products.isLast());
 
     }
 
@@ -119,8 +125,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageResponse<ProductDto> findProductsBySearch(String searchTerm, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PageResponse<ProductDto> findProductsBySearch(String searchTerm, int page, int size , String sortBy , String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size , Sort.by(direction, sortBy));
         Page<Product> productsPage = searchService.searchProducts(searchTerm, pageable);
 
         List<ProductDto> productDtos = productsPage

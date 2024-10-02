@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,6 +27,6 @@ public class Category {
     @OneToMany(mappedBy = "parent" , cascade = CascadeType.ALL , orphanRemoval = true)
     private List<Category> subCategories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products;
+    @ManyToMany(mappedBy = "categories",cascade = CascadeType.ALL)
+    private Set<Product> products;
 }
