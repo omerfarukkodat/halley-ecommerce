@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -107,6 +108,20 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productsPage = searchService.searchProducts(searchTerm, pageable);
         return createPageResponse(productsPage);
     }
+
+    @Override
+    public PageResponse<ProductDto> filterProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size, String sortBy, String sortDirection) {
+        Pageable pageable = createPageable(page, size, sortBy, sortDirection);
+        Page<Product> products = productRepository.findAllWithFilters(categoryIds,minPrice,maxPrice,pageable);
+        if (products.isEmpty()){
+            throw new ProductNotFoundException("Cannot finding any products with these filter elements.");
+        }
+        return createPageResponse(products);
+    }
+
+
+
+
 
     private PageResponse<ProductDto> createPageResponse(Page<Product> products) {
         List<ProductDto> productDtos = products.stream()

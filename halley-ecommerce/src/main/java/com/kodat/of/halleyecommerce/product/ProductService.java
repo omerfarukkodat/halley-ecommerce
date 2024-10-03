@@ -4,6 +4,9 @@ import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import org.springframework.security.core.Authentication;
 
+import java.math.BigDecimal;
+import java.util.Set;
+
 public interface ProductService {
     ProductDto addProduct(ProductDto productDto , Authentication connectedUser);
 
@@ -19,4 +22,6 @@ public interface ProductService {
 
 
     PageResponse<ProductDto> findProductsBySearch(String searchTerm,  int page, int size , String sortBy , String sortDirection);
+
+    PageResponse<ProductDto> filterProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size, String sortBy, String sortDirection);
 }

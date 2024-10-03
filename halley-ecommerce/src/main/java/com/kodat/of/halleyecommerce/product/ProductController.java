@@ -9,6 +9,9 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.Set;
+
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -37,6 +40,23 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProduct(productId , productDto , connectedUser));
     }
 
+    @Secured("ADMIN")
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> deleteProductById(
+            @PathVariable Long productId,
+            Authentication connectedUser
+    ){
+        productService.deleteProductById(productId , connectedUser);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductDto> findProductById(
+            @PathVariable Long productId
+    ){
+        return ResponseEntity.ok(productService.findProductById(productId));
+    }
+
     @GetMapping
     public ResponseEntity<PageResponse<ProductDto>> findAllProducts(
           @RequestParam(name = "page" , defaultValue = "0" , required = false) int page,
@@ -46,12 +66,7 @@ public class ProductController {
     ){
         return ResponseEntity.ok(productService.findAllProducts(page,size , sortBy , sortDirection));
     }
-    @GetMapping("/{productId}")
-    public ResponseEntity<ProductDto> findProductById(
-            @PathVariable Long productId
-    ){
-        return ResponseEntity.ok(productService.findProductById(productId));
-    }
+
     @GetMapping("/{categoryId}/products")
     public ResponseEntity<PageResponse<ProductDto>> findProductsByCategoryId(
             @RequestParam(name = "page" , defaultValue = "0" , required = false) int page,
@@ -63,16 +78,6 @@ public class ProductController {
         return ResponseEntity.ok(productService.findProductsByCategoryId(page,size,categoryId , sortBy , sortDirection));
     }
 
-    @Secured("ADMIN")
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> deleteProductById(
-            @PathVariable Long productId,
-            Authentication connectedUser
-    ){
-        productService.deleteProductById(productId , connectedUser);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/search")
     public ResponseEntity<PageResponse<ProductDto>> findProductsBySearch(
             @RequestParam String searchTerm,
@@ -82,6 +87,19 @@ public class ProductController {
             @RequestParam(defaultValue = "desc") String sortDirection
     ){
         return ResponseEntity.ok(productService.findProductsBySearch(searchTerm,page,size,sortBy, sortDirection));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<PageResponse<ProductDto>> filterProducts(
+            @RequestParam(required = false) Set<Long> categoryIds,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "productCode") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection
+            ){
+    return ResponseEntity.ok(productService.filterProducts(categoryIds,minPrice,maxPrice,page,size,sortBy,sortDirection));
     }
 
 
