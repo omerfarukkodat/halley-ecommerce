@@ -75,3 +75,6 @@
 2024-10-03T11:54:42.360+03:00  WARN 2129 --- [halley-ecommerce] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
 2024-10-03T11:54:42.720+03:00  INFO 2129 --- [halley-ecommerce] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8088 (http) with context path '/api/v1'
 2024-10-03T11:54:42.725+03:00  INFO 2129 --- [halley-ecommerce] [main] c.k.o.h.HalleyEcommerceApplication       : Started HalleyEcommerceApplication in 2.675 seconds (process running for 2.936)
+2024-10-03T11:59:04.242+03:00  INFO 2129 --- [halley-ecommerce] [http-nio-8088-exec-2] o.a.c.c.C.[.[localhost].[/api/v1]        : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-03T11:59:04.243+03:00  INFO 2129 --- [halley-ecommerce] [http-nio-8088-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-03T11:59:04.247+03:00  INFO 2129 --- [halley-ecommerce] [http-nio-8088-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms

@@ -71,22 +71,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageResponse<ProductDto> findAllProducts(int page, int size , String sortBy , String sortDirection) {
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+    public PageResponse<ProductDto> findAllProducts(int page, int size, String sortBy, String sortDirection) {
+        Pageable pageable = createPageable(page, size, sortBy, sortDirection);
         Page<Product> products = productRepository.findAll(pageable);
-        List<ProductDto> productDtos = products.stream()
-                .map(ProductMapper::toProductDto)
-                .toList();
-        return new PageResponse<>(
-                productDtos,
-                products.getNumber(),
-                products.getSize(),
-                products.getTotalElements(),
-                products.getTotalPages(),
-                products.isFirst(),
-                products.isLast()
-        );
+        return createPageResponse(products);
     }
 
     @Override
@@ -98,23 +86,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId , String sortBy , String sortDirection) {
+    public PageResponse<ProductDto> findProductsByCategoryId(int page, int size, Long categoryId, String sortBy, String sortDirection) {
         categoryValidator.validateCategoryIds(Set.of(categoryId));
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Pageable pageable = createPageable(page, size, sortBy, sortDirection);
         Page<Product> products = productRepository.findByCategories_Id(categoryId, pageable);
-        List<ProductDto> productDtos = products.stream()
-                .map(ProductMapper::toProductDto)
-                .toList();
-        return new PageResponse<>(
-                productDtos,
-                products.getNumber(),
-                products.getSize(),
-                products.getTotalElements(),
-                products.getTotalPages(),
-                products.isFirst(),
-                products.isLast());
-
+        return createPageResponse(products);
     }
 
     @Override
@@ -122,29 +98,36 @@ public class ProductServiceImpl implements ProductService {
         roleValidator.verifyAdminRole(connectedUser);
         productValidator.validateProductId(productId);
         LOGGER.info("Product with ID: {} deleted successfully", productId);
+        productRepository.deleteById(productId);
     }
 
     @Override
-    public PageResponse<ProductDto> findProductsBySearch(String searchTerm, int page, int size , String sortBy , String sortDirection) {
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size , Sort.by(direction, sortBy));
+    public PageResponse<ProductDto> findProductsBySearch(String searchTerm, int page, int size, String sortBy, String sortDirection) {
+        Pageable pageable = createPageable(page, size, sortBy, sortDirection);
         Page<Product> productsPage = searchService.searchProducts(searchTerm, pageable);
+        return createPageResponse(productsPage);
+    }
 
-        List<ProductDto> productDtos = productsPage
-                .getContent()
-                .stream()
+    private PageResponse<ProductDto> createPageResponse(Page<Product> products) {
+        List<ProductDto> productDtos = products.stream()
                 .map(ProductMapper::toProductDto)
                 .toList();
 
         return new PageResponse<>(
                 productDtos,
-                productsPage.getNumber(),
-                productsPage.getSize(),
-                productsPage.getTotalElements(),
-                productsPage.getTotalPages(),
-                productsPage.isFirst(),
-                productsPage.isLast()
+                products.getNumber(),
+                products.getSize(),
+                products.getTotalElements(),
+                products.getTotalPages(),
+                products.isFirst(),
+                products.isLast()
         );
     }
+
+    private Pageable createPageable(int page, int size, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        return PageRequest.of(page, size, Sort.by(direction, sortBy));
+    }
+
 
 }
