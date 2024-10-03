@@ -9,5 +9,13 @@ spring:
 server:
   servlet:
     context-path: /api/v1/
+logging:
+  level:
+    root: info
 
+  file:
+    name: logs/halley-dev.log
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 

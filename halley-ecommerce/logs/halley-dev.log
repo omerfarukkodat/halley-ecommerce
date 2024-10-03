@@ -1,0 +1,77 @@
+2024-10-03T11:46:17.761+03:00  INFO 2045 --- [halley-ecommerce] [main] c.k.o.h.HalleyEcommerceApplication       : Starting HalleyEcommerceApplication using Java 17.0.8 with PID 2045 (/Users/farukkodat/Downloads/halley-ecommerce/halley-ecommerce/target/classes started by farukkodat in /Users/farukkodat/Downloads/halley-ecommerce/halley-ecommerce)
+2024-10-03T11:46:17.762+03:00  INFO 2045 --- [halley-ecommerce] [main] c.k.o.h.HalleyEcommerceApplication       : The following 1 profile is active: "dev"
+2024-10-03T11:46:18.049+03:00  INFO 2045 --- [halley-ecommerce] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-03T11:46:18.076+03:00  INFO 2045 --- [halley-ecommerce] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 23 ms. Found 3 JPA repository interfaces.
+2024-10-03T11:46:18.481+03:00  INFO 2045 --- [halley-ecommerce] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8088 (http)
+2024-10-03T11:46:18.491+03:00  INFO 2045 --- [halley-ecommerce] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-03T11:46:18.491+03:00  INFO 2045 --- [halley-ecommerce] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-03T11:46:18.514+03:00  INFO 2045 --- [halley-ecommerce] [main] o.a.c.c.C.[.[localhost].[/api/v1]        : Initializing Spring embedded WebApplicationContext
+2024-10-03T11:46:18.514+03:00  INFO 2045 --- [halley-ecommerce] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 720 ms
+2024-10-03T11:46:18.549+03:00  INFO 2045 --- [halley-ecommerce] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-03T11:46:18.623+03:00  INFO 2045 --- [halley-ecommerce] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3a38e4dc
+2024-10-03T11:46:18.624+03:00  INFO 2045 --- [halley-ecommerce] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-03T11:46:18.672+03:00  INFO 2045 --- [halley-ecommerce] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-03T11:46:18.706+03:00  INFO 2045 --- [halley-ecommerce] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-03T11:46:18.725+03:00  INFO 2045 --- [halley-ecommerce] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-03T11:46:18.887+03:00  INFO 2045 --- [halley-ecommerce] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-03T11:46:18.915+03:00  WARN 2045 --- [halley-ecommerce] [main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-10-03T11:46:19.371+03:00  INFO 2045 --- [halley-ecommerce] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-03T11:46:19.450+03:00  INFO 2045 --- [halley-ecommerce] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-03T11:46:19.668+03:00  INFO 2045 --- [halley-ecommerce] [main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2024-10-03T11:46:19.668+03:00  WARN 2045 --- [halley-ecommerce] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2024-10-03T11:46:19.712+03:00  INFO 2045 --- [halley-ecommerce] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-10-03T11:46:19.739+03:00  WARN 2045 --- [halley-ecommerce] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-10-03T11:46:20.096+03:00  INFO 2045 --- [halley-ecommerce] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8088 (http) with context path '/api/v1'
+2024-10-03T11:46:20.102+03:00  INFO 2045 --- [halley-ecommerce] [main] c.k.o.h.HalleyEcommerceApplication       : Started HalleyEcommerceApplication in 2.591 seconds (process running for 2.859)
+2024-10-03T11:48:39.708+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-1] o.a.c.c.C.[.[localhost].[/api/v1]        : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-03T11:48:39.709+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-03T11:48:39.719+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 10 ms
+2024-10-03T11:48:40.023+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-1] c.k.o.h.auth.AuthenticationServiceImpl   : Authenticated user: farukkodat@gmail.com
+2024-10-03T11:49:52.583+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-5] c.k.o.h.category.CategoryServiceImpl     : Adding parent category with name: duvar
+2024-10-03T11:49:52.583+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-5] c.k.o.h.validator.RoleValidator          : Admin role verified for user: farukkodat@gmail.com
+2024-10-03T11:49:52.589+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-5] c.k.o.h.validator.CategoryValidator      : Category name validation passed for: duvar
+2024-10-03T11:49:52.590+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-5] c.k.o.h.category.CategoryServiceImpl     : Parent category added successfully with ID: null
+2024-10-03T11:49:56.066+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-6] c.k.o.h.category.CategoryServiceImpl     : Adding child category with name: Sahil
+2024-10-03T11:49:56.067+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-6] c.k.o.h.validator.RoleValidator          : Admin role verified for user: farukkodat@gmail.com
+2024-10-03T11:49:56.072+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-6] c.k.o.h.validator.CategoryValidator      : Category name validation passed for: Sahil
+2024-10-03T11:49:56.092+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-6] c.k.o.h.category.CategoryServiceImpl     : Child category added successfully with name: Sahil
+2024-10-03T11:51:20.897+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-9] c.k.o.h.category.CategoryServiceImpl     : Adding child category with name: Manzara
+2024-10-03T11:51:20.897+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-9] c.k.o.h.validator.RoleValidator          : Admin role verified for user: farukkodat@gmail.com
+2024-10-03T11:51:20.900+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-9] c.k.o.h.validator.CategoryValidator      : Category name validation passed for: Manzara
+2024-10-03T11:51:20.908+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-9] c.k.o.h.category.CategoryServiceImpl     : Child category added successfully with name: Manzara
+2024-10-03T11:51:37.960+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-10] c.k.o.h.validator.RoleValidator          : Admin role verified for user: farukkodat@gmail.com
+2024-10-03T11:51:38.077+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-10] c.k.o.h.validator.CategoryValidator      : Category id validation passed for: [2, 3]
+2024-10-03T11:51:38.107+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-10] c.k.o.h.product.ProductServiceImpl       : Product: 10 m2 duvar kağıdı hlley added successfully with product code: SP-01211
+2024-10-03T11:52:39.076+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-1] c.k.o.h.validator.CategoryValidator      : Category id validation passed for: [2]
+2024-10-03T11:52:59.963+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-4] c.k.o.h.validator.RoleValidator          : Admin role verified for user: farukkodat@gmail.com
+2024-10-03T11:52:59.966+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-4] c.k.o.h.validator.CategoryValidator      : Category id validation passed for: [2, 3]
+2024-10-03T11:52:59.980+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-4] c.k.o.h.product.ProductServiceImpl       : Product: 10 m2 duvar kağıdı hlley added successfully with product code: SP-012
+2024-10-03T11:53:04.935+03:00  INFO 2045 --- [halley-ecommerce] [http-nio-8088-exec-5] c.k.o.h.validator.CategoryValidator      : Category id validation passed for: [2]
+2024-10-03T11:54:38.927+03:00  INFO 2045 --- [halley-ecommerce] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-03T11:54:38.931+03:00  INFO 2045 --- [halley-ecommerce] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-03T11:54:38.933+03:00  INFO 2045 --- [halley-ecommerce] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-10-03T11:54:40.297+03:00  INFO 2129 --- [halley-ecommerce] [main] c.k.o.h.HalleyEcommerceApplication       : Starting HalleyEcommerceApplication using Java 17.0.8 with PID 2129 (/Users/farukkodat/Downloads/halley-ecommerce/halley-ecommerce/target/classes started by farukkodat in /Users/farukkodat/Downloads/halley-ecommerce/halley-ecommerce)
+2024-10-03T11:54:40.299+03:00  INFO 2129 --- [halley-ecommerce] [main] c.k.o.h.HalleyEcommerceApplication       : The following 1 profile is active: "dev"
+2024-10-03T11:54:40.578+03:00  INFO 2129 --- [halley-ecommerce] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-03T11:54:40.609+03:00  INFO 2129 --- [halley-ecommerce] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 27 ms. Found 3 JPA repository interfaces.
+2024-10-03T11:54:41.063+03:00  INFO 2129 --- [halley-ecommerce] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8088 (http)
+2024-10-03T11:54:41.081+03:00  INFO 2129 --- [halley-ecommerce] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-03T11:54:41.081+03:00  INFO 2129 --- [halley-ecommerce] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-03T11:54:41.110+03:00  INFO 2129 --- [halley-ecommerce] [main] o.a.c.c.C.[.[localhost].[/api/v1]        : Initializing Spring embedded WebApplicationContext
+2024-10-03T11:54:41.111+03:00  INFO 2129 --- [halley-ecommerce] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 787 ms
+2024-10-03T11:54:41.147+03:00  INFO 2129 --- [halley-ecommerce] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-03T11:54:41.232+03:00  INFO 2129 --- [halley-ecommerce] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@30036a18
+2024-10-03T11:54:41.233+03:00  INFO 2129 --- [halley-ecommerce] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-03T11:54:41.276+03:00  INFO 2129 --- [halley-ecommerce] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-03T11:54:41.299+03:00  INFO 2129 --- [halley-ecommerce] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-03T11:54:41.320+03:00  INFO 2129 --- [halley-ecommerce] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-03T11:54:41.442+03:00  INFO 2129 --- [halley-ecommerce] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-03T11:54:41.473+03:00  WARN 2129 --- [halley-ecommerce] [main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-10-03T11:54:41.986+03:00  INFO 2129 --- [halley-ecommerce] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-03T11:54:42.068+03:00  INFO 2129 --- [halley-ecommerce] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-03T11:54:42.285+03:00  INFO 2129 --- [halley-ecommerce] [main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2024-10-03T11:54:42.286+03:00  WARN 2129 --- [halley-ecommerce] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2024-10-03T11:54:42.334+03:00  INFO 2129 --- [halley-ecommerce] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-10-03T11:54:42.360+03:00  WARN 2129 --- [halley-ecommerce] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-10-03T11:54:42.720+03:00  INFO 2129 --- [halley-ecommerce] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8088 (http) with context path '/api/v1'
+2024-10-03T11:54:42.725+03:00  INFO 2129 --- [halley-ecommerce] [main] c.k.o.h.HalleyEcommerceApplication       : Started HalleyEcommerceApplication in 2.675 seconds (process running for 2.936)
