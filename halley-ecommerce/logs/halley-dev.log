@@ -408,3 +408,15 @@ io.jsonwebtoken.ExpiredJwtException: JWT expired at 2024-10-02T13:04:25Z. Curren
 2024-10-03T17:19:20.034+03:00  INFO 4224 --- [halley-ecommerce] [http-nio-8088-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2024-10-03T17:19:20.039+03:00  INFO 4224 --- [halley-ecommerce] [http-nio-8088-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 5 ms
 2024-10-03T17:19:20.142+03:00  WARN 4224 --- [halley-ecommerce] [http-nio-8088-exec-2] c.k.o.h.handler.GlobalExceptionHandler   : Product does not exist: Not finding any products with these filter elements.
+2024-10-03T17:26:53.554+03:00  WARN 4224 --- [halley-ecommerce] [http-nio-8088-exec-5] c.k.o.h.handler.GlobalExceptionHandler   : Product does not exist: Not finding any products with these filter elements.
+2024-10-03T17:27:10.175+03:00  WARN 4224 --- [halley-ecommerce] [http-nio-8088-exec-6] c.k.o.h.handler.GlobalExceptionHandler   : Product does not exist: Not finding any products with these filter elements.
+2024-10-03T17:32:38.491+03:00  WARN 4224 --- [halley-ecommerce] [http-nio-8088-exec-8] c.k.o.h.handler.GlobalExceptionHandler   : Product does not exist: Not finding any products with these filter elements.
+2024-10-03T17:33:28.674+03:00  INFO 4224 --- [halley-ecommerce] [http-nio-8088-exec-10] c.k.o.h.auth.AuthenticationServiceImpl   : Authenticated user: farukkodat@gmail.com
+2024-10-03T17:33:37.228+03:00  INFO 4224 --- [halley-ecommerce] [http-nio-8088-exec-1] c.k.o.h.validator.CategoryValidator      : Category id validation passed for: [1]
+2024-10-03T17:40:16.584+03:00  INFO 4224 --- [halley-ecommerce] [http-nio-8088-exec-3] c.k.o.h.validator.RoleValidator          : Admin role verified for user: farukkodat@gmail.com
+2024-10-03T17:40:16.591+03:00  INFO 4224 --- [halley-ecommerce] [http-nio-8088-exec-3] c.k.o.h.validator.CategoryValidator      : Category id validation passed for: [1, 4]
+2024-10-03T17:40:16.684+03:00  INFO 4224 --- [halley-ecommerce] [http-nio-8088-exec-3] c.k.o.h.product.ProductServiceImpl       : Product: yapışkanlı kağıt added successfully with product code: SP-0111
+2024-10-03T17:40:38.016+03:00  INFO 4224 --- [halley-ecommerce] [http-nio-8088-exec-5] c.k.o.h.validator.CategoryValidator      : Category id validation passed for: [1]
+2024-10-03T17:50:02.962+03:00  INFO 4224 --- [halley-ecommerce] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-03T17:50:02.968+03:00  INFO 4224 --- [halley-ecommerce] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-03T17:50:02.970+03:00  INFO 4224 --- [halley-ecommerce] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

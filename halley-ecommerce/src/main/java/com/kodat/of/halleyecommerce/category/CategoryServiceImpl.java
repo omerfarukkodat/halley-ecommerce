@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.category;
 
+import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
 import com.kodat.of.halleyecommerce.exception.ParentCategoryDoesNotExistsException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
@@ -8,9 +9,15 @@ import com.kodat.of.halleyecommerce.validator.CategoryValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -48,6 +55,25 @@ public class CategoryServiceImpl implements CategoryService {
         Category childCategory = categoryRepository.save(CategoryMapper.toCategory(categoryDto,parentCategory));
         LOGGER.info("Child category added successfully with name: {}", childCategory.getCategoryName());
         return CategoryMapper.toCategoryDto(childCategory);
+    }
+
+    @Override
+    public PageResponse<CategoryDto> getAllCategories(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Category> categoryPage = categoryRepository.findAll(pageable);
+        List<CategoryDto> categoryDtoPage = categoryPage.
+                stream().
+                map(CategoryMapper::toCategoryDto)
+                .collect(Collectors.toList());
+        return new PageResponse<>(
+                categoryDtoPage,
+                categoryPage.getNumber(),
+                categoryPage.getSize(),
+                categoryPage.getTotalElements(),
+                categoryPage.getTotalPages(),
+                categoryPage.isFirst(),
+                categoryPage.isLast()
+        );
     }
 
 }

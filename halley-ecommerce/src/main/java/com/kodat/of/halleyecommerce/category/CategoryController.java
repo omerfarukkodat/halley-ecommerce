@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.category;
 
+import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -7,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/kategoriler")
@@ -32,5 +35,17 @@ public class CategoryController {
     ){
         return  ResponseEntity.status(HttpStatus.CREATED).body(service.addChildCategory(parentCategoryName,categoryDto,connectedAdmin));
     }
+
+    @GetMapping("list")
+    public ResponseEntity<PageResponse<CategoryDto>> getAllCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ResponseEntity.ok(service.getAllCategories(page,size));
+
+    }
+
+
+
 
 }
