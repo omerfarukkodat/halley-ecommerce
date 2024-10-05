@@ -2,8 +2,10 @@ package com.kodat.of.halleyecommerce.category;
 
 import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
+import com.kodat.of.halleyecommerce.dto.category.CategoryTreeDto;
 import com.kodat.of.halleyecommerce.exception.ParentCategoryDoesNotExistsException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
+import com.kodat.of.halleyecommerce.mapper.category.CategoryTreeMapper;
 import com.kodat.of.halleyecommerce.util.CategoryUtils;
 import com.kodat.of.halleyecommerce.validator.CategoryValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
@@ -74,6 +76,14 @@ public class CategoryServiceImpl implements CategoryService {
                 categoryPage.isFirst(),
                 categoryPage.isLast()
         );
+    }
+
+    @Override
+    public List<CategoryTreeDto> getCategoryTree() {
+        List<Category> rootCategories = categoryRepository.findByParentIsNull();
+        return rootCategories.stream()
+                .map(CategoryTreeMapper::toCategoryTreeDto)
+                .collect(Collectors.toList());
     }
 
 }
