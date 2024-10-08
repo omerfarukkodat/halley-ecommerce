@@ -1,3 +1,0 @@
-2024-10-08T15:04:29.098+03:00  INFO 3235 --- [halley-ecommerce] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2024-10-08T15:04:29.104+03:00  INFO 3235 --- [halley-ecommerce] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2024-10-08T15:04:29.109+03:00  INFO 3235 --- [halley-ecommerce] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

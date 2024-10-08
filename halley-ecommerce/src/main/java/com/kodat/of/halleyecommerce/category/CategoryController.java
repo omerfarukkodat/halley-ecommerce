@@ -20,37 +20,49 @@ public class CategoryController {
     public CategoryController(CategoryService service) {
         this.service = service;
     }
+
     @Secured("ADMIN")
     @PostMapping("/addMainCategory")
     public ResponseEntity<CategoryDto> addParentCategory(
             @RequestBody @Valid CategoryDto categoryDto,
             Authentication connectedAdmin) {
-        return  ResponseEntity.status(HttpStatus.CREATED).body(service.addParentCategory(categoryDto , connectedAdmin));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.addParentCategory(categoryDto, connectedAdmin));
     }
+
     @Secured("ADMIN")
     @PostMapping("/{parentCategory}/addChildCategory")
     public ResponseEntity<CategoryDto> addChildCategory(
             @PathVariable("parentCategory") Long parentCategoryId,
             @RequestBody @Valid CategoryDto categoryDto,
             Authentication connectedAdmin
-    ){
-        return  ResponseEntity.status(HttpStatus.CREATED).body(service.addChildCategory(parentCategoryId,categoryDto,connectedAdmin));
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.addChildCategory(parentCategoryId, categoryDto, connectedAdmin));
     }
 
     @GetMapping("/findAll")
     public ResponseEntity<PageResponse<CategoryDto>> getAllCategories(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-    ){
-        return ResponseEntity.ok(service.getAllCategories(page,size));
+    ) {
+        return ResponseEntity.ok(service.getAllCategories(page, size));
     }
 
     @GetMapping("/tree")
-    public ResponseEntity<List<CategoryTreeDto>> getCategoryTree(){
+    public ResponseEntity<List<CategoryTreeDto>> getCategoryTree() {
         return ResponseEntity.ok(service.getCategoryTree());
     }
 
-
+    @Secured("ADMIN")
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<CategoryDto> updateCategory(
+            @PathVariable Long categoryId,
+         @Valid @RequestBody CategoryDto categoryDto,
+            Authentication connectedAdmin
+    ) {
+        return ResponseEntity.ok(service.updateCategory(categoryId,categoryDto,connectedAdmin));
+    }
 
 
 }

@@ -3,6 +3,7 @@ package com.kodat.of.halleyecommerce.mapper.category;
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
 
+
 public class CategoryMapper {
 
     public static CategoryDto toCategoryDto(Category category) {
@@ -24,4 +25,15 @@ public class CategoryMapper {
                 .slug(slug)
                 .build();
     }
+
+    public static Category updateCategoryFromDto(CategoryDto categoryDto, Category exsistingCategory , String slug , Category parentCategory) {
+        exsistingCategory.setCategoryName(categoryDto.getCategoryName());
+        exsistingCategory.setSlug(slug);
+        if (parentCategory != null) {
+            exsistingCategory.setParent(parentCategory);
+        }
+    return exsistingCategory;
+
+    }
+
 }

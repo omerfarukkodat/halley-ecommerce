@@ -15,4 +15,7 @@ public interface CategoryService {
     PageResponse<CategoryDto> getAllCategories(int page,int size);
 
     List<CategoryTreeDto> getCategoryTree();
+
+
+    CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto, Authentication connectedAdmin);
 }

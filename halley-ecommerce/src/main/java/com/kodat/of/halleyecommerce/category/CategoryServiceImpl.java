@@ -4,6 +4,7 @@ import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.common.SlugService;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
 import com.kodat.of.halleyecommerce.dto.category.CategoryTreeDto;
+import com.kodat.of.halleyecommerce.exception.CategoryDoesNotExistsException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryTreeMapper;
 import com.kodat.of.halleyecommerce.util.CategoryUtils;
@@ -18,7 +19,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,5 +95,24 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(CategoryTreeMapper::toCategoryTreeDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto, Authentication connectedAdmin) {
+        roleValidator.verifyAdminRole(connectedAdmin);
+        categoryValidator.validateCategoryIds(Set.of(categoryId));
+        Category existingCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryDoesNotExistsException("Category does not exist with id: " + categoryId));
+       Category parentCategory = null;
+        if (categoryDto.getParentId() != null){
+             parentCategory = categoryRepository.findById(categoryDto.getParentId())
+                    .orElseThrow(() -> new CategoryDoesNotExistsException("Parent Category does not exist with id: " + categoryId));
+        }
+        String slug = slugService.generateSlug(categoryDto.getCategoryName(),"");
+        Category updatedCategory = CategoryMapper.updateCategoryFromDto(categoryDto,existingCategory,slug,parentCategory);
+        categoryRepository.save(updatedCategory);
+        LOGGER.info("Updated category id : {} ,  name: {}",updatedCategory.getId(), updatedCategory.getCategoryName());
+        return CategoryMapper.toCategoryDto(updatedCategory);
+    }
+
 
 }
