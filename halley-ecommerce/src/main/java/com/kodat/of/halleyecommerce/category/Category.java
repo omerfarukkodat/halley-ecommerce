@@ -29,4 +29,6 @@ public class Category {
 
     @ManyToMany(mappedBy = "categories",cascade = CascadeType.ALL)
     private Set<Product> products;
+    @Column(unique = true)
+    private String slug;
 }

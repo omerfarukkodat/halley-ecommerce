@@ -12,14 +12,16 @@ public class CategoryMapper {
                 .categoryName(category.getCategoryName())
                 .parentId(category.getParent() != null ? category.getParent().getId() : null)
                 .mainCategoryName(category.getParent() != null ? category.getParent().getCategoryName() : null)
+                .slug(category.getSlug())
                 .build();
     }
 
-    public static Category toCategory(CategoryDto categoryDto , Category parentCategory) {
+    public static Category toCategory(CategoryDto categoryDto , Category parentCategory ,String slug) {
         return Category.builder()
                 .id(categoryDto.getCategoryId())
                 .categoryName(categoryDto.getCategoryName())
                 .parent(parentCategory)
+                .slug(slug)
                 .build();
     }
 }

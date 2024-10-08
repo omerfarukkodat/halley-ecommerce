@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.category;
 
 import com.kodat.of.halleyecommerce.common.PageResponse;
+import com.kodat.of.halleyecommerce.common.SlugService;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
 import com.kodat.of.halleyecommerce.dto.category.CategoryTreeDto;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
@@ -28,12 +29,14 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryValidator categoryValidator;
     private final RoleValidator roleValidator;
     private final CategoryUtils categoryUtils;
+    private final SlugService slugService;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryValidator categoryValidator, RoleValidator roleValidator, CategoryUtils categoryUtils) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryValidator categoryValidator, RoleValidator roleValidator, CategoryUtils categoryUtils, SlugService slugService) {
         this.categoryRepository = categoryRepository;
         this.categoryValidator = categoryValidator;
         this.roleValidator = roleValidator;
         this.categoryUtils = categoryUtils;
+        this.slugService = slugService;
     }
 
     @Override
@@ -41,7 +44,9 @@ public class CategoryServiceImpl implements CategoryService {
         LOGGER.info("Adding parent category with name: {}", categoryDto.getCategoryName());
         roleValidator.verifyAdminRole(connectedAdmin); // Check admin role
         categoryValidator.validateCategoryName(categoryDto.getCategoryName()); // Check categoryName added before , null or empty?
-        Category category = CategoryMapper.toCategory(categoryDto,null);
+        String slug = slugService.generateSlug(categoryDto.getCategoryName(),"");
+        Category category = CategoryMapper.toCategory(categoryDto,null,slug);
+        category.setSlug(slug);
         LOGGER.info("Parent category added successfully with ID: {}", category.getId());
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
     }
@@ -53,7 +58,10 @@ public class CategoryServiceImpl implements CategoryService {
        roleValidator.verifyAdminRole(connectedAdmin);
        categoryValidator.validateCategoryName(categoryDto.getCategoryName());
         Category parentCategory = categoryUtils.findCategoryById(parentCategoryId);
-        Category childCategory = categoryRepository.save(CategoryMapper.toCategory(categoryDto,parentCategory));
+        String slug = slugService.generateSlug(categoryDto.getCategoryName(),""); // create slug
+        Category childCategory = CategoryMapper.toCategory(categoryDto,parentCategory,slug);
+        childCategory.setSlug(slug);
+        categoryRepository.save(childCategory);
         LOGGER.info("Child category added successfully with name: {}", childCategory.getCategoryName());
         return CategoryMapper.toCategoryDto(childCategory);
     }

@@ -1,7 +1,6 @@
 package com.kodat.of.halleyecommerce.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -16,4 +15,5 @@ public class CategoryDto {
     private String mainCategoryName;
 
     private Long parentId; // Upper category id
+    private String slug;
 }
