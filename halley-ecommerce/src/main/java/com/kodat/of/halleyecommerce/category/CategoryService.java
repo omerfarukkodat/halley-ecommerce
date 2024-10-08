@@ -10,7 +10,7 @@ import java.util.List;
 public interface CategoryService {
     CategoryDto addParentCategory(CategoryDto categoryDto, Authentication connectedAdmin);
 
-    CategoryDto addChildCategory(String parentCategoryName, CategoryDto categoryDto, Authentication connectedAdmin);
+    CategoryDto addChildCategory(Long parentCategoryId, CategoryDto categoryDto, Authentication connectedAdmin);
 
     PageResponse<CategoryDto> getAllCategories(int page,int size);
 

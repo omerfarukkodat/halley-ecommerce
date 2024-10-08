@@ -3,7 +3,6 @@ package com.kodat.of.halleyecommerce.category;
 import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
 import com.kodat.of.halleyecommerce.dto.category.CategoryTreeDto;
-import com.kodat.of.halleyecommerce.exception.ParentCategoryDoesNotExistsException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryTreeMapper;
 import com.kodat.of.halleyecommerce.util.CategoryUtils;
@@ -49,11 +48,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public CategoryDto addChildCategory(String parentCategoryName, CategoryDto categoryDto, Authentication connectedAdmin) {
+    public CategoryDto addChildCategory(Long parentCategoryId, CategoryDto categoryDto, Authentication connectedAdmin) {
         LOGGER.info("Adding child category with name: {}", categoryDto.getCategoryName());
        roleValidator.verifyAdminRole(connectedAdmin);
        categoryValidator.validateCategoryName(categoryDto.getCategoryName());
-        Category parentCategory = categoryUtils.findParentCategory(parentCategoryName);
+        Category parentCategory = categoryUtils.findCategoryById(parentCategoryId);
         Category childCategory = categoryRepository.save(CategoryMapper.toCategory(categoryDto,parentCategory));
         LOGGER.info("Child category added successfully with name: {}", childCategory.getCategoryName());
         return CategoryMapper.toCategoryDto(childCategory);

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 
 public class ProductMapper {
-    public static Product toProduct(ProductDto productDto , Set<Category> categories) {
+    public static Product toProduct(ProductDto productDto , Set<Category> categories , String slug) {
         return Product.builder()
                 .name(productDto.getName())
                 .description(productDto.getDescription())
@@ -18,6 +18,7 @@ public class ProductMapper {
                 .productCode(productDto.getProductCode())
                 .imageUrl(productDto.getImageUrl())
                 .categories(categories)
+                .slug(slug)
                 .build();
     }
     public static ProductDto toProductDto(Product product) {
@@ -29,6 +30,7 @@ public class ProductMapper {
                 .productCode(product.getProductCode())
                 .imageUrl(product.getImageUrl())
                 .categoryIds(product.getCategories().stream().map(Category::getId).collect(Collectors.toSet()))
+                .slug(product.getSlug())
                 .build();
     }
     public static Product updateProductFromDto(ProductDto productDto, Product existingProduct , Set<Category> categories) {
@@ -39,6 +41,7 @@ public class ProductMapper {
         existingProduct.setProductCode(productDto.getProductCode());
         existingProduct.setImageUrl(productDto.getImageUrl());
         existingProduct.setCategories(categories);
+        existingProduct.setSlug(productDto.getSlug());
         return existingProduct;
     }
 }

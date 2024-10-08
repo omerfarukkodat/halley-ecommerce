@@ -26,4 +26,5 @@ public class ProductDto {
     private String imageUrl;
     @NotNull(message = "At least one category Id is mandatory")
     private Set<Long> categoryIds;
+    private String slug;
 }

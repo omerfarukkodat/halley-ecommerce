@@ -30,11 +30,11 @@ public class CategoryController {
     @Secured("ADMIN")
     @PostMapping("/{parentCategory}/addChildCategory")
     public ResponseEntity<CategoryDto> addChildCategory(
-            @PathVariable("parentCategory") String parentCategoryName,
+            @PathVariable("parentCategory") Long parentCategoryId,
             @RequestBody @Valid CategoryDto categoryDto,
             Authentication connectedAdmin
     ){
-        return  ResponseEntity.status(HttpStatus.CREATED).body(service.addChildCategory(parentCategoryName,categoryDto,connectedAdmin));
+        return  ResponseEntity.status(HttpStatus.CREATED).body(service.addChildCategory(parentCategoryId,categoryDto,connectedAdmin));
     }
 
     @GetMapping("/findAll")

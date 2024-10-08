@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.product;
 
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.common.PageResponse;
+import com.kodat.of.halleyecommerce.common.SlugService;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.product.ProductMapper;
@@ -32,14 +33,16 @@ public class ProductServiceImpl implements ProductService {
     private final ProductValidator productValidator;
     private final CategoryUtils categoryUtils;
     private final SearchService searchService;
+    private final SlugService slugService;
 
-    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, SearchService searchService) {
+    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, SearchService searchService, SlugService slugService) {
         this.productRepository = productRepository;
         this.roleValidator = roleValidator;
         this.categoryValidator = categoryValidator;
         this.productValidator = productValidator;
         this.categoryUtils = categoryUtils;
         this.searchService = searchService;
+        this.slugService = slugService;
     }
 
     @Override
@@ -50,7 +53,8 @@ public class ProductServiceImpl implements ProductService {
         Set<Category> categories = productDto.getCategoryIds().stream()
                 .map(categoryUtils::findCategoryById)
                 .collect(Collectors.toSet());
-        Product product = productRepository.save(ProductMapper.toProduct(productDto, categories));
+        String slug = slugService.generateSlug(productDto.getName() , productDto.getProductCode()); //Create slug for friendly-url
+        Product product = productRepository.save(ProductMapper.toProduct(productDto, categories , slug));
         LOGGER.info("Product: {} added successfully with product code: {}", productDto.getName(), product.getProductCode());
         return ProductMapper.toProductDto(product);
     }
@@ -65,7 +69,9 @@ public class ProductServiceImpl implements ProductService {
         Set<Category> category = productDto.getCategoryIds().stream()
                 .map(categoryUtils::findCategoryById)
                 .collect(Collectors.toSet());
+        String slug = slugService.generateSlug(productDto.getName() , productDto.getProductCode());
         Product updatedProduct = ProductMapper.updateProductFromDto(productDto, exsistingProduct, category);
+        updatedProduct.setSlug(slug);
         productRepository.save(updatedProduct);
         LOGGER.info("Product with ID: {} updated successfully", productId);
         return ProductMapper.toProductDto(updatedProduct);

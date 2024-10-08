@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.config;
 
+import com.github.slugify.Slugify;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -57,6 +58,11 @@ public class BeansConfig {
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         source.registerCorsConfiguration("/**",config);
         return new CorsFilter(source);
+    }
+
+    @Bean
+    public Slugify slugify(){
+        return new Slugify();
     }
 
 

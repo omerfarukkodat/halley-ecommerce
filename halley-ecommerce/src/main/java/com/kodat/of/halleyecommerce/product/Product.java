@@ -41,6 +41,9 @@ public class Product {
            inverseJoinColumns = @JoinColumn(name = "category_id")
    )
     private Set<Category> categories;
+    @Column(unique = true)
+    private String slug;
+
     private String imageUrl;
     @CreationTimestamp()
     @Column(updatable = false , nullable = false)
