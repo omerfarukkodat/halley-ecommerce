@@ -102,6 +102,8 @@ public class ProductController {
     return ResponseEntity.ok(productService.filterProducts(categoryIds,minPrice,maxPrice,page,size,sortBy,sortDirection));
     }
 
+    @GetMapping("/similar/{produtId}")
+
 
 
 

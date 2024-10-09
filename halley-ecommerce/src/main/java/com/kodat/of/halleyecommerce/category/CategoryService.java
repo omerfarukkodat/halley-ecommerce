@@ -18,4 +18,6 @@ public interface CategoryService {
 
 
     CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto, Authentication connectedAdmin);
+
+    void deleteCategory(Long categoryId, Authentication connectedAdmin);
 }

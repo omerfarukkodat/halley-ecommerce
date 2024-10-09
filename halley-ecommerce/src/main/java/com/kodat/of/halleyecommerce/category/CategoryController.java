@@ -63,6 +63,15 @@ public class CategoryController {
     ) {
         return ResponseEntity.ok(service.updateCategory(categoryId,categoryDto,connectedAdmin));
     }
+    @Secured("ADMIN")
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(
+            @PathVariable Long categoryId ,
+            Authentication connectedAdmin
+    ){
+        service.deleteCategory(categoryId,connectedAdmin);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }

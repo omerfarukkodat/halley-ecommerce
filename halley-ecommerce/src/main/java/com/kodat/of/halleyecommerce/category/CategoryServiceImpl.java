@@ -114,7 +114,13 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.toCategoryDto(updatedCategory);
     }
 
-
+    @Override
+    public void deleteCategory(Long categoryId, Authentication connectedAdmin) {
+        roleValidator.verifyAdminRole(connectedAdmin);
+        categoryValidator.validateCategoryIds(Set.of(categoryId));
+        LOGGER.info("Deleting category with id: {}", categoryId);
+        categoryRepository.deleteById(categoryId);
+    }
 
 
 }
