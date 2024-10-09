@@ -13,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class ProductDto {
+    private Long id;
     @NotBlank(message = "Product name required")
     private String name;
     @NotBlank(message = "Product description required")

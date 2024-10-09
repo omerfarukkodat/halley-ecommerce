@@ -24,4 +24,6 @@ public interface ProductService {
     PageResponse<ProductDto> findProductsBySearch(String searchTerm,  int page, int size , String sortBy , String sortDirection);
 
     PageResponse<ProductDto> filterProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size, String sortBy, String sortDirection);
+
+    PageResponse<ProductDto> findSimilarProducts(Long productId, int page, int size);
 }

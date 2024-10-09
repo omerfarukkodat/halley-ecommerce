@@ -125,8 +125,18 @@ public class ProductServiceImpl implements ProductService {
         return createPageResponse(products);
     }
 
+    @Override
+    public PageResponse<ProductDto> findSimilarProducts(Long productId, int page, int size) {
+        Product existingProduct = productValidator.validateProductAndFindById(productId);
+        Set<Long> categoryIds = existingProduct.getCategories()
+                .stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet());
+        Pageable pageable = createPageable(page,size,"id" ,"desc");
+        Page<Product> similarProductsPage = productRepository.findByCategories_IdInAndIdNot(categoryIds,productId,pageable);
+        return createPageResponse(similarProductsPage);
 
-
+    }
 
 
     private PageResponse<ProductDto> createPageResponse(Page<Product> products) {

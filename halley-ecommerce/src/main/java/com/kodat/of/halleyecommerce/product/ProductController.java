@@ -102,7 +102,14 @@ public class ProductController {
     return ResponseEntity.ok(productService.filterProducts(categoryIds,minPrice,maxPrice,page,size,sortBy,sortDirection));
     }
 
-    @GetMapping("/similar/{produtId}")
+    @GetMapping("/similar/{productId}")
+    public ResponseEntity<PageResponse<ProductDto>> findSimilarProducts(
+            @PathVariable Long productId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ResponseEntity.ok(productService.findSimilarProducts(productId,page,size));
+    }
 
 
 

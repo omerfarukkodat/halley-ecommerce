@@ -43,8 +43,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllWithFilters(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 
 
-
-
+    Page<Product> findByCategories_IdInAndIdNot(Set<Long> categoryIds, Long productId, Pageable pageable);
 }
 
 

@@ -33,7 +33,12 @@ public class ProductValidator {
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException("Product with id " + productId + " does not exist.");
         }
-        productRepository.deleteById(productId);
+    }
+
+    public Product validateProductAndFindById(Long productId) {
+        validateProductId(productId);
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + productId + " does not exist1."));
     }
 
 
