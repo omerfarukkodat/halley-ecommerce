@@ -138,6 +138,14 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    @Override
+    public List<ProductDto> findFeaturedProducts(int limit) {
+        return productRepository.findTopFeaturedProducts(limit)
+                .stream()
+                .map(ProductMapper::toProductDto)
+                .toList();
+    }
+
 
     private PageResponse<ProductDto> createPageResponse(Page<Product> products) {
         List<ProductDto> productDtos = products.stream()

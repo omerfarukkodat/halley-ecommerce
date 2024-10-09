@@ -19,6 +19,7 @@ public class ProductMapper {
                 .imageUrl(productDto.getImageUrl())
                 .categories(categories)
                 .slug(slug)
+                .isFeatured(productDto.isFeatured())
                 .build();
     }
     public static ProductDto toProductDto(Product product) {
@@ -32,6 +33,7 @@ public class ProductMapper {
                 .imageUrl(product.getImageUrl())
                 .categoryIds(product.getCategories().stream().map(Category::getId).collect(Collectors.toSet()))
                 .slug(product.getSlug())
+                .isFeatured(product.isFeatured())
                 .build();
     }
     public static Product updateProductFromDto(ProductDto productDto, Product existingProduct , Set<Category> categories) {
@@ -43,6 +45,7 @@ public class ProductMapper {
         existingProduct.setImageUrl(productDto.getImageUrl());
         existingProduct.setCategories(categories);
         existingProduct.setSlug(productDto.getSlug());
+        existingProduct.setFeatured(productDto.isFeatured());
         return existingProduct;
     }
 }

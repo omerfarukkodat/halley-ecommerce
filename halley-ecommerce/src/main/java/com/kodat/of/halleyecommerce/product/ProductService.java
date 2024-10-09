@@ -5,6 +5,7 @@ import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import org.springframework.security.core.Authentication;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 public interface ProductService {
@@ -26,4 +27,7 @@ public interface ProductService {
     PageResponse<ProductDto> filterProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size, String sortBy, String sortDirection);
 
     PageResponse<ProductDto> findSimilarProducts(Long productId, int page, int size);
+
+    List<ProductDto> findFeaturedProducts(int limit);
+
 }

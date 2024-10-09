@@ -28,4 +28,5 @@ public class ProductDto {
     @NotNull(message = "At least one category Id is mandatory")
     private Set<Long> categoryIds;
     private String slug;
+    private boolean isFeatured;
 }

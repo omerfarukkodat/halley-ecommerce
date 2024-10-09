@@ -43,6 +43,7 @@ public class Product {
     private Set<Category> categories;
     @Column(unique = true)
     private String slug;
+    private boolean isFeatured = false;
 
     private String imageUrl;
     @CreationTimestamp()

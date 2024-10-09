@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -110,6 +111,12 @@ public class ProductController {
     ){
         return ResponseEntity.ok(productService.findSimilarProducts(productId,page,size));
     }
+
+    @GetMapping("/featured")
+    public List<ProductDto> getFeaturedProducts(@RequestParam int limit){
+        return productService.findFeaturedProducts(limit);
+    }
+
 
 
 
