@@ -4,7 +4,6 @@ import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.common.SlugService;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
 import com.kodat.of.halleyecommerce.dto.category.CategoryTreeDto;
-import com.kodat.of.halleyecommerce.exception.CategoryDoesNotExistsException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryTreeMapper;
 import com.kodat.of.halleyecommerce.util.CategoryUtils;
@@ -61,6 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
        roleValidator.verifyAdminRole(connectedAdmin);
        categoryValidator.validateCategoryName(categoryDto.getCategoryName());
         Category parentCategory = categoryUtils.findCategoryById(parentCategoryId);
+        categoryValidator.validateParentCategory(null,parentCategory);
         String slug = slugService.generateSlug(categoryDto.getCategoryName(),""); // create slug
         Category childCategory = CategoryMapper.toCategory(categoryDto,parentCategory,slug);
         childCategory.setSlug(slug);
@@ -100,19 +100,21 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto, Authentication connectedAdmin) {
         roleValidator.verifyAdminRole(connectedAdmin);
         categoryValidator.validateCategoryIds(Set.of(categoryId));
-        Category existingCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryDoesNotExistsException("Category does not exist with id: " + categoryId));
-       Category parentCategory = null;
+        categoryValidator.validateCategoryName(categoryDto.getCategoryName());
+        Category existingCategory = categoryUtils.findCategoryById(categoryId);
+        Category parentCategory = null;
         if (categoryDto.getParentId() != null){
-             parentCategory = categoryRepository.findById(categoryDto.getParentId())
-                    .orElseThrow(() -> new CategoryDoesNotExistsException("Parent Category does not exist with id: " + categoryId));
+             parentCategory = categoryUtils.findCategoryById(categoryDto.getParentId());
         }
+        categoryValidator.validateParentCategory(existingCategory, parentCategory);
         String slug = slugService.generateSlug(categoryDto.getCategoryName(),"");
         Category updatedCategory = CategoryMapper.updateCategoryFromDto(categoryDto,existingCategory,slug,parentCategory);
         categoryRepository.save(updatedCategory);
         LOGGER.info("Updated category id : {} ,  name: {}",updatedCategory.getId(), updatedCategory.getCategoryName());
         return CategoryMapper.toCategoryDto(updatedCategory);
     }
+
+
 
 
 }

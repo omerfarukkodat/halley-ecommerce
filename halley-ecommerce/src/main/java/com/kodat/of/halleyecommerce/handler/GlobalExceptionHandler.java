@@ -131,6 +131,33 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(ParentCategoryCycleException.class)
+    public ResponseEntity<ExceptionResponse> handleParentCategoryCycleException(ParentCategoryCycleException e) {
+        LOGGER.warn("Parent category cycle exception: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.PARENT_CATEGORY_CYCLE_EXCEPTION.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.PARENT_CATEGORY_CYCLE_EXCEPTION.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+    @ExceptionHandler(InvalidParentCategoryException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidParentCategoryException(InvalidParentCategoryException e){
+        LOGGER.warn("Invalid parent category: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.INVALID_PARENT_CATEGORY_EXCEPTION.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.INVALID_PARENT_CATEGORY_EXCEPTION.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+
 
 
 
