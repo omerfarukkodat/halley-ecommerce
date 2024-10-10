@@ -1,7 +1,7 @@
 package com.kodat.of.halleyecommerce.product;
 
 import com.kodat.of.halleyecommerce.common.PageResponse;
-import com.kodat.of.halleyecommerce.dto.product.DiscountRequest;
+import com.kodat.of.halleyecommerce.dto.discount.DiscountRequest;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import org.springframework.security.core.Authentication;
 

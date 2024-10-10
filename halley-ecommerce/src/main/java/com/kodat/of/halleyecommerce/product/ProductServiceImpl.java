@@ -3,7 +3,7 @@ package com.kodat.of.halleyecommerce.product;
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.common.SlugService;
-import com.kodat.of.halleyecommerce.dto.product.DiscountRequest;
+import com.kodat.of.halleyecommerce.dto.discount.DiscountRequest;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.product.ProductMapper;
