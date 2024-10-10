@@ -3,6 +3,7 @@ package com.kodat.of.halleyecommerce.product;
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.common.SlugService;
+import com.kodat.of.halleyecommerce.dto.product.DiscountRequest;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.product.ProductMapper;
@@ -34,8 +35,9 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryUtils categoryUtils;
     private final SearchService searchService;
     private final SlugService slugService;
+    private final DiscountService discountService;
 
-    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, SearchService searchService, SlugService slugService) {
+    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, SearchService searchService, SlugService slugService, DiscountService discountService) {
         this.productRepository = productRepository;
         this.roleValidator = roleValidator;
         this.categoryValidator = categoryValidator;
@@ -43,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
         this.categoryUtils = categoryUtils;
         this.searchService = searchService;
         this.slugService = slugService;
+        this.discountService = discountService;
     }
 
     @Override
@@ -144,6 +147,14 @@ public class ProductServiceImpl implements ProductService {
                 .stream()
                 .map(ProductMapper::toProductDto)
                 .toList();
+    }
+
+    @Override
+    public Void applyDiscount(DiscountRequest discountRequest, Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        discountService.applyDiscount(discountRequest.getProductIds(),discountRequest.getDiscountPercentage());
+        LOGGER.info("Discount of {}% applied to products with IDs: {} successfully", discountRequest.getDiscountPercentage() , discountRequest.getProductIds());
+        return null;
     }
 
 

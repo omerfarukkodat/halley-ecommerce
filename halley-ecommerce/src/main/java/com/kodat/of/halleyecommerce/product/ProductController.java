@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.product;
 
 import com.kodat.of.halleyecommerce.common.PageResponse;
+import com.kodat.of.halleyecommerce.dto.product.DiscountRequest;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -115,6 +116,15 @@ public class ProductController {
     @GetMapping("/featured")
     public List<ProductDto> getFeaturedProducts(@RequestParam int limit){
         return productService.findFeaturedProducts(limit);
+    }
+
+    @Secured("ADMIN")
+    @PostMapping("/discount")
+    public ResponseEntity<Void> applyDiscount(
+            @RequestBody DiscountRequest discountRequest,
+            Authentication connectedUser
+    ){
+        return ResponseEntity.ok(productService.applyDiscount(discountRequest,connectedUser));
     }
 
 

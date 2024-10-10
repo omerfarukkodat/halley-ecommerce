@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.product;
 
 
 import com.kodat.of.halleyecommerce.category.Category;
+import com.kodat.of.halleyecommerce.discount.Discount;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,7 +32,7 @@ public class Product {
     private String description;
     @Column(nullable = false , unique = true , length = 50)
     private String productCode;
-    @Column(nullable = false)
+    @Column(nullable = false , precision = 10, scale = 2)
     private BigDecimal price;
     @Column(nullable = false)
     private Integer stock;
@@ -45,6 +46,9 @@ public class Product {
     private String slug;
     private boolean isFeatured = false;
 
+    @ManyToOne
+    @JoinColumn(name = "discount_id")
+    private Discount discount;
     private String imageUrl;
     @CreationTimestamp()
     @Column(updatable = false , nullable = false)
