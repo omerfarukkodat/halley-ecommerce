@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.discount;
 
+import com.kodat.of.halleyecommerce.exception.InvalidDiscountException;
 import com.kodat.of.halleyecommerce.product.Product;
 import com.kodat.of.halleyecommerce.product.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class DiscountCalculator {
 
     public BigDecimal calculateDiscountMultiplier(BigDecimal discountPercentage) {
         if (discountPercentage.compareTo(BigDecimal.ZERO) < 0 || discountPercentage.compareTo(BigDecimal.valueOf(100)) > 0) {
-            throw new IllegalArgumentException("Discount percentage must be between 0 and 100");
+            throw new InvalidDiscountException("Discount percentage must be between 0 and 100");
         }
         return BigDecimal.ONE.subtract(discountPercentage.divide(BigDecimal.valueOf(100)));
     }

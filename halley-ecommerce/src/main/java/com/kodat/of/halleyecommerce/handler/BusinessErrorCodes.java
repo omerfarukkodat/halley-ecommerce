@@ -18,7 +18,8 @@ public enum BusinessErrorCodes {
     UNAUTHORIZED_ADMIN_ACCESS(403,HttpStatus.FORBIDDEN,"Unauthorized access attempt by non-admin user"),
     PRODUCT_ALREADY_EXISTS(409,HttpStatus.CONFLICT,"Product already exists."),
     INVALID_PARENT_CATEGORY_EXCEPTION(409,HttpStatus.CONFLICT,"A parent category cannot have another parent."),
-    PARENT_CATEGORY_CYCLE_EXCEPTION(409,HttpStatus.CONFLICT,"A category cannot be assigned as a parent of its own child category.")
+    PARENT_CATEGORY_CYCLE_EXCEPTION(409,HttpStatus.CONFLICT,"A category cannot be assigned as a parent of its own child category."),
+    INVALID_DISCOUNT_EXCEPTION(409,HttpStatus.CONFLICT,"Invalid discount percentage.")
             {
     };
 

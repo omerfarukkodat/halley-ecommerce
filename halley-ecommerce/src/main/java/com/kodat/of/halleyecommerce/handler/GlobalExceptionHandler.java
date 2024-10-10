@@ -157,6 +157,18 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(InvalidDiscountException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidDiscountException(InvalidDiscountException e) {
+        LOGGER.warn("Invalid discount: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.INVALID_DISCOUNT_EXCEPTION.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.INVALID_DISCOUNT_EXCEPTION.getDescription())
+                                .error(e.getMessage())
+                                .build());
+    }
 
 
 
