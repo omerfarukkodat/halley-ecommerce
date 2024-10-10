@@ -40,8 +40,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT DISTINCT p FROM Product p " +
             "JOIN p.categories c " +
             "WHERE (:categoryIds IS NULL OR c.id IN :categoryIds) AND " +
-            "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
-            "(:maxPrice IS NULL OR p.price <= :maxPrice)")
+            "(:minPrice IS NULL OR p.originalPrice >= :minPrice) AND " +
+            "(:maxPrice IS NULL OR p.originalPrice <= :maxPrice)")
     Page<Product> findAllWithFilters(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 
 
@@ -49,10 +49,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query(value = "SELECT p FROM Product p WHERE p.isFeatured = true  ORDER BY p.createdTime DESC")
     List<Product> findTopFeaturedProducts(int limit);
+
+    @Query("SELECT DISTINCT p FROM Product p " +
+            "JOIN p.categories c " +
+            "WHERE (:categoryIds IS NULL OR c.id IN :categoryIds) AND " +
+            "(:minPrice IS NULL OR p.originalPrice >= :minPrice) AND " +
+            "(:maxPrice IS NULL OR p.originalPrice <= :maxPrice) AND " +
+            "p.discountedPrice < p.originalPrice")
+    Page<Product> findDiscountedProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 }
-
-
-
 
 
 // Levenshtein Search
@@ -65,7 +70,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 //                    "WHERE levenshtein(p.name, :searchTerm) < 20",
 //            nativeQuery = true)
 //    Page<Product> findProductsByLevenshteinSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
-
 
 
 // Trigram Search

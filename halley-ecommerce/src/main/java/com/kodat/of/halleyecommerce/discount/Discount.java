@@ -18,17 +18,15 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "discounts")
 public class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private BigDecimal discountPercentage;
-    @CreationTimestamp
+
     @Column(updatable = false , nullable = false)
     private LocalDateTime startDate;
-    @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime endDate;
     @OneToMany(mappedBy = "discount")
