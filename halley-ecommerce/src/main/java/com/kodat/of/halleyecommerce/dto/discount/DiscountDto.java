@@ -1,20 +1,19 @@
 package com.kodat.of.halleyecommerce.dto.discount;
 
-import com.kodat.of.halleyecommerce.dto.product.ProductRequest;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiscountRequest {
+public class DiscountDto {
     private Long id;
     @NotNull
     private BigDecimal discountPercentage;
@@ -22,6 +21,6 @@ public class DiscountRequest {
     private LocalDateTime startDate;
     @NotNull
     private LocalDateTime endDate;
-    private List<ProductRequest> products;
+    private Set<Long> productIds;
 
 }

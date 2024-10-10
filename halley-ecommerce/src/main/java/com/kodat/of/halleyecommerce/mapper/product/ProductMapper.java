@@ -13,7 +13,8 @@ public class ProductMapper {
         return Product.builder()
                 .name(productDto.getName())
                 .description(productDto.getDescription())
-                .price(productDto.getPrice())
+                .originalPrice(productDto.getOriginalPrice())
+                .discountedPrice(productDto.getDiscountedPrice())
                 .stock(productDto.getStock())
                 .productCode(productDto.getProductCode())
                 .imageUrl(productDto.getImageUrl())
@@ -27,7 +28,8 @@ public class ProductMapper {
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
-                .price(product.getPrice())
+                .originalPrice(product.getOriginalPrice())
+                .discountedPrice(product.getDiscountedPrice())
                 .stock(product.getStock())
                 .productCode(product.getProductCode())
                 .imageUrl(product.getImageUrl())
@@ -39,7 +41,8 @@ public class ProductMapper {
     public static Product updateProductFromDto(ProductDto productDto, Product existingProduct , Set<Category> categories) {
         existingProduct.setName(productDto.getName());
         existingProduct.setDescription(productDto.getDescription());
-        existingProduct.setPrice(productDto.getPrice());
+        existingProduct.setOriginalPrice(productDto.getOriginalPrice());
+        existingProduct.setDiscountedPrice(productDto.getDiscountedPrice());
         existingProduct.setStock(productDto.getStock());
         existingProduct.setProductCode(productDto.getProductCode());
         existingProduct.setImageUrl(productDto.getImageUrl());

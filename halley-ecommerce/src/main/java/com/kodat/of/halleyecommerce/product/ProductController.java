@@ -1,7 +1,6 @@
 package com.kodat.of.halleyecommerce.product;
 
 import com.kodat.of.halleyecommerce.common.PageResponse;
-import com.kodat.of.halleyecommerce.dto.discount.DiscountRequest;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import java.util.Set;
 @RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
-
 
     public ProductController(ProductService productService) {
         this.productService = productService;
@@ -118,13 +116,18 @@ public class ProductController {
         return productService.findFeaturedProducts(limit);
     }
 
-    @Secured("ADMIN")
-    @PostMapping("/discount")
-    public ResponseEntity<Void> applyDiscount(
-            @RequestBody DiscountRequest discountRequest,
-            Authentication connectedUser
+
+    @GetMapping("/discounted")
+    public ResponseEntity<PageResponse<ProductDto>> getDiscountedProducts(
+            @RequestParam(required = false) Set<Long> categoryIds,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "productCode") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection
     ){
-        return ResponseEntity.ok(productService.applyDiscount(discountRequest,connectedUser));
+        return ResponseEntity.ok(productService.getDiscountedProducts(categoryIds,minPrice,maxPrice,page,size,sortBy,sortDirection));
     }
 
 

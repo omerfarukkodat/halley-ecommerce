@@ -3,7 +3,7 @@ package com.kodat.of.halleyecommerce.product;
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.common.SlugService;
-import com.kodat.of.halleyecommerce.dto.discount.DiscountRequest;
+import com.kodat.of.halleyecommerce.discount.DiscountCalculator;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.product.ProductMapper;
@@ -35,9 +35,9 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryUtils categoryUtils;
     private final SearchService searchService;
     private final SlugService slugService;
-    private final DiscountService discountService;
+    private final DiscountCalculator discountService;
 
-    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, SearchService searchService, SlugService slugService, DiscountService discountService) {
+    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, SearchService searchService, SlugService slugService, DiscountCalculator discountService) {
         this.productRepository = productRepository;
         this.roleValidator = roleValidator;
         this.categoryValidator = categoryValidator;
@@ -150,11 +150,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Void applyDiscount(DiscountRequest discountRequest, Authentication connectedUser) {
-        roleValidator.verifyAdminRole(connectedUser);
-        discountService.applyDiscount(discountRequest.getProductIds(),discountRequest.getDiscountPercentage());
-        LOGGER.info("Discount of {}% applied to products with IDs: {} successfully", discountRequest.getDiscountPercentage() , discountRequest.getProductIds());
-        return null;
+    public PageResponse<ProductDto> getDiscountedProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size, String sortBy, String sortDirection) {
+       Pageable pageable = createPageable(page, size, sortBy, sortDirection);
     }
 
 

@@ -33,7 +33,9 @@ public class Product {
     @Column(nullable = false , unique = true , length = 50)
     private String productCode;
     @Column(nullable = false , precision = 10, scale = 2)
-    private BigDecimal price;
+    private BigDecimal originalPrice;
+    @Column(nullable = false , precision = 10 , scale = 2)
+    private BigDecimal discountedPrice;
     @Column(nullable = false)
     private Integer stock;
     @ManyToMany
