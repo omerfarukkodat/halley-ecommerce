@@ -35,6 +35,14 @@ public class DiscountController {
         discountService.deleteDiscount(discountId,connectedUser);
         return ResponseEntity.noContent().build();
     }
+    @Secured("ADMIN")
+    @GetMapping("/{discountId}")
+    public ResponseEntity<DiscountDto> getDiscountById(
+            @PathVariable Long discountId,
+            Authentication connectedUser
+    ){
+        return ResponseEntity.ok(discountService.getDiscountById(discountId,connectedUser));
+    }
 
 
 

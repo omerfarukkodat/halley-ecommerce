@@ -54,6 +54,13 @@ public class DiscountServiceImpl implements DiscountService{
         discountRepository.deleteById(discountId);
     }
 
+    @Override
+    public DiscountDto getDiscountById(Long discountId, Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        discountValidator.validateDiscount(discountId);
+        return DiscountMapper.toDiscountDto(discountRepository.findById(discountId).get());
+    }
+
 
     private void applyDiscountToProducts(Discount discount){
         List<Long> productIds = discount.getProducts().stream()

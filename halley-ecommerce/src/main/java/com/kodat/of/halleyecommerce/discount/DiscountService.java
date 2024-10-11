@@ -8,4 +8,6 @@ public interface DiscountService {
     DiscountDto createDiscount(DiscountDto discountDto, Authentication connectedUser);
 
     void deleteDiscount(Long discountId, Authentication connectedUser);
+
+    DiscountDto getDiscountById(Long discountId, Authentication connectedUser);
 }
