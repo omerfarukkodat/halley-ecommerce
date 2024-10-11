@@ -30,17 +30,15 @@ public class DiscountCalculator {
         List<Product> products = productRepository.findAllById(productIds);
 
         for (Product product : products) {
-            // If discount is valid , save the original price and calculate new price
+            // If discount is valid , calculated the discounted price and set
             if (isDiscountActive(startDate,endDate)){
                 BigDecimal currentPrice = product.getOriginalPrice();
                 BigDecimal discountedPrice = currentPrice.multiply(discountMultiplier);
                 product.setDiscountedPrice(discountedPrice);
                 LOGGER.info("Product ID: {} - Original Price: {}, Discounted Price: {}", product.getId(), currentPrice, discountedPrice);
-
             }
         }
         productRepository.saveAll(products);
-
     }
 
     private boolean isDiscountActive(LocalDateTime startDate, LocalDateTime endDate) {

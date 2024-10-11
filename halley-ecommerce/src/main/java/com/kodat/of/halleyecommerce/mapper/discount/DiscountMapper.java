@@ -11,18 +11,21 @@ import java.util.stream.Collectors;
 public class DiscountMapper {
     public static Discount toDiscount(DiscountDto discountDto, List<Product> products) {
 
-        List<Product> selectedProducts = products.stream()
-                .filter(product -> discountDto.getProductIds()
-                        .contains(product.getId()))
-                .toList();
-
-        return Discount.builder()
+        Discount discount = Discount.builder()
                 .id(discountDto.getId())
                 .discountPercentage(discountDto.getDiscountPercentage())
                 .startDate(discountDto.getStartDate())
                 .endDate(discountDto.getEndDate())
-                .products(selectedProducts)
                 .build();
+
+        List<Product> selectedProducts = products.stream()
+                .filter(product -> discountDto.getProductIds()
+                .contains(product.getId()))
+                .peek(product -> product.setDiscount(discount))
+                .toList();
+
+        discount.setProducts(selectedProducts);
+        return discount;
     }
 
     public static DiscountDto toDiscountDto(Discount discount) {
@@ -30,7 +33,6 @@ public class DiscountMapper {
         Set<Long> productIds = discount.getProducts().stream()
                 .map(Product::getId)
                 .collect(Collectors.toSet());
-
 
         return DiscountDto.builder()
                 .id(discount.getId())
@@ -40,7 +42,6 @@ public class DiscountMapper {
                 .productIds(productIds)
                 .build();
     }
-
 
 
 }

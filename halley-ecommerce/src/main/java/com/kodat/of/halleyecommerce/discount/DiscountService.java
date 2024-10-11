@@ -6,4 +6,6 @@ import org.springframework.security.core.Authentication;
 
 public interface DiscountService {
     DiscountDto createDiscount(DiscountDto discountDto, Authentication connectedUser);
+
+    void deleteDiscount(Long discountId, Authentication connectedUser);
 }

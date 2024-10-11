@@ -48,7 +48,7 @@ public class Product {
     private String slug;
     private boolean isFeatured = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "discount_id")
     private Discount discount;
     private String imageUrl;

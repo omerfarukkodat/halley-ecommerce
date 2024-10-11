@@ -169,7 +169,20 @@ public class GlobalExceptionHandler {
                                 .error(e.getMessage())
                                 .build());
     }
+    @ExceptionHandler(DiscountNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleDiscountNotFoundException(DiscountNotFoundException e) {
+        LOGGER.warn("Discount not found: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.DISCOUNT_NOT_FOUND.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.DISCOUNT_NOT_FOUND.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
 
+    }
 
 
 

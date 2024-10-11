@@ -11,6 +11,7 @@ public enum BusinessErrorCodes {
     USER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "User not found"),
     PARENT_CATEGORY_DOES_NOT_EXISTS(404,HttpStatus.NOT_FOUND,"Parent category does not exists."),
     CATEGORY_DOES_NOT_EXISTS(404,HttpStatus.NOT_FOUND,"Category with this id not found."),
+    DISCOUNT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Discount not found"),
     CATEGORY_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Category already exists"),
     DATA_INTEGRITY_VIOLATION(409, HttpStatus.CONFLICT, "Data integrity violation"),
     VALIDATION_ERROR(400, HttpStatus.BAD_REQUEST, "Validation error"),
