@@ -4,11 +4,15 @@ import com.kodat.of.halleyecommerce.discount.Discount;
 import com.kodat.of.halleyecommerce.dto.discount.DiscountDto;
 import com.kodat.of.halleyecommerce.product.Product;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DiscountMapper {
+
+
+
     public static Discount toDiscount(DiscountDto discountDto, List<Product> products) {
 
         Discount discount = Discount.builder()
@@ -16,6 +20,7 @@ public class DiscountMapper {
                 .discountPercentage(discountDto.getDiscountPercentage())
                 .startDate(discountDto.getStartDate())
                 .endDate(discountDto.getEndDate())
+                .products(null)
                 .build();
 
         List<Product> selectedProducts = products.stream()
@@ -30,9 +35,9 @@ public class DiscountMapper {
 
     public static DiscountDto toDiscountDto(Discount discount) {
 
-        Set<Long> productIds = discount.getProducts().stream()
+        List<Long> productIds = discount.getProducts().stream()
                 .map(Product::getId)
-                .collect(Collectors.toSet());
+                .toList();
 
         return DiscountDto.builder()
                 .id(discount.getId())
@@ -41,6 +46,17 @@ public class DiscountMapper {
                 .endDate(discount.getEndDate())
                 .productIds(productIds)
                 .build();
+    }
+    public static Discount updateDiscountFromDto(DiscountDto discountDto, Discount discount, List<Product> products ) {
+
+        discount.setDiscountPercentage(discountDto.getDiscountPercentage());
+        discount.setStartDate(discountDto.getStartDate());
+        discount.setEndDate(discountDto.getEndDate());
+        for (Product product : products) {
+            product.setDiscount(discount);
+        }
+        discount.setProducts(products);
+        return discount;
     }
 
 

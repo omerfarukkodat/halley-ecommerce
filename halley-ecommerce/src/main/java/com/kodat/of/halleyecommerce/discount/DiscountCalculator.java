@@ -6,6 +6,7 @@ import com.kodat.of.halleyecommerce.product.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,7 +24,7 @@ public class DiscountCalculator {
     public DiscountCalculator(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
-
+    @Transactional
     public void applyDiscount(List<Long> productIds , BigDecimal discountPercentage , LocalDateTime startDate , LocalDateTime endDate) {
 
         BigDecimal discountMultiplier = calculateDiscountMultiplier(discountPercentage);
@@ -36,6 +37,10 @@ public class DiscountCalculator {
                 BigDecimal discountedPrice = currentPrice.multiply(discountMultiplier);
                 product.setDiscountedPrice(discountedPrice);
                 LOGGER.info("Product ID: {} - Original Price: {}, Discounted Price: {}", product.getId(), currentPrice, discountedPrice);
+            }else {
+                product.setDiscountedPrice(product.getOriginalPrice());
+                product.setDiscount(null);
+
             }
         }
         productRepository.saveAll(products);

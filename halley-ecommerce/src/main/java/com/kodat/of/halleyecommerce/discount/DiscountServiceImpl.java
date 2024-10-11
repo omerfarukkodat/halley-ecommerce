@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DiscountServiceImpl implements DiscountService{
@@ -34,7 +33,6 @@ public class DiscountServiceImpl implements DiscountService{
         this.discountCalculator = discountCalculator;
         this.discountValidator = discountValidator;
     }
-
 
     @Override
     public DiscountDto createDiscount(DiscountDto discountDto, Authentication connectedUser) {
@@ -69,6 +67,30 @@ public class DiscountServiceImpl implements DiscountService{
      return discountDtos.stream()
                 .map(DiscountMapper::toDiscountDto)
                 .toList();
+    }
+
+    @Override
+    public DiscountDto updateDiscountById(Long discountId, DiscountDto discountDto, Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        discountValidator.validateDiscount(discountId);
+        List<Product> products = productRepository.findAllById(discountDto.getProductIds());
+        Discount discount = discountRepository.findById(discountId)
+                .orElseThrow(() -> new IllegalArgumentException("Discount not found"));
+        List<Long> existingProductList = discount.getProducts().stream().map(Product::getId).toList();
+        List<Long> updatingProductList = products.stream().map(Product::getId).toList();
+
+        if (!existingProductList.equals(updatingProductList)) {
+
+            discount.getProducts().forEach(product -> {
+                product.setDiscountedPrice(product.getOriginalPrice());
+                product.setDiscount(null); // Reset the discount
+            });
+        }
+        Discount updatedDiscount = DiscountMapper.updateDiscountFromDto(discountDto,discount,products);
+        Discount savedDiscount = discountRepository.save(updatedDiscount);
+        applyDiscountToProducts(updatedDiscount);
+
+        return DiscountMapper.toDiscountDto(savedDiscount);
     }
 
 

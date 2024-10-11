@@ -29,6 +29,17 @@ public class DiscountController {
 
     }
     @Secured("ADMIN")
+    @PutMapping("/{discountId}")
+    public ResponseEntity<DiscountDto> updateDiscountById(
+            @PathVariable Long discountId,
+            @Valid @RequestBody DiscountDto discountDto,
+            Authentication connectedUser
+    ){
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(discountService.updateDiscountById(discountId,discountDto,connectedUser));
+
+    }
+    @Secured("ADMIN")
     @DeleteMapping("/{discountId}")
     public ResponseEntity<Void> deleteDiscount(
             @PathVariable Long discountId,

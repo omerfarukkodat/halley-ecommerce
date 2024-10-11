@@ -19,8 +19,9 @@ public class DiscountDto {
     private BigDecimal discountPercentage;
     @NotNull
     private LocalDateTime startDate;
-    @NotNull
+    @NotNull()
     private LocalDateTime endDate;
-    private Set<Long> productIds;
+    @NotNull(message = "At least one product id is mandatory")
+    private List<Long> productIds;
 
 }

@@ -14,4 +14,6 @@ public interface DiscountService {
     DiscountDto getDiscountById(Long discountId, Authentication connectedUser);
 
     List<DiscountDto> getAllDiscounts(Authentication connectedUser);
+
+    DiscountDto updateDiscountById(Long discountId, DiscountDto discountDto, Authentication connectedUser);
 }

@@ -4,9 +4,7 @@ package com.kodat.of.halleyecommerce.discount;
 import com.kodat.of.halleyecommerce.product.Product;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,7 +27,7 @@ public class Discount {
     private LocalDateTime startDate;
     @Column(nullable = false)
     private LocalDateTime endDate;
-    @OneToMany(mappedBy = "discount")
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL)
     private List<Product> products;
 
 }
