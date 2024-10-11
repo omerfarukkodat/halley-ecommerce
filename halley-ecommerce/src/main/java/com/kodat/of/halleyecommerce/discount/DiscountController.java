@@ -8,6 +8,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/discounts")
 public class DiscountController {
@@ -42,6 +44,13 @@ public class DiscountController {
             Authentication connectedUser
     ){
         return ResponseEntity.ok(discountService.getDiscountById(discountId,connectedUser));
+    }
+    @Secured("ADMIN")
+    @GetMapping
+    public ResponseEntity<List<DiscountDto>> getAllDiscounts(
+            Authentication connectedUser
+    ){
+        return ResponseEntity.ok(discountService.getAllDiscounts(connectedUser));
     }
 
 

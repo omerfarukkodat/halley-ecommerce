@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DiscountServiceImpl implements DiscountService{
@@ -59,6 +60,15 @@ public class DiscountServiceImpl implements DiscountService{
         roleValidator.verifyAdminRole(connectedUser);
         discountValidator.validateDiscount(discountId);
         return DiscountMapper.toDiscountDto(discountRepository.findById(discountId).get());
+    }
+
+    @Override
+    public List<DiscountDto> getAllDiscounts(Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        List<Discount> discountDtos = discountRepository.findAll();
+     return discountDtos.stream()
+                .map(DiscountMapper::toDiscountDto)
+                .toList();
     }
 
 
