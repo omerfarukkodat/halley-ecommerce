@@ -6,6 +6,7 @@ import com.kodat.of.halleyecommerce.validator.RoleValidator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
@@ -22,4 +23,16 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByEmail(username).get();
         return UserMapper.toUserProfileDto(user);
     }
+
+    @Override
+    public UserProfileDto updateProfile(UserProfileDto userProfileDto, Authentication connectedUser) {
+        roleValidator.verifyUserRole(connectedUser);
+        String username = connectedUser.getName();
+        User user = userRepository.findByEmail(username).get();
+        User updatedUser = UserMapper.updateUserFromDto(user,userProfileDto);
+        userRepository.save(updatedUser);
+        return UserMapper.toUserProfileDto(updatedUser);
+    }
+
+
 }

@@ -5,4 +5,6 @@ import org.springframework.security.core.Authentication;
 
 public interface UserService {
     UserProfileDto getProfile(Authentication connectedUser);
+
+    UserProfileDto updateProfile(UserProfileDto profileDto, Authentication connectedUser);
 }
