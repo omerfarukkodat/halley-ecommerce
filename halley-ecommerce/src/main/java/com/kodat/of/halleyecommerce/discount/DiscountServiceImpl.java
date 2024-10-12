@@ -76,30 +76,40 @@ public class DiscountServiceImpl implements DiscountService{
         List<Product> products = productRepository.findAllById(discountDto.getProductIds());
         Discount discount = discountRepository.findById(discountId)
                 .orElseThrow(() -> new IllegalArgumentException("Discount not found"));
-        List<Long> existingProductList = discount.getProducts().stream().map(Product::getId).toList();
-        List<Long> updatingProductList = products.stream().map(Product::getId).toList();
-
-        if (!existingProductList.equals(updatingProductList)) {
-
-            discount.getProducts().forEach(product -> {
-                product.setDiscountedPrice(product.getOriginalPrice());
-                product.setDiscount(null); // Reset the discount
-            });
-        }
-        Discount updatedDiscount = DiscountMapper.updateDiscountFromDto(discountDto,discount,products);
+        updateProductDiscountIfChanged(discount, products);
+        Discount updatedDiscount = updateDiscount(discount, discountDto, products);
         Discount savedDiscount = discountRepository.save(updatedDiscount);
         applyDiscountToProducts(updatedDiscount);
-
         return DiscountMapper.toDiscountDto(savedDiscount);
     }
 
+    // If the products updating , reset the old discount.
+    private void updateProductDiscountIfChanged(Discount discount, List<Product> products) {
+        List<Long> existingProductList = discount.getProducts().stream().map(Product::getId).toList();
+        List<Long> updatingProductList = products.stream().map(Product::getId).toList();
+        if (!existingProductList.equals(updatingProductList)) {
+            resetProductDiscounts(discount);
+        }
+    }
+
+    //This method doing reset the products
+    private void resetProductDiscounts(Discount discount) {
+        discount.getProducts().forEach(product -> {
+            product.setDiscountedPrice(product.getOriginalPrice());
+            product.setDiscount(null); // Reset the discount
+        });
+    }
+
+    // Updating discount
+    private Discount updateDiscount(Discount discount, DiscountDto discountDto, List<Product> products) {
+        return DiscountMapper.updateDiscountFromDto(discountDto, discount, products);
+    }
 
     private void applyDiscountToProducts(Discount discount){
         List<Long> productIds = discount.getProducts().stream()
                 .map(Product::getId)
                 .toList();
         discountCalculator.applyDiscount(productIds,discount.getDiscountPercentage(),discount.getStartDate(),discount.getEndDate());
-
     }
 
 
