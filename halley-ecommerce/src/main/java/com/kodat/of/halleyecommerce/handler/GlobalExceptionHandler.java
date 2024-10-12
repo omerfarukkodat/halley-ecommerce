@@ -183,6 +183,19 @@ public class GlobalExceptionHandler {
                 );
 
     }
+    @ExceptionHandler(UnauthorizedUserAccessException.class)
+    public ResponseEntity<ExceptionResponse> handleUnauthroizedUserAccessException(UnauthorizedUserAccessException e){
+        LOGGER.warn("Unauthorized user: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.UNAUTHORIZED_USER_ACCESS.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.UNAUTHORIZED_USER_ACCESS.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
 
 
 

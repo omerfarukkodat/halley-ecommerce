@@ -24,12 +24,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(nullable = false)
-    private String password;
     private String firstName;
     private String lastName;
     @Column(unique = true)
     private String email;
+    @Column(nullable = false)
+    private String password;
     private boolean enabled;
     private String phone;
     @Enumerated(EnumType.STRING)
