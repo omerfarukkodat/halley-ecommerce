@@ -11,4 +11,6 @@ public interface AddressService {
     AddressDto getAddressById(Long addressId, Authentication connectedUser);
 
     AddressDto createAddress(AddressDto addressDto, Authentication connectedUser);
+
+    AddressDto updateAddressById(Long addressId, AddressDto addressDto, Authentication connectedUser);
 }

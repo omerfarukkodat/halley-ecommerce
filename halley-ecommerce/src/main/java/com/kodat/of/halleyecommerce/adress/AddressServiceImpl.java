@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.adress;
 
 import com.kodat.of.halleyecommerce.dto.address.AddressDto;
+import com.kodat.of.halleyecommerce.exception.AddressNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.address.AddressMapper;
 import com.kodat.of.halleyecommerce.user.User;
 import com.kodat.of.halleyecommerce.user.UserRepository;
@@ -57,5 +58,17 @@ public class AddressServiceImpl implements AddressService{
         newAddress.setUser(user);
         Address savedAddress = addressRepository.save(newAddress);
         return AddressMapper.toAddressDto(savedAddress);
+    }
+
+    @Override
+    public AddressDto updateAddressById(Long addressId, AddressDto addressDto, Authentication connectedUser) {
+        roleValidator.verifyUserRole(connectedUser);
+        String username = connectedUser.getName();
+        User user = userRepository.findByEmail(username).get();
+        addressValidator.validateUserAddress(user.getId());
+        Address existingAddress = addressRepository.findById(addressId)
+                .orElseThrow(() -> new AddressNotFoundException("Address not found"));
+        Address updatedAddress = addressRepository.save(AddressMapper.updateAddressToDto(existingAddress, addressDto));
+        return AddressMapper.toAddressDto(updatedAddress);
     }
 }

@@ -42,6 +42,15 @@ public class AddressController {
     public ResponseEntity<List<AddressDto>> getAllAddresses(Authentication connectedUser) {
         return ResponseEntity.ok(addressService.getAllAddresses(connectedUser));
     }
+    @Secured("USER")
+    @PutMapping("/{addressId}")
+    public ResponseEntity<AddressDto> updateAddressById(
+            @PathVariable Long addressId,
+            @Valid @RequestBody AddressDto addressDto,
+            Authentication connectedUser
+    ){
+        return ResponseEntity.ok(addressService.updateAddressById(addressId,addressDto,connectedUser));
+    }
 
 
 }

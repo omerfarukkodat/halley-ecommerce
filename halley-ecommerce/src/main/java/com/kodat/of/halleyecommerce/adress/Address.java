@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.adress;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kodat.of.halleyecommerce.adress.enums.AddressType;
 import com.kodat.of.halleyecommerce.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -43,6 +44,10 @@ public class Address {
 
     @Size(max = 10, message = "Apartment number must not exceed 10 characters")
     private String apartmentNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false , name = "address_type")
+    private AddressType addressType;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

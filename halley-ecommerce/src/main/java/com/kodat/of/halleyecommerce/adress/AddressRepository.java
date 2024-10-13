@@ -9,6 +9,6 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
 
     Optional<List<Address>> findAllByUserId(Integer user_id);
 
-    Optional<Address> findByUserId(Integer user_id);
+    Optional<Address> findFirstByUserId(Integer user_id);
 
 }

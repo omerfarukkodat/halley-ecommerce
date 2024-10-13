@@ -1,6 +1,8 @@
 package com.kodat.of.halleyecommerce.dto.address;
 
+import com.kodat.of.halleyecommerce.adress.enums.AddressType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +36,8 @@ public class AddressDto {
 
     private String floor;
     private String apartmentNumber;
+    @NotNull( message = "AddressType is mandatory")
+    private AddressType addressType;
 
 
 }
