@@ -37,7 +37,7 @@ public class User {
     private Role role;
     private boolean accountLocked;
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true , fetch = FetchType.EAGER)
-    private List<Address> adresses = new ArrayList<>();
+    private List<Address> addresses = new ArrayList<>();
 
 
     @Column(nullable = false, updatable = false)

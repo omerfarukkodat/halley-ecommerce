@@ -21,7 +21,7 @@ public class RoleValidator {
         if (connectedUser.getAuthorities().stream().noneMatch(u -> u.getAuthority().equals("USER"))){
             throw new UnauthorizedUserAccessException("Only the main user can perform this operation");
         }
-        LOGGER.info("User role verified for user: {}", connectedUser.getName());
+      //  LOGGER.info("User role verified for user: {}", connectedUser.getName());
     }
 
 }

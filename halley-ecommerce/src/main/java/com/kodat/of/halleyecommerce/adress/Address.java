@@ -39,7 +39,7 @@ public class Address {
     private String zipCode;
 
     private String buildingNumber;
-    private Integer floor;
+    private String floor;
 
     @Size(max = 10, message = "Apartment number must not exceed 10 characters")
     private String apartmentNumber;

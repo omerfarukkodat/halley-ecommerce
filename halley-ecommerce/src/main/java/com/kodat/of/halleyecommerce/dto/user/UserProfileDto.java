@@ -23,6 +23,5 @@ public class UserProfileDto {
     private String email;
     @NotBlank(message = "Phone number is mandatory")
     private String phone;
-    @NotEmpty(message = "Address is mandatory")
-    private List<Address> addresses;
+
 }

@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.handler;
 
 import com.kodat.of.halleyecommerce.exception.*;
+import com.kodat.of.halleyecommerce.validator.AddressAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,6 +193,32 @@ public class GlobalExceptionHandler {
                         ExceptionResponse.builder()
                                 .businessErrorCode(BusinessErrorCodes.UNAUTHORIZED_USER_ACCESS.getCode())
                                 .businessErrorDescription(BusinessErrorCodes.UNAUTHORIZED_USER_ACCESS.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+    @ExceptionHandler(AddressNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleAddressNotFoundException(AddressNotFoundException e) {
+        LOGGER.warn("Address does not exist: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.ADDRESS_NOT_FOUND.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.ADDRESS_NOT_FOUND.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+    @ExceptionHandler(AddressAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleAddressAlreadyExistsException(AddressAlreadyExistsException e) {
+        LOGGER.warn("Address already exists: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.ADDRESS_ALREADY_EXISTS_EXCEPTION.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.ADDRESS_ALREADY_EXISTS_EXCEPTION.getDescription())
                                 .error(e.getMessage())
                                 .build()
                 );
