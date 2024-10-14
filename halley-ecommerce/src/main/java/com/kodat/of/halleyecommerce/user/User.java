@@ -1,6 +1,6 @@
 package com.kodat.of.halleyecommerce.user;
 
-import com.kodat.of.halleyecommerce.adress.Address;
+import com.kodat.of.halleyecommerce.address.Address;
 import com.kodat.of.halleyecommerce.user.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,7 +36,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
     private boolean accountLocked;
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true , fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
 
 

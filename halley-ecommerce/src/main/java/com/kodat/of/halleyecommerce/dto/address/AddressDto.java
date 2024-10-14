@@ -1,6 +1,6 @@
 package com.kodat.of.halleyecommerce.dto.address;
 
-import com.kodat.of.halleyecommerce.adress.enums.AddressType;
+import com.kodat.of.halleyecommerce.address.enums.AddressType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

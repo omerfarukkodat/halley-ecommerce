@@ -1,4 +1,4 @@
-package com.kodat.of.halleyecommerce.adress;
+package com.kodat.of.halleyecommerce.address;
 
 import com.kodat.of.halleyecommerce.dto.address.AddressDto;
 import com.kodat.of.halleyecommerce.exception.AddressNotFoundException;
@@ -9,6 +9,7 @@ import com.kodat.of.halleyecommerce.validator.AddressValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -70,5 +71,14 @@ public class AddressServiceImpl implements AddressService{
                 .orElseThrow(() -> new AddressNotFoundException("Address not found"));
         Address updatedAddress = addressRepository.save(AddressMapper.updateAddressToDto(existingAddress, addressDto));
         return AddressMapper.toAddressDto(updatedAddress);
+    }
+    @Transactional
+    @Override
+    public void deleteAddressById(Long addressId, Authentication connectedUser) {
+        roleValidator.verifyUserRole(connectedUser);
+        String username = connectedUser.getName();
+        User user = userRepository.findByEmail(username).get();
+       Address address = addressValidator.validateUserAddress(addressId,user.getId());
+        addressRepository.delete(address);
     }
 }

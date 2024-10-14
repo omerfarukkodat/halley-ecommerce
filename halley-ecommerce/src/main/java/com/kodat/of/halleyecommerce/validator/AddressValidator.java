@@ -1,7 +1,7 @@
 package com.kodat.of.halleyecommerce.validator;
 
-import com.kodat.of.halleyecommerce.adress.Address;
-import com.kodat.of.halleyecommerce.adress.AddressRepository;
+import com.kodat.of.halleyecommerce.address.Address;
+import com.kodat.of.halleyecommerce.address.AddressRepository;
 import com.kodat.of.halleyecommerce.exception.AddressNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +23,10 @@ public class AddressValidator {
     public void validateUserAddresses(Integer userId){
         List<Address> addresses = addressRepository.findAllByUserId(userId)
                 .orElseThrow(() -> new AddressNotFoundException("User has no registered addresses"));
+    }
+    public Address validateUserAddress(Long addressId , Integer userId){
+        return addressRepository.findByIdAndUserId(addressId,userId)
+                .orElseThrow(() -> new AddressNotFoundException("Address not found for this user"));
     }
 
 }

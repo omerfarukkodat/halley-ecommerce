@@ -1,4 +1,4 @@
-package com.kodat.of.halleyecommerce.adress.enums;
+package com.kodat.of.halleyecommerce.address.enums;
 
 public enum AddressType {
     HOME,

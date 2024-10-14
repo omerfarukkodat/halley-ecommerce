@@ -1,4 +1,4 @@
-package com.kodat.of.halleyecommerce.adress;
+package com.kodat.of.halleyecommerce.address;
 
 import com.kodat.of.halleyecommerce.dto.address.AddressDto;
 import jakarta.validation.Valid;
@@ -51,6 +51,13 @@ public class AddressController {
     ){
         return ResponseEntity.ok(addressService.updateAddressById(addressId,addressDto,connectedUser));
     }
-
+    @Secured("USER")
+    @DeleteMapping("/{addressId}")
+    public ResponseEntity<Void> deleteAddressById(
+            @PathVariable Long addressId , Authentication connectedUser
+    ){
+        addressService.deleteAddressById(addressId,connectedUser);
+        return ResponseEntity.noContent().build();
+    }
 
 }

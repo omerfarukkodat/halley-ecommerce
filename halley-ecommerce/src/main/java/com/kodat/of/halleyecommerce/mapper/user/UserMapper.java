@@ -1,12 +1,7 @@
 package com.kodat.of.halleyecommerce.mapper.user;
 
-import com.kodat.of.halleyecommerce.adress.Address;
-import com.kodat.of.halleyecommerce.common.base.enums.Status;
 import com.kodat.of.halleyecommerce.dto.user.UserProfileDto;
 import com.kodat.of.halleyecommerce.user.User;
-
-import java.util.List;
-import java.util.Optional;
 
 
 public class UserMapper {

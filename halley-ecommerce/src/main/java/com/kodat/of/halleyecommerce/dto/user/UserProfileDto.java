@@ -1,14 +1,11 @@
 package com.kodat.of.halleyecommerce.dto.user;
 
-import com.kodat.of.halleyecommerce.adress.Address;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
 @Getter
 @Setter
 @Builder

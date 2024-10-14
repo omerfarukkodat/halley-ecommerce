@@ -1,7 +1,7 @@
 package com.kodat.of.halleyecommerce.mapper.address;
 
 
-import com.kodat.of.halleyecommerce.adress.Address;
+import com.kodat.of.halleyecommerce.address.Address;
 import com.kodat.of.halleyecommerce.dto.address.AddressDto;
 
 public class AddressMapper {

@@ -1,4 +1,4 @@
-package com.kodat.of.halleyecommerce.adress;
+package com.kodat.of.halleyecommerce.address;
 
 import com.kodat.of.halleyecommerce.dto.address.AddressDto;
 import org.springframework.security.core.Authentication;
@@ -13,4 +13,6 @@ public interface AddressService {
     AddressDto createAddress(AddressDto addressDto, Authentication connectedUser);
 
     AddressDto updateAddressById(Long addressId, AddressDto addressDto, Authentication connectedUser);
+
+    void deleteAddressById(Long addressId, Authentication connectedUser);
 }
