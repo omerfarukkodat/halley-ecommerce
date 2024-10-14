@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.product;
 
 
+import com.kodat.of.halleyecommerce.cart.CartItem;
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.discount.Discount;
 import jakarta.persistence.*;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -47,8 +49,9 @@ public class Product {
     @Column(unique = true)
     private String slug;
     private boolean isFeatured = false;
-
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
+    private List<CartItem> cartItem;
+    @ManyToOne
     @JoinColumn(name = "discount_id")
     private Discount discount;
     private String imageUrl;

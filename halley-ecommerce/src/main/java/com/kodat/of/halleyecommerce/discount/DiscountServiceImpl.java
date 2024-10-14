@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.discount;
 
 
 import com.kodat.of.halleyecommerce.dto.discount.DiscountDto;
+import com.kodat.of.halleyecommerce.exception.DiscountNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.discount.DiscountMapper;
 import com.kodat.of.halleyecommerce.product.Product;
 import com.kodat.of.halleyecommerce.product.ProductRepository;
@@ -50,6 +51,9 @@ public class DiscountServiceImpl implements DiscountService{
         roleValidator.verifyAdminRole(connectedUser);
         discountValidator.validateDiscount(discountId);
         LOGGER.info("Delete discount with id: {}", discountId);
+        Discount discount = discountRepository.findById(discountId).orElseThrow(
+                () -> new DiscountNotFoundException("Discount with id: " + discountId + " not found"));
+        resetProductDiscounts(discount);
         discountRepository.deleteById(discountId);
     }
 
@@ -88,15 +92,23 @@ public class DiscountServiceImpl implements DiscountService{
         List<Long> existingProductList = discount.getProducts().stream().map(Product::getId).toList();
         List<Long> updatingProductList = products.stream().map(Product::getId).toList();
         if (!existingProductList.equals(updatingProductList)) {
+            LOGGER.info("Product list has changed, resetting discounts.");
             resetProductDiscounts(discount);
+        } else {
+            LOGGER.info("Product list is unchanged, no reset needed.");
         }
-    }
+        }
 
     //This method doing reset the products
     private void resetProductDiscounts(Discount discount) {
         discount.getProducts().forEach(product -> {
-            product.setDiscountedPrice(product.getOriginalPrice());
-            product.setDiscount(null); // Reset the discount
+            if (product != null) {
+                product.setDiscountedPrice(product.getOriginalPrice());
+                product.setDiscount(null); // Reset the discount
+                LOGGER.info("Reset discount for product id: {}", product.getId());
+            } else {
+                LOGGER.warn("Product is null, skipping reset.");
+            }
         });
     }
 

@@ -27,7 +27,7 @@ public class Discount {
     private LocalDateTime startDate;
     @Column(nullable = false)
     private LocalDateTime endDate;
-    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "discount")
     private List<Product> products;
 
 }

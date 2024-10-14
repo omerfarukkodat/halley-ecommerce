@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.user;
 
 import com.kodat.of.halleyecommerce.address.Address;
+import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.user.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,6 +39,8 @@ public class User {
     private boolean accountLocked;
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cart cart;
 
 
     @Column(nullable = false, updatable = false)

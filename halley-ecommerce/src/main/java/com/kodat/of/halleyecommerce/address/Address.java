@@ -49,7 +49,7 @@ public class Address {
     @Column(nullable = false , name = "address_type")
     private AddressType addressType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
