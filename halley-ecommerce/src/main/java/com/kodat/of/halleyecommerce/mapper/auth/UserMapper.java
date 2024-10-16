@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.mapper.auth;
 
+import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.dto.auth.RegistrationRequest;
 import com.kodat.of.halleyecommerce.user.User;
 import com.kodat.of.halleyecommerce.user.enums.Role;

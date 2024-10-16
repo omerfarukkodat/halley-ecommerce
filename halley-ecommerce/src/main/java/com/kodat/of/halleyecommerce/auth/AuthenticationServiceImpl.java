@@ -1,5 +1,7 @@
 package com.kodat.of.halleyecommerce.auth;
 
+import com.kodat.of.halleyecommerce.cart.Cart;
+import com.kodat.of.halleyecommerce.cart.CartRepository;
 import com.kodat.of.halleyecommerce.dto.auth.AuthenticationResponse;
 import com.kodat.of.halleyecommerce.dto.auth.LoginRequest;
 import com.kodat.of.halleyecommerce.dto.auth.RegistrationRequest;
@@ -26,12 +28,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserMapper userMapper;
+    private final CartRepository cartRepository;
 
-    public AuthenticationServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager, JwtService jwtService,UserMapper userMapper) {
+    public AuthenticationServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager, JwtService jwtService, UserMapper userMapper, CartRepository cartRepository) {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userMapper = userMapper;
+        this.cartRepository = cartRepository;
     }
 
     @Override
@@ -39,6 +43,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       checkIfUserExists(request.getEmail());
         var user = userMapper.toUser(request);
         userRepository.save(user);
+        Cart cart = new Cart();
+        cart.setUser(user);
+        cartRepository.save(cart);
         LOGGER.info("User with email: {} registered", request.getEmail());
     }
 

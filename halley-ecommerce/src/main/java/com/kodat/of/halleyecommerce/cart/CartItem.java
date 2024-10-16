@@ -18,11 +18,11 @@ public class CartItem {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "cart_id" , nullable = false)
+    @JoinColumn(name = "cart_id" , nullable = false,unique = true)
     private Cart cart;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "product_id" , nullable = false)
+    @JoinColumn(name = "product_id" , nullable = false , unique = true)
     private Product product;
     @Column(nullable = false)
     @Min(value = 1, message = "Quantity must be at least 1")

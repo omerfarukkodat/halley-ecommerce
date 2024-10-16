@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.dto.auth;
 
+import com.kodat.of.halleyecommerce.cart.Cart;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -24,4 +25,5 @@ public class RegistrationRequest {
     private String password;
     @NotBlank(message = "Phone number is mandatory")
     private String phone;
+
 }
