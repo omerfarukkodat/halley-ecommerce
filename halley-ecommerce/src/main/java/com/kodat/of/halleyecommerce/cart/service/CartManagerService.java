@@ -7,6 +7,7 @@ import com.kodat.of.halleyecommerce.cart.CartRepository;
 import com.kodat.of.halleyecommerce.dto.cart.AddToCartRequest;
 import com.kodat.of.halleyecommerce.dto.cart.CartDto;
 import com.kodat.of.halleyecommerce.dto.cart.CartItemDto;
+import com.kodat.of.halleyecommerce.dto.cart.CartSummaryDto;
 import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
 import com.kodat.of.halleyecommerce.exception.UserNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.cart.CartMapper;
@@ -20,6 +21,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -82,7 +84,6 @@ public class CartManagerService {
         Cart mergedCart = cartRepository.save(CartMapper.INSTANCE.toCart(cartDto));
         return CartMapper.INSTANCE.toCartDto(mergedCart);
     }
-
 
 
     public CartDto getCart(Authentication connectedUser) {
@@ -187,37 +188,37 @@ public class CartManagerService {
     }
 
     public CartDto decreaseProductQuantity(Authentication connectedUser, HttpSession session, Long productId, Integer quantity) {
-        if (connectedUser != null && connectedUser.isAuthenticated()){
-            return decreaseProductQuantityForAuthenticatedUser(productId,quantity,connectedUser);
-        }else {
-            return decreaseProductQuantityForUnauthenticatedUser(productId,quantity,session);
+        if (connectedUser != null && connectedUser.isAuthenticated()) {
+            return decreaseProductQuantityForAuthenticatedUser(productId, quantity, connectedUser);
+        } else {
+            return decreaseProductQuantityForUnauthenticatedUser(productId, quantity, session);
         }
     }
 
     private CartDto decreaseProductQuantityForUnauthenticatedUser(Long productId, Integer quantity, HttpSession session) {
-    CartDto sessionCart = (CartDto) session.getAttribute("cart");
-    if (sessionCart == null) {
-        throw new ProductNotFoundException("Cart does not exist in session");
-    }
-    CartItemDto cartItemDto = findItemByProductId(sessionCart, productId);
-    if (cartItemDto == null) {
-        throw new ProductNotFoundException("Product does not exist in session");
-    }
-    int newQuantity = cartItemDto.getQuantity() - quantity;
-    if (newQuantity <= 0) {
-        sessionCart.getItems().remove(cartItemDto);
+        CartDto sessionCart = (CartDto) session.getAttribute("cart");
+        if (sessionCart == null) {
+            throw new ProductNotFoundException("Cart does not exist in session");
+        }
+        CartItemDto cartItemDto = findItemByProductId(sessionCart, productId);
+        if (cartItemDto == null) {
+            throw new ProductNotFoundException("Product does not exist in session");
+        }
+        int newQuantity = cartItemDto.getQuantity() - quantity;
+        if (newQuantity <= 0) {
+            sessionCart.getItems().remove(cartItemDto);
+            session.setAttribute("cart", sessionCart);
+            return sessionCart;
+        }
+        cartItemDto.setQuantity(newQuantity);
         session.setAttribute("cart", sessionCart);
         return sessionCart;
-    }
-    cartItemDto.setQuantity(newQuantity);
-    session.setAttribute("cart", sessionCart);
-    return sessionCart;
     }
 
     private CartDto decreaseProductQuantityForAuthenticatedUser(Long productId, Integer quantity, Authentication connectedUser) {
         Cart cart = cartValidator.validateCartAndUser(connectedUser);
         CartItem cartItem = cartItemRepository.findByProductIdAndCartId(productId, cart.getId());
-        if (cartItem == null){
+        if (cartItem == null) {
             throw new ProductNotFoundException("Product not found in Cart");
         }
         int newQuantity = cartItem.getQuantity() - quantity;
@@ -246,5 +247,50 @@ public class CartManagerService {
         }
         sessionCart.getItems().clear();
         session.setAttribute("cart", sessionCart);
+    }
+
+    public CartSummaryDto getCartSummaryAuthenticated(Authentication connectedUser) {
+        Cart cart = cartValidator.validateCartAndUser(connectedUser);
+        if (cart == null) {
+            throw new ProductNotFoundException("Cart does not exist in session");
+        }
+        BigDecimal totalPrice = cart.getItems().stream()
+                .map(item -> item.getProduct().getDiscountedPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        int totalQuantity = cart.getItems().stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+        return CartSummaryDto.builder()
+                .cartItems(CartMapper.INSTANCE.toCartItemDtoList(cart.getItems()))
+                .totalPrice(totalPrice)
+                .totalItems(totalQuantity)
+                .build();
+    }
+
+    public CartSummaryDto getCartSummaryUnauthenticated(HttpSession session) {
+        Object cartItemsObject = session.getAttribute("cartItems");
+        if (cartItemsObject instanceof List<?> cartItemsList) {
+            if (!cartItemsList.isEmpty() && cartItemsList.getFirst() instanceof CartItem) {
+                @SuppressWarnings("unchecked")
+                List<CartItem> cartItems = (List<CartItem>) cartItemsList;
+
+                if (cartItems == null || cartItems.isEmpty()) {
+                    throw new ProductNotFoundException("Cart does not exist in session");
+                }
+                BigDecimal totalPrice = cartItems.stream()
+                        .map(item -> item.getProduct().getDiscountedPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                int totalQuantity = cartItems.stream()
+                        .mapToInt(CartItem::getQuantity)
+                        .sum();
+
+                return CartSummaryDto.builder()
+                        .cartItems(CartMapper.INSTANCE.toCartItemDtoList(cartItems))
+                        .totalPrice(totalPrice)
+                        .totalItems(totalQuantity)
+                        .build();
+            }
+        }
+        throw new ProductNotFoundException("Cart does not exist in session");
     }
 }

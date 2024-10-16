@@ -3,6 +3,7 @@ package com.kodat.of.halleyecommerce.cart;
 import com.kodat.of.halleyecommerce.cart.service.CartService;
 import com.kodat.of.halleyecommerce.dto.cart.AddToCartRequest;
 import com.kodat.of.halleyecommerce.dto.cart.CartDto;
+import com.kodat.of.halleyecommerce.dto.cart.CartSummaryDto;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,12 @@ public class CartController {
         cartService.clearCart(connectedUser,session);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/summary")
+    public ResponseEntity<CartSummaryDto> getCartSummary(Authentication connectedUser, HttpSession session) {
+        return ResponseEntity.ok(cartService.getCartSummary(connectedUser,session));
+    }
+
 
 
 }

@@ -4,6 +4,7 @@ import com.kodat.of.halleyecommerce.cart.service.CartManagerService;
 import com.kodat.of.halleyecommerce.cart.service.CartService;
 import com.kodat.of.halleyecommerce.dto.cart.AddToCartRequest;
 import com.kodat.of.halleyecommerce.dto.cart.CartDto;
+import com.kodat.of.halleyecommerce.dto.cart.CartSummaryDto;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,15 @@ public class CartServiceImpl implements CartService {
             cartManagerService.clearAuthenticatedCart(connectedUser);
         }else {
             cartManagerService.clearUnauthenticatedCart(session);
+        }
+    }
+
+    @Override
+    public CartSummaryDto getCartSummary(Authentication connectedUser, HttpSession session) {
+        if (connectedUser != null && connectedUser.isAuthenticated()) {
+            return cartManagerService.getCartSummaryAuthenticated(connectedUser);
+        }else {
+            return cartManagerService.getCartSummaryUnauthenticated(session);
         }
     }
 
