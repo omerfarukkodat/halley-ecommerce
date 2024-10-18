@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/cart")
 public class CartController {
@@ -54,6 +56,17 @@ public class CartController {
     @GetMapping("/summary")
     public ResponseEntity<CartSummaryDto> getCartSummary(Authentication connectedUser, HttpSession session) {
         return ResponseEntity.ok(cartService.getCartSummary(connectedUser,session));
+    }
+    @GetMapping("/isEmpty")
+    public ResponseEntity<Boolean> isEmptyCart(Authentication connectedUser , HttpSession session) {
+        return ResponseEntity.ok(cartService.isEmptyCart(connectedUser,session));
+    }
+    @PatchMapping("/updateQuantities")
+    public ResponseEntity<CartDto> updateAllQuantities(
+            Authentication connectedUser,
+            HttpSession session,
+            @RequestBody Map <Long , Integer> productQuantities) {
+        return ResponseEntity.ok(cartService.updateAllQuantities(connectedUser,session , productQuantities));
     }
 
 

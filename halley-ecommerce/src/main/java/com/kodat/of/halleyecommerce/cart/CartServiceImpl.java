@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -79,6 +81,24 @@ public class CartServiceImpl implements CartService {
             return cartManagerService.getCartSummaryAuthenticated(connectedUser);
         }else {
             return cartManagerService.getCartSummaryUnauthenticated(session);
+        }
+    }
+
+    @Override
+    public Boolean isEmptyCart(Authentication connectedUser, HttpSession session) {
+        if (connectedUser != null && connectedUser.isAuthenticated()) {
+            return cartManagerService.isEmptyForAuthenticated(connectedUser);
+        }else {
+            return cartManagerService.isEmptyForUnauthenticated(session);
+        }
+    }
+
+    @Override
+    public CartDto updateAllQuantities(Authentication connectedUser, HttpSession session , Map<Long,Integer> productQuantities) {
+        if (connectedUser != null && connectedUser.isAuthenticated()) {
+            return cartManagerService.updateQuantitiesForAuthenticated(connectedUser , productQuantities);
+        }else {
+            return cartManagerService.updateQuantitiesForUnauthenticated(session , productQuantities);
         }
     }
 

@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class CartManagerService {
@@ -274,7 +276,7 @@ public class CartManagerService {
                 @SuppressWarnings("unchecked")
                 List<CartItem> cartItems = (List<CartItem>) cartItemsList;
 
-                if (cartItems == null || cartItems.isEmpty()) {
+                if (cartItems.isEmpty()) {
                     throw new ProductNotFoundException("Cart does not exist in session");
                 }
                 BigDecimal totalPrice = cartItems.stream()
@@ -292,5 +294,63 @@ public class CartManagerService {
             }
         }
         throw new ProductNotFoundException("Cart does not exist in session");
+    }
+
+    public Boolean isEmptyForAuthenticated(Authentication connectedUser) {
+        Cart cart = cartValidator.validateCartAndUser(connectedUser);
+        return cart == null || cart.getItems().isEmpty();
+    }
+
+    public Boolean isEmptyForUnauthenticated(HttpSession session) {
+        CartDto sessionCart = (CartDto) session.getAttribute("cart");
+        return sessionCart == null || sessionCart.getItems().isEmpty();
+    }
+
+    public CartDto updateQuantitiesForAuthenticated(Authentication connectedUser, Map<Long,Integer> productQuantities) {
+        Cart cart = cartValidator.validateCartAndUser(connectedUser);
+        if (cart == null) {
+            throw new ProductNotFoundException("Cart does not exist in session");
+        }
+        AtomicBoolean isUpdated = new AtomicBoolean(false);
+        cart.getItems().forEach(item -> {
+            Long productId = item.getProduct().getId();
+            if (productQuantities.containsKey(productId)) {
+                Integer newQuantity = productQuantities.get(productId);
+                if (isQuantityUpdated(newQuantity, item.getQuantity())) {
+                    item.setQuantity(newQuantity);
+                    isUpdated.set(true);
+                }
+            }
+        });
+        if (isUpdated.get()){
+            cartRepository.save(cart);
+        }
+        return CartMapper.INSTANCE.toCartDto(cart);
+    }
+
+    public CartDto updateQuantitiesForUnauthenticated(HttpSession session, Map<Long, Integer> productQuantities) {
+        Object sessionCartObject = session.getAttribute("cart");
+        if (!(sessionCartObject instanceof CartDto sessionCart) || sessionCart.getItems() == null) {
+            throw new ProductNotFoundException("Cart does not exist in session");
+        }
+        AtomicBoolean isUpdated = new AtomicBoolean(false);
+        sessionCart.getItems().forEach(item -> {
+            Long productId = item.getProduct().getId();
+            if (productQuantities.containsKey(productId)) {
+                Integer newQuantity = productQuantities.get(productId);
+                if (isQuantityUpdated(newQuantity, item.getQuantity())) {
+                    isUpdated.set(true);
+                    item.setQuantity(newQuantity);
+                }
+            }
+        });
+        if (isUpdated.get()){
+            session.setAttribute("cart", sessionCart);
+        }
+        return sessionCart;
+    }
+
+    private boolean isQuantityUpdated(Integer newQuantity, Integer currentQuantity) {
+        return newQuantity != null && newQuantity > 0 && !newQuantity.equals(currentQuantity);
     }
 }
