@@ -6,6 +6,7 @@ import com.kodat.of.halleyecommerce.dto.cart.CartDto;
 import com.kodat.of.halleyecommerce.dto.cart.CartSummaryDto;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class CartController {
 
     @PostMapping
     public ResponseEntity<CartDto> addToCart(Authentication connectedUser, HttpSession session, @Valid @RequestBody AddToCartRequest request) {
-        return ResponseEntity.ok(cartService.addToCart(connectedUser, session, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addToCart(connectedUser, session, request));
     }
 
     @DeleteMapping("/{productId}")
@@ -43,7 +44,7 @@ public class CartController {
             Authentication connectedUser,
             HttpSession session,
             @PathVariable Long productId,
-            @RequestParam Integer quantity) {
+            @Valid @RequestParam Integer quantity) {
         return ResponseEntity.ok(cartService.decreaseProductQuantity(connectedUser, session, productId, quantity));
     }
 

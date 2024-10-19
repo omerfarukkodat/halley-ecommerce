@@ -223,6 +223,58 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(EmptyCartException.class)
+    public ResponseEntity<ExceptionResponse> handleEmptyCartException(EmptyCartException e) {
+        LOGGER.warn("Empty cart exception: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.EMPTY_CART.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.EMPTY_CART.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+    @ExceptionHandler(CartNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleCartNotFoundException(CartNotFoundException e) {
+        LOGGER.warn("Cart not found: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.CART_NOT_FOUND.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.CART_NOT_FOUND.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+    @ExceptionHandler(CartItemNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleCartItemNotFoundException(CartItemNotFoundException e) {
+        LOGGER.warn("Cart item not found: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.CART_ITEM_NOT_FOUND.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.CART_ITEM_NOT_FOUND.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ExceptionResponse> handleInsufficientStockException(InsufficientStockException e) {
+        LOGGER.warn("Insufficient stock: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.INSUFFICIENT_STOCK.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.INSUFFICIENT_STOCK.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
 
 
 
