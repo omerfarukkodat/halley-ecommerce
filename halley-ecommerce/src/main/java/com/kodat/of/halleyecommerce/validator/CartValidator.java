@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.validator;
 
 import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.cart.CartRepository;
+import com.kodat.of.halleyecommerce.exception.CartNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,6 @@ public class CartValidator {
     public Cart validateCartAndUser(Authentication connectedUser) {
     String username = connectedUser.getName();
     return cartRepository.findByUser_Email(username)
-            .orElseThrow(() -> new IllegalArgumentException("The user does not have permission to access this cart or the cart was not found."));
+            .orElseThrow(() -> new CartNotFoundException("The user does not have permission to access this cart or the cart was not found."));
     }
 }

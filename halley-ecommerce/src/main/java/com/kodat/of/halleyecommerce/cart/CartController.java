@@ -58,10 +58,12 @@ public class CartController {
     public ResponseEntity<CartSummaryDto> getCartSummary(Authentication connectedUser, HttpSession session) {
         return ResponseEntity.ok(cartService.getCartSummary(connectedUser,session));
     }
+
     @GetMapping("/isEmpty")
     public ResponseEntity<Boolean> isEmptyCart(Authentication connectedUser , HttpSession session) {
         return ResponseEntity.ok(cartService.isEmptyCart(connectedUser,session));
     }
+
     @PatchMapping("/updateQuantities")
     public ResponseEntity<CartDto> updateAllQuantities(
             Authentication connectedUser,
