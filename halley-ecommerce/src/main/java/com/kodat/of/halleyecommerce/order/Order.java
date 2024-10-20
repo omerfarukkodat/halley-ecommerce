@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.order;
 
+import com.kodat.of.halleyecommerce.order.enums.Status;
 import com.kodat.of.halleyecommerce.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +23,8 @@ public class Order {
     @OneToMany(mappedBy = "order" , cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
     private BigDecimal totalPrice;
-    private String status;
     private Long addressId;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
 }

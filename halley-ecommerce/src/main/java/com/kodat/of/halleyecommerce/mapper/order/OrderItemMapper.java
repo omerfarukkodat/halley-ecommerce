@@ -1,7 +1,6 @@
 package com.kodat.of.halleyecommerce.mapper.order;
 
-import com.kodat.of.halleyecommerce.cart.CartItem;
-import com.kodat.of.halleyecommerce.dto.cart.CartItemDto;
+
 import com.kodat.of.halleyecommerce.dto.order.OrderItemDto;
 import com.kodat.of.halleyecommerce.mapper.cart.CartMapper;
 import com.kodat.of.halleyecommerce.order.OrderItem;

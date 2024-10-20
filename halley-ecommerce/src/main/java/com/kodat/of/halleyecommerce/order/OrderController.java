@@ -1,6 +1,8 @@
 package com.kodat.of.halleyecommerce.order;
 
 import com.kodat.of.halleyecommerce.dto.order.OrderDto;
+import com.kodat.of.halleyecommerce.dto.order.UpdateOrderStatusDto;
+import com.kodat.of.halleyecommerce.order.enums.Status;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,5 +49,15 @@ public class OrderController {
     @GetMapping("/admin")
     public ResponseEntity<List<OrderDto>> getAllOrdersForAdmin(Authentication connectedUser) {
         return ResponseEntity.ok(orderService.getAllOrdersForAdmin(connectedUser));
+    }
+    @Secured("ADMIN")
+    @PutMapping("{orderId}/status")
+    public ResponseEntity<OrderDto> updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody UpdateOrderStatusDto orderStatusDto,
+            Authentication connectedUser
+    ){
+        Status status = orderStatusDto.getStatus();
+        return ResponseEntity.ok(orderService.updateOrderStatus(orderId,status,connectedUser));
     }
 }

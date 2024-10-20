@@ -8,6 +8,7 @@ import com.kodat.of.halleyecommerce.dto.order.OrderDto;
 import com.kodat.of.halleyecommerce.exception.AddressNotFoundException;
 import com.kodat.of.halleyecommerce.exception.OrderNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.order.OrderMapper;
+import com.kodat.of.halleyecommerce.order.enums.Status;
 import com.kodat.of.halleyecommerce.user.CustomUserDetails;
 import com.kodat.of.halleyecommerce.user.User;
 import com.kodat.of.halleyecommerce.validator.CartValidator;
@@ -45,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
                 .user(user)
                 .totalPrice(calculateTotalPrice(cart.getItems()))
                 .addressId(address.getId())
-                .status("PENDING")
+                .status(Status.HAZIRLANIYOR)
                 .build();
         List<OrderItem> orderItems = OrderMapper.toOrderItemList(cart.getItems(),order);
         order.setOrderItems(orderItems);
@@ -83,6 +84,16 @@ public class OrderServiceImpl implements OrderService {
         return allOrders.stream()
                 .map(OrderMapper::toOrderDto)
                 .toList();
+    }
+
+    @Override
+    public OrderDto updateOrderStatus(Long orderId, Status status, Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+        order.setStatus(status);
+        orderRepository.save(order);
+        return OrderMapper.toOrderDto(order);
     }
 
     private BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
