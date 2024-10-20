@@ -18,6 +18,7 @@ public enum BusinessErrorCodes {
     EMPTY_CART(404, HttpStatus.NOT_FOUND, "Empty cart"),
     CART_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Cart not found"),
     CART_ITEM_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Cart item not found"),
+    ORDER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Order not found"),
     CATEGORY_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Category already exists"),
     DATA_INTEGRITY_VIOLATION(409, HttpStatus.CONFLICT, "Data integrity violation"),
     USER_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "User already exist"),

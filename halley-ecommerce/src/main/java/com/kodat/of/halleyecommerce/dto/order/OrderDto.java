@@ -15,7 +15,7 @@ import java.util.List;
 public class OrderDto {
     private Long userId;
     @NotNull
-    private List<CartItemDto> orderItems;
+    private List<OrderItemDto> orderItems;
     @NotNull
     private BigDecimal totalPrice;
     @NotNull

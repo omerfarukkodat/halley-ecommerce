@@ -33,7 +33,7 @@ public class OrderMapper {
     public static OrderDto toOrderDto(Order order) {
         return OrderDto.builder()
                 .userId(Long.valueOf(order.getUser().getId()))
-                .orderItems(OrderItemMapper.toCartItemDtoList(order.getOrderItems()))
+                .orderItems(OrderItemMapper.toOrderItemDtoList(order.getOrderItems()))
                 .totalPrice(order.getTotalPrice())
                 .status(order.getStatus())
                 .addressId(order.getAddressId())

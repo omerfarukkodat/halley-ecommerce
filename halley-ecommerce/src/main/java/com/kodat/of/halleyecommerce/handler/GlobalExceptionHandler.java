@@ -275,6 +275,19 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleOrderNotFoundException(OrderNotFoundException e) {
+        LOGGER.warn("Order not found: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.ORDER_NOT_FOUND.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.ORDER_NOT_FOUND.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
 
 
 

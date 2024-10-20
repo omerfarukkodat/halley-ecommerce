@@ -22,6 +22,6 @@ public class ProductResponseDto {
     @NotNull(message = "Discounted price cannot be null")
     private BigDecimal discountedPrice;
     private String imageUrl;
-    private String slug;
+
 
 }

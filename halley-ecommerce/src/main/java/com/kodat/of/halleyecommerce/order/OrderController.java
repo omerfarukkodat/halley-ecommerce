@@ -8,6 +8,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -23,6 +25,10 @@ public class OrderController {
             Authentication connectedUser
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrderFromCart(orderDto,connectedUser));
-
     }
+ @Secured("USER")
+ @GetMapping
+ public ResponseEntity<List<OrderDto>> getAllOrders(Authentication connectedUser) {
+        return ResponseEntity.ok(orderService.getAllOrders(connectedUser));
+ }
 }

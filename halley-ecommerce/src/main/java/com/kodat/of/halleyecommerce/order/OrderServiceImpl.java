@@ -6,6 +6,7 @@ import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.cart.CartItem;
 import com.kodat.of.halleyecommerce.dto.order.OrderDto;
 import com.kodat.of.halleyecommerce.exception.AddressNotFoundException;
+import com.kodat.of.halleyecommerce.exception.OrderNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.order.OrderMapper;
 import com.kodat.of.halleyecommerce.user.CustomUserDetails;
 import com.kodat.of.halleyecommerce.user.User;
@@ -51,6 +52,19 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         return OrderMapper.toOrderDto(order);
 
+    }
+
+    @Override
+    public List<OrderDto> getAllOrders(Authentication connectedUser) {
+        roleValidator.verifyUserRole(connectedUser);
+        CustomUserDetails customUserDetails = (CustomUserDetails) connectedUser.getPrincipal();
+        User user = customUserDetails.getUser();
+        cartValidator.validateCartAndUser(connectedUser);
+        List<Order> order = orderRepository.findAllByUser(user)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+        return order.stream()
+                .map(OrderMapper::toOrderDto)
+                .toList();
     }
 
     private BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
