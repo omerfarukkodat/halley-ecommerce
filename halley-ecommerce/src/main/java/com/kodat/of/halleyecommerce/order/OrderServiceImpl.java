@@ -67,6 +67,24 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    @Override
+    public OrderDto getOrderById(Long orderId, Authentication connectedUser) {
+        roleValidator.verifyUserRole(connectedUser);
+        cartValidator.validateCartAndUser(connectedUser);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+        return OrderMapper.toOrderDto(order);
+    }
+
+    @Override
+    public List<OrderDto> getAllOrdersForAdmin(Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        List<Order> allOrders = orderRepository.findAll();
+        return allOrders.stream()
+                .map(OrderMapper::toOrderDto)
+                .toList();
+    }
+
     private BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
         return cartItems.stream()
                 .map(item-> item.getProduct().getDiscountedPrice().multiply(BigDecimal.valueOf(item.getQuantity())))

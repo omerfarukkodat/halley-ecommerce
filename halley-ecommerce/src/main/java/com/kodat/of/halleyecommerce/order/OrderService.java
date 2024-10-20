@@ -11,4 +11,8 @@ public interface OrderService {
     OrderDto createOrderFromCart(OrderDto orderDto, Authentication connectedUser);
 
     List<OrderDto> getAllOrders(Authentication connectedUser);
+
+    OrderDto getOrderById(Long orderId, Authentication connectedUser);
+
+    List<OrderDto> getAllOrdersForAdmin(Authentication connectedUser);
 }

@@ -18,17 +18,34 @@ public class OrderController {
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
- @Secured("USER")
+
+    @Secured("USER")
     @PostMapping
     public ResponseEntity<OrderDto> createOrderFromCart(
             @Valid @RequestBody OrderDto orderDto,
             Authentication connectedUser
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrderFromCart(orderDto,connectedUser));
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrderFromCart(orderDto, connectedUser));
     }
- @Secured("USER")
- @GetMapping
- public ResponseEntity<List<OrderDto>> getAllOrders(Authentication connectedUser) {
+
+    @Secured("USER")
+    @GetMapping
+    public ResponseEntity<List<OrderDto>> getAllOrders(Authentication connectedUser) {
         return ResponseEntity.ok(orderService.getAllOrders(connectedUser));
- }
+    }
+
+    @Secured("USER")
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderDto> getOrderById(
+            @PathVariable Long orderId,
+            Authentication connectedUser) {
+        return ResponseEntity.ok(orderService.getOrderById(orderId, connectedUser));
+
+    }
+
+    @Secured("ADMIN")
+    @GetMapping("/admin")
+    public ResponseEntity<List<OrderDto>> getAllOrdersForAdmin(Authentication connectedUser) {
+        return ResponseEntity.ok(orderService.getAllOrdersForAdmin(connectedUser));
+    }
 }

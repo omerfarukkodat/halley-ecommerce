@@ -32,6 +32,7 @@ public class OrderMapper {
     }
     public static OrderDto toOrderDto(Order order) {
         return OrderDto.builder()
+                .id(order.getId())
                 .userId(Long.valueOf(order.getUser().getId()))
                 .orderItems(OrderItemMapper.toOrderItemDtoList(order.getOrderItems()))
                 .totalPrice(order.getTotalPrice())

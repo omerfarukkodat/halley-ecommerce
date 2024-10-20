@@ -1,6 +1,5 @@
 package com.kodat.of.halleyecommerce.dto.order;
 
-import com.kodat.of.halleyecommerce.dto.cart.CartItemDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +12,7 @@ import java.util.List;
 @Setter
 @Builder
 public class OrderDto {
+    private Long id;
     private Long userId;
     @NotNull
     private List<OrderItemDto> orderItems;
