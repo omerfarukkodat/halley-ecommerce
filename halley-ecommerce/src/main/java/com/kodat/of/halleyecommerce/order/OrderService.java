@@ -18,4 +18,6 @@ public interface OrderService {
     List<OrderDto> getAllOrdersForAdmin(Authentication connectedUser);
 
     OrderDto updateOrderStatus(Long orderId, Status status, Authentication connectedUser);
+
+    List<OrderDto> getOrdersByDateRange(String startDate, String endDate, Authentication connectedUser);
 }

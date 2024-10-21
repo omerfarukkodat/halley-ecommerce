@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -94,6 +95,18 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(status);
         orderRepository.save(order);
         return OrderMapper.toOrderDto(order);
+    }
+
+    @Override
+    public List<OrderDto> getOrdersByDateRange(String startDate, String endDate, Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        LocalDateTime startDateTime = LocalDateTime.parse(startDate);
+        LocalDateTime endDateTime = LocalDateTime.parse(endDate);
+        List<Order> orderList = orderRepository.findByCreatedAtBetween(startDateTime,endDateTime)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+        return orderList.stream()
+                .map(OrderMapper::toOrderDto)
+                .toList();
     }
 
     private BigDecimal calculateTotalPrice(List<CartItem> cartItems) {

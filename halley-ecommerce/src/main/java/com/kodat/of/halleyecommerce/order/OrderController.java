@@ -60,4 +60,12 @@ public class OrderController {
         Status status = orderStatusDto.getStatus();
         return ResponseEntity.ok(orderService.updateOrderStatus(orderId,status,connectedUser));
     }
+    @Secured("ADMIN")
+    @GetMapping("/admin/filter")
+    public ResponseEntity<List<OrderDto>> getOrdersByDateRange(
+            @RequestParam String startDate,
+            @RequestParam String endDate,
+            Authentication connectedUser) {
+        return ResponseEntity.ok(orderService.getOrdersByDateRange(startDate,endDate,connectedUser));
+    }
 }
