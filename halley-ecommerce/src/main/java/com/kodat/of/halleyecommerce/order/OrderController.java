@@ -10,6 +10,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -50,6 +51,7 @@ public class OrderController {
     public ResponseEntity<List<OrderDto>> getAllOrdersForAdmin(Authentication connectedUser) {
         return ResponseEntity.ok(orderService.getAllOrdersForAdmin(connectedUser));
     }
+
     @Secured("ADMIN")
     @PutMapping("{orderId}/status")
     public ResponseEntity<OrderDto> updateOrderStatus(
@@ -60,6 +62,7 @@ public class OrderController {
         Status status = orderStatusDto.getStatus();
         return ResponseEntity.ok(orderService.updateOrderStatus(orderId,status,connectedUser));
     }
+
     @Secured("ADMIN")
     @GetMapping("/admin/filter")
     public ResponseEntity<List<OrderDto>> getOrdersByDateRange(
@@ -67,5 +70,14 @@ public class OrderController {
             @RequestParam String endDate,
             Authentication connectedUser) {
         return ResponseEntity.ok(orderService.getOrdersByDateRange(startDate,endDate,connectedUser));
+    }
+
+    @Secured("ADMIN")
+    @GetMapping("/admin/total-sales")
+    public ResponseEntity<BigDecimal> getTotalSalesForAdmin(
+            @RequestParam String startDate,
+            @RequestParam String endDate,
+            Authentication connectedUser) {
+        return ResponseEntity.ok(orderService.getTotalSalesForAdmin(startDate,endDate,connectedUser));
     }
 }

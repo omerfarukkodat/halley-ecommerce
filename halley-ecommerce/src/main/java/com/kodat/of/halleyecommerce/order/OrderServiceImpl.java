@@ -109,6 +109,18 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    @Override
+    public BigDecimal getTotalSalesForAdmin(String startDate, String endDate, Authentication connectedUser) {
+        roleValidator.verifyAdminRole(connectedUser);
+        LocalDateTime startDateTime = LocalDateTime.parse(startDate);
+        LocalDateTime endDateTime = LocalDateTime.parse(endDate);
+        List<Order> orderList = orderRepository.findByCreatedAtBetween(startDateTime,endDateTime)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found these between days"));
+        return orderList.stream()
+                .map(Order::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     private BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
         return cartItems.stream()
                 .map(item-> item.getProduct().getDiscountedPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
