@@ -32,6 +32,8 @@ public class Order {
     private Long addressId;
     @Enumerated(EnumType.STRING)
     private Status status;
+    private BigDecimal shippingCost;
+    private BigDecimal finalPrice;
     @CreationTimestamp()
     @Column(updatable = false)
     private LocalDateTime createdAt;

@@ -46,6 +46,7 @@ public class OrderController {
 
     }
 
+
     @Secured("ADMIN")
     @GetMapping("/admin")
     public ResponseEntity<List<OrderDto>> getAllOrdersForAdmin(Authentication connectedUser) {

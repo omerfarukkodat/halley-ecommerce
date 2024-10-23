@@ -11,6 +11,7 @@ import com.kodat.of.halleyecommerce.mapper.order.OrderMapper;
 import com.kodat.of.halleyecommerce.order.enums.Status;
 import com.kodat.of.halleyecommerce.user.CustomUserDetails;
 import com.kodat.of.halleyecommerce.user.User;
+import com.kodat.of.halleyecommerce.util.ShippingUtils;
 import com.kodat.of.halleyecommerce.validator.CartValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
 import org.springframework.security.core.Authentication;
@@ -26,12 +27,14 @@ public class OrderServiceImpl implements OrderService {
     private final RoleValidator roleValidator;
     private final CartValidator cartValidator;
     private final AddressRepository addressRepository;
+    private final ShippingUtils shippingUtils;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RoleValidator roleValidator, CartValidator cartValidator, AddressRepository addressRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, RoleValidator roleValidator, CartValidator cartValidator, AddressRepository addressRepository, ShippingUtils shippingUtils) {
         this.orderRepository = orderRepository;
         this.roleValidator = roleValidator;
         this.cartValidator = cartValidator;
         this.addressRepository = addressRepository;
+        this.shippingUtils = shippingUtils;
     }
 
 
@@ -43,9 +46,13 @@ public class OrderServiceImpl implements OrderService {
         Cart cart = cartValidator.validateCartAndUser(connectedUser);
         Address address = addressRepository.findById(orderDto.getAddressId())
                 .orElseThrow(() -> new AddressNotFoundException("Address not found"));
+        BigDecimal totalPrice = calculateTotalPrice(cart.getItems());
+        BigDecimal shippingCost = shippingUtils.calculateShippingCost(totalPrice);
         Order order = Order.builder()
                 .user(user)
                 .totalPrice(calculateTotalPrice(cart.getItems()))
+                .shippingCost(shippingCost)
+                .finalPrice(totalPrice.add(shippingCost))
                 .addressId(address.getId())
                 .status(Status.HAZIRLANIYOR)
                 .build();
@@ -122,9 +129,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
-        return cartItems.stream()
+         return cartItems.stream()
                 .map(item-> item.getProduct().getDiscountedPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
 
     }
 }

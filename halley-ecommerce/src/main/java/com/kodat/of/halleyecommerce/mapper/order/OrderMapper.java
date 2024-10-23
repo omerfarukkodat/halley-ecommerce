@@ -36,6 +36,8 @@ public class OrderMapper {
                 .userId(Long.valueOf(order.getUser().getId()))
                 .orderItems(OrderItemMapper.toOrderItemDtoList(order.getOrderItems()))
                 .totalPrice(order.getTotalPrice())
+                .shippingCost(order.getShippingCost())
+                .finalPrice(order.getFinalPrice())
                 .status(order.getStatus())
                 .addressId(order.getAddressId())
                 .build();

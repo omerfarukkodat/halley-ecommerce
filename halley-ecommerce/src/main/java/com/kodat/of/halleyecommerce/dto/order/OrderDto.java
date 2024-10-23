@@ -1,7 +1,6 @@
 package com.kodat.of.halleyecommerce.dto.order;
 
 import com.kodat.of.halleyecommerce.order.enums.Status;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,4 +23,6 @@ public class OrderDto {
     private Status status;
     @NotNull
     private Long addressId;
+    private BigDecimal shippingCost;
+    private BigDecimal finalPrice;
 }
