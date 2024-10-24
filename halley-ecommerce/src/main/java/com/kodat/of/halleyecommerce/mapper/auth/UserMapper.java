@@ -22,6 +22,7 @@ public class UserMapper {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPhone(request.getPhone());
         user.setEnabled(true);
         user.setAccountLocked(false);
         user.setRole(Role.USER);

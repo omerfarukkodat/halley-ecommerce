@@ -3,6 +3,7 @@ package com.kodat.of.halleyecommerce.config;
 import com.kodat.of.halleyecommerce.user.User;
 import com.kodat.of.halleyecommerce.user.UserRepository;
 import com.kodat.of.halleyecommerce.user.enums.Role;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AdminInitializer {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${spring.admin.email}")
+    private String email;
+    @Value("${spring.admin.password}")
+    private String password;
 
 
     public AdminInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -27,8 +33,8 @@ public class AdminInitializer {
                 User admin = User.builder()
                         .firstName("Faruk")
                         .lastName("Kodat")
-                        .password(passwordEncoder.encode("Ofk.12345."))
-                        .email("farukkodat@gmail.com")
+                        .password(passwordEncoder.encode(password))
+                        .email(email)
                         .enabled(true)
                         .accountLocked(false)
                         .phone("05468732334")

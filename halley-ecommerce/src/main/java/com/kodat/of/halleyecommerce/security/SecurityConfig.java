@@ -34,7 +34,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request.
                         requestMatchers(
-                                "auth/**"
+                                "auth/**",
+                                "users/reset-password",
+                                    "users/reset-password/request"
                         ).permitAll()
                                 .requestMatchers(HttpMethod.GET , "/products/**")
                                 .permitAll()

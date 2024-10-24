@@ -6,6 +6,21 @@ spring:
   servlet:
     multipart:
       max-file-size: 50MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING.MAIL.USERNAME}
+    password:  ${SPRING.MAIL.PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  admin:
+    email: ${"SPRING.ADMIN.EMAIL"}
+    password: ${"SPRING.ADMIN.PASSWORD"}
 server:
   servlet:
     context-path: /api/v1/

@@ -20,5 +20,6 @@ application:
       expiration: 86400000
 
 
+
 server:
   port: 8088

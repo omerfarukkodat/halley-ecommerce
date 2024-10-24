@@ -27,7 +27,9 @@ public enum BusinessErrorCodes {
     PARENT_CATEGORY_CYCLE_EXCEPTION(409,HttpStatus.CONFLICT,"A category cannot be assigned as a parent of its own child category."),
     INVALID_DISCOUNT_EXCEPTION(409,HttpStatus.CONFLICT,"Invalid discount percentage."),
     ADDRESS_ALREADY_EXISTS_EXCEPTION(409,HttpStatus.CONFLICT,"Address already exists"),
-    INSUFFICIENT_STOCK(409 , HttpStatus.CONFLICT,"Insufficient stock")
+    INSUFFICIENT_STOCK(409 , HttpStatus.CONFLICT,"Insufficient stock"),
+    INVALID_TOKEN(409,HttpStatus.CONFLICT,"Invalid or expired token"),
+    DUPLICATE_PASSWORD(409,HttpStatus.CONFLICT,"Using existing password exception")
             {
     };
 

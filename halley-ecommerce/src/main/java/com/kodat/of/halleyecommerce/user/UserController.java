@@ -27,5 +27,18 @@ public class UserController {
     Authentication connectedUser){
         return ResponseEntity.ok(userService.updateProfile(profileDto,connectedUser));
     }
+    @PostMapping("/reset-password/request")
+    public ResponseEntity<String> requestPasswordReset(@RequestParam String email){
+        userService.sendPasswordResetEmail(email);
+        return ResponseEntity.ok("Password reset email sent successfully");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @RequestParam String token,
+            @RequestParam String newPassword){
+        userService.resetPassword(token,newPassword);
+        return ResponseEntity.ok("Password has been reset successfully");
+    }
 
 }

@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,8 @@ public class User {
     private List<Address> addresses = new ArrayList<>();
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true )
     private Cart cart;
+    private String resetPasswordToken;
+    private Instant resetPasswordExpiryDate;
 
 
     @Column(nullable = false, updatable = false)

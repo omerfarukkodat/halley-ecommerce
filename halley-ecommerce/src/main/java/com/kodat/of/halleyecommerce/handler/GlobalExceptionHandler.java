@@ -288,6 +288,32 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidTokenException(InvalidTokenException e) {
+        LOGGER.warn("Invalid token: {}", e.getMessage());
+        return ResponseEntity
+                .status((HttpStatus.CONFLICT))
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.INVALID_TOKEN.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.INVALID_TOKEN.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+    @ExceptionHandler(DuplicatePasswordException.class)
+    public ResponseEntity<ExceptionResponse> handleDuplicatePasswordException(DuplicatePasswordException e) {
+        LOGGER.warn("Duplicate password: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.DUPLICATE_PASSWORD.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.DUPLICATE_PASSWORD.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
 
 
 
