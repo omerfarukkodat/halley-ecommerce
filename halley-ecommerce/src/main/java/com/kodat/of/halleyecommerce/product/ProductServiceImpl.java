@@ -12,6 +12,7 @@ import com.kodat.of.halleyecommerce.validator.ProductValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -77,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
         LOGGER.info("Product with ID: {} updated successfully", productId);
         return ProductMapper.toProductDto(updatedProduct);
     }
-
+    @Cacheable(value = "products" , key = "'all_products_' + #page + '_' + #size + '_' + #sortBy + '_' + #sortDirection")
     @Override
     public PageResponse<ProductDto> findAllProducts(int page, int size, String sortBy, String sortDirection) {
         Pageable pageable = createPageable(page, size, sortBy, sortDirection);

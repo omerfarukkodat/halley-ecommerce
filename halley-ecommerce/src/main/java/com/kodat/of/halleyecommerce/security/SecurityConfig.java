@@ -36,9 +36,14 @@ public class SecurityConfig {
                         requestMatchers(
                                 "auth/**",
                                 "users/reset-password",
-                                    "users/reset-password/request"
+                                    "users/reset-password/request",
+                                "cart/**",
+                                "kategoriler/tree",
+                                "kategoriler/findAll",
+                                "users/reset-password/request",
+                                "users/reset-password"
                         ).permitAll()
-                                .requestMatchers(HttpMethod.GET , "/products/**")
+                                .requestMatchers(HttpMethod.GET , "products/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()

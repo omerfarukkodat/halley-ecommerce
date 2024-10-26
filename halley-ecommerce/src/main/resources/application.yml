@@ -21,6 +21,10 @@ spring:
   admin:
     email: ${"SPRING.ADMIN.EMAIL"}
     password: ${"SPRING.ADMIN.PASSWORD"}
+  data:
+    redis:
+      host: localhost
+      port: 6379
 server:
   servlet:
     context-path: /api/v1/
@@ -33,4 +37,5 @@ logging:
 
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
 
