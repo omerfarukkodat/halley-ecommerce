@@ -112,8 +112,8 @@ public class ProductController {
     }
 
     @GetMapping("/featured")
-    public List<ProductDto> getFeaturedProducts(@RequestParam int limit){
-        return productService.findFeaturedProducts(limit);
+    public ResponseEntity<List<ProductDto>> getFeaturedProducts(@RequestParam int limit){
+        return ResponseEntity.ok(productService.findFeaturedProducts(limit));
     }
 
 

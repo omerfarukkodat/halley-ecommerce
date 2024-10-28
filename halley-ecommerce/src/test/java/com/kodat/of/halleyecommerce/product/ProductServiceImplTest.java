@@ -1,7 +1,6 @@
 package com.kodat.of.halleyecommerce.product;
 
 import com.kodat.of.halleyecommerce.category.Category;
-import com.kodat.of.halleyecommerce.category.CategoryRepository;
 import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.common.SlugService;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
@@ -17,16 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,17 +40,31 @@ public class ProductServiceImplTest {
     @Mock
     private CategoryUtils categoryUtils;
     @Mock
-    private SearchService searchService;
-    @Mock
-    private CategoryRepository categoryRepository;
-    @Mock
     private SlugService slugService;
     @Mock
     private ProductValidator productValidator;
     private ProductDto productDto;
+    private Product sampleProduct;
+    private Category sampleCategory;
 
     @BeforeEach
     public void setUp() {
+        sampleCategory = Category.builder()
+                .id(1L)
+                .categoryName("Sample Category")
+                .build();
+
+        sampleProduct = Product.builder()
+                .id(1L)
+                .name("Test Product")
+                .description("Test Description")
+                .originalPrice(BigDecimal.valueOf(200))
+                .discountedPrice(BigDecimal.valueOf(100))
+                .stock(19)
+                .productCode("TP002")
+                .categories(Set.of(sampleCategory))
+                .build();
+
          productDto = ProductDto.builder()
                 .name("Test product")
                 .description("Test description")
@@ -69,7 +78,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void addProduct_validInput_productIsAdded() {
+    void when_addProduct_validInput_productIsAdded() {
 
         Authentication mockAuthentication = mock(Authentication.class);
         doNothing().when(roleValidator).verifyAdminRole(mockAuthentication);
@@ -101,19 +110,12 @@ public class ProductServiceImplTest {
         verify(productRepository).save(any(Product.class));
     }
     @Test
-    void updateProduct_existingId_productIsUpdated() {
+    void when_updateProduct_existingId_productIsUpdated() {
         Long productId = 1L;
         Authentication mockAuthentication = mock(Authentication.class);
         doNothing().when(roleValidator).verifyAdminRole(mockAuthentication);
 
-        Product existingProduct = new Product();
-        existingProduct.setId(productId);
-        existingProduct.setName("Old product");
-        existingProduct.setDescription("Old description");
-        existingProduct.setOriginalPrice(BigDecimal.valueOf(200));
-        existingProduct.setDiscountedPrice(BigDecimal.valueOf(100));
-        existingProduct.setStock(19);
-        existingProduct.setProductCode("OP001");
+        Product existingProduct = sampleProduct;
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
         ProductDto updatedProduct = ProductDto.builder()
@@ -157,16 +159,8 @@ public class ProductServiceImplTest {
 
     }
     @Test
-    void findAllProducts_validInput_productIsFound() {
-        Product product1 = new Product();
-        product1.setId(1L);
-        product1.setName("Test product1");
-        product1.setDescription("Test description1");
-        product1.setOriginalPrice(BigDecimal.valueOf(200));
-        product1.setDiscountedPrice(BigDecimal.valueOf(100));
-        product1.setStock(19);
-        product1.setProductCode("OP001");
-        product1.setCategories(Set.of(Category.builder().id(1L).build()));
+    void when_findAllProducts_validInput_productIsFound() {
+        Product product1 = sampleProduct;
 
         Product product2 = new Product();
         product2.setId(2L);
@@ -185,22 +179,14 @@ public class ProductServiceImplTest {
 
         assertNotNull(result);
         assertEquals(2,result.getTotalElements());
-        assertEquals("Test product1",result.getContent().get(0).getName());
+        assertEquals("Test Product",result.getContent().get(0).getName());
         assertEquals("Test product2",result.getContent().get(1).getName());
         verify(productRepository).findAll(any(Pageable.class));
     }
     @Test
-    void findProductById_productExists_returnsProduct() {
+    void when_findProductById_productExists_returnsProduct() {
         Long productId = 1L;
-        Product product = new Product();
-        product.setId(productId);
-        product.setName("Test product");
-        product.setDescription("Test description");
-        product.setOriginalPrice(BigDecimal.valueOf(200));
-        product.setDiscountedPrice(BigDecimal.valueOf(100));
-        product.setStock(19);
-        product.setProductCode("TP001");
-        product.setCategories(Set.of(Category.builder().id(1L).build()));
+        Product product = sampleProduct;
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
@@ -208,7 +194,7 @@ public class ProductServiceImplTest {
 
         assertNotNull(result);
         assertEquals(product.getName(), result.getName());
-        assertEquals("Test description", result.getDescription());
+        assertEquals("Test Description", result.getDescription());
         assertEquals(product.getOriginalPrice(), result.getOriginalPrice());
         assertEquals(product.getDiscountedPrice(), result.getDiscountedPrice());
         assertEquals(product.getStock(), result.getStock());
@@ -217,7 +203,7 @@ public class ProductServiceImplTest {
 
     }
     @Test
-    void findProductById_productDoesNotExist_throwsProductNotFoundException() {
+    void when_findProductById_productDoesNotExist_throwsProductNotFoundException() {
         Long productId = 1L;
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
@@ -225,21 +211,9 @@ public class ProductServiceImplTest {
         verify(productRepository).findById(productId);
     }
     @Test
-    void findProductsByCategoryId_validInput_productIsFound() {
-        Category category = new Category();
-        category.setId(1L);
-        category.setCategoryName("Test Category1");
-
-        Long productId = 1L;
-        Product product = new Product();
-        product.setId(productId);
-        product.setName("Test product");
-        product.setDescription("Test description");
-        product.setOriginalPrice(BigDecimal.valueOf(200));
-        product.setDiscountedPrice(BigDecimal.valueOf(100));
-        product.setStock(19);
-        product.setProductCode("OP001");
-        product.setCategories(Set.of(category));
+    void when_findProductsByCategoryId_validInput_productIsFound() {
+        Category category = sampleCategory;
+        Product product = sampleProduct;
 
         doNothing().when(categoryValidator).validateCategoryIds(Set.of(category.getId()));
         List<Product> productList = List.of(product);
@@ -249,10 +223,179 @@ public class ProductServiceImplTest {
 
         assertNotNull(result);
         assertEquals(1,result.getTotalElements());
-        assertEquals("Test product",result.getContent().getFirst().getName());
-        assertEquals("OP001",result.getContent().getFirst().getProductCode());
+        assertEquals("Test Product",result.getContent().getFirst().getName());
+        assertEquals("TP002",result.getContent().getFirst().getProductCode());
         verify(productRepository).findByCategories_Id(category.getId(), pageable);
         verify(categoryValidator).validateCategoryIds(Set.of(category.getId()));
+
+
+    }
+    @Test
+    void when_deleteProductById_validInput_productIsFound() {
+        Long productId = 1L;
+        Authentication mockAuthentication = mock(Authentication.class);
+        doNothing().when(roleValidator).verifyAdminRole(mockAuthentication);
+        doNothing().when(productValidator).validateProductId(productId);
+        productService.deleteProductById(productId, mockAuthentication);
+        verify(roleValidator).verifyAdminRole(mockAuthentication);
+        verify(productValidator).validateProductId(productId);
+        verify(productRepository).deleteById(productId);
+    }
+    @Test
+    void when_deleteProductById_productDoesNotExist_throwsProductNotFoundException() {
+        Long invalidProductId = 1L;
+        Authentication mockAuthentication = mock(Authentication.class);
+        doThrow(new ProductNotFoundException("Product not found")).when(productValidator).validateProductId(invalidProductId);
+        assertThrows(ProductNotFoundException.class , () -> productService.deleteProductById(invalidProductId, mockAuthentication));
+
+        verify(roleValidator).verifyAdminRole(mockAuthentication);
+        verify(productValidator).validateProductId(invalidProductId);
+        verify(productRepository , never()).deleteById(invalidProductId);
+    }
+    @Test
+    void when_filterProducts_validInput_productIsFound() {
+        Category category = sampleCategory;
+        Category category2 = new Category();
+        category2.setId(2L);
+        category2.setCategoryName("Test Category2");
+    Set<Long> categoryIds = Set.of(category.getId(), category2.getId());
+    BigDecimal minPrice = BigDecimal.valueOf(150);
+    BigDecimal maxPrice = BigDecimal.valueOf(200);
+    int page = 0;
+    int size = 10;
+    String sortBy = "name";
+    String sortDirection = "asc";
+
+    Product product = sampleProduct;
+
+    Product product2 = new Product();
+    product2.setId(2L);
+    product2.setName("Test product2");
+    product2.setDescription("Test description2");
+    product2.setOriginalPrice(BigDecimal.valueOf(99));
+    product2.setDiscountedPrice(BigDecimal.valueOf(99));
+    product2.setStock(19);
+    product2.setProductCode("UP001");
+    product2.setCategories(Set.of(category2));
+    List<Product> productList = List.of(product,product2);
+    Page<Product> productPage = new PageImpl<>(productList);
+
+    Pageable pageable = PageRequest.of(page,size,Sort.by(Sort.Direction.ASC,sortBy));
+    when(productRepository.findAllWithFilters(categoryIds,minPrice,maxPrice,pageable)).thenReturn(productPage);
+    PageResponse<ProductDto> response = productService.filterProducts(categoryIds,minPrice,maxPrice,page,size,sortBy,sortDirection);
+
+    assertNotNull(response);
+    assertEquals(2,response.getContent().size());
+    assertEquals("Test Product",response.getContent().get(0).getName());
+    assertEquals("Test product2",response.getContent().get(1).getName());
+    verify(productRepository).findAllWithFilters(categoryIds,minPrice,maxPrice,pageable);
+    }
+    @Test
+    void when_filterProducts_productDoesNotExist_throwsProductNotFoundException() {
+        Set<Long> categoryIds = Set.of(1L, 2L);
+        BigDecimal minPrice = BigDecimal.valueOf(300);
+        BigDecimal maxPrice = BigDecimal.valueOf(400);
+        int page = 0;
+        int size = 10;
+        String sortBy = "name";
+        String sortDirection = "asc";
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy));
+        Page<Product> emptyPage = Page.empty();
+        when(productRepository.findAllWithFilters(categoryIds, minPrice, maxPrice, pageable)).thenReturn(emptyPage);
+
+
+        assertThrows(ProductNotFoundException.class, () -> productService.filterProducts(categoryIds, minPrice, maxPrice, page, size, sortBy, sortDirection));
+        verify(productRepository).findAllWithFilters(categoryIds, minPrice, maxPrice, pageable);
+    }
+    @Test
+    void when_findSimilarProducts_validInput_productIsFound() {
+        Long productId = 2L;
+        Category category = sampleCategory;
+        Product product = sampleProduct;
+
+        Product product2 = new Product();
+        product2.setId(3L);
+        product2.setName("Test product2");
+        product2.setDescription("Test description2");
+        product2.setOriginalPrice(BigDecimal.valueOf(99));
+        product2.setDiscountedPrice(BigDecimal.valueOf(99));
+        product2.setStock(19);
+        product2.setProductCode("UP001");
+        product2.setCategories(Set.of(category));
+
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+        existingProduct.setName("Test product3");
+        existingProduct.setDescription("Test description3");
+        existingProduct.setOriginalPrice(BigDecimal.valueOf(99));
+        existingProduct.setDiscountedPrice(BigDecimal.valueOf(99));
+        existingProduct.setStock(19);
+        existingProduct.setProductCode("UP002");
+        existingProduct.setCategories(Set.of(category));
+
+        int page = 0;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        List<Product> productList = List.of(product,product2);
+
+        when(productValidator.validateProductAndFindById(productId)).thenReturn(existingProduct);
+        Set<Long> categoryIds = existingProduct.getCategories().stream().map(Category::getId).collect(Collectors.toSet());
+        when(productRepository.findByCategories_IdInAndIdNot(categoryIds,productId,pageable))
+                .thenReturn(new PageImpl<>(productList));
+        PageResponse<ProductDto> response = productService.findSimilarProducts(productId,page,size);
+
+        assertNotNull(response);
+        assertEquals(2,response.getContent().size());
+        assertEquals("TP002",response.getContent().get(0).getProductCode());
+        assertEquals("UP001",response.getContent().get(1).getProductCode());
+        verify(productValidator).validateProductAndFindById(productId);
+        verify(productRepository).findByCategories_IdInAndIdNot(categoryIds,productId,pageable);
+    }
+    @Test
+    void when_findSimilarProducts_productDoesNotExist_throwsProductNotFoundException() {
+        Long productId = -1L;
+
+        when(productValidator.validateProductAndFindById(productId))
+                .thenThrow(new ProductNotFoundException("Product with id " + productId + " not found"));
+
+        assertThrows(ProductNotFoundException.class , () -> {
+            productService.findSimilarProducts(productId, 0, 10);
+        });
+    }
+    @Test
+    void when_findFeaturedProducts_validInput_productIsFound() {
+        sampleProduct.setFeatured(true);
+        Product product = Product.builder()
+                .id(2L)
+                .name("Test Product2")
+                .description("Test Description2")
+                .originalPrice(BigDecimal.valueOf(200))
+                .discountedPrice(BigDecimal.valueOf(100))
+                .stock(19)
+                .productCode("TP003")
+                .categories(Set.of(sampleCategory))
+                .build();
+        List<Product> productList = List.of(sampleProduct,product);
+
+        int limit = 2;
+        when(productRepository.findTopFeaturedProducts(limit)).thenReturn(productList);
+        List<ProductDto> response = productService.findFeaturedProducts(limit);
+        assertNotNull(response);
+        assertEquals(2,response.size());
+        assertEquals("Test Product2",response.get(1).getName());
+        verify(productRepository).findTopFeaturedProducts(limit);
+    }
+    @Test
+    void when_findFeaturedProducts_productDoesNotExist_throwsProductNotFoundException() {
+    List<Product> productList = Collections.emptyList();
+    int limit = 2;
+    when(productRepository.findTopFeaturedProducts(limit)).thenReturn(productList);
+    assertThrows(ProductNotFoundException.class , () -> {
+        productService.findFeaturedProducts(limit);
+    });
+    verify(productRepository).findTopFeaturedProducts(limit);
+
 
 
     }

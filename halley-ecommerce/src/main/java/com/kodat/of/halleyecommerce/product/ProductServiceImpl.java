@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -142,8 +143,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> findFeaturedProducts(int limit) {
-        return productRepository.findTopFeaturedProducts(limit)
-                .stream()
+        List<Product> productList = productRepository.findTopFeaturedProducts(limit);
+        if (productList.isEmpty()){
+            throw new ProductNotFoundException("Cannot find featured any products.");
+        }
+        return productList.stream()
                 .map(ProductMapper::toProductDto)
                 .toList();
     }

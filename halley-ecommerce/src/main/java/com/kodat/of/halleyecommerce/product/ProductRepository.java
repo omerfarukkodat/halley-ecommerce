@@ -9,18 +9,17 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-
 
     boolean existsByProductCode(String productCode);
 
     Product findByProductCode(String productCode);
 
     Page<Product> findByCategories_Id(Long categoryId, Pageable pageable);
-
 
     //Full-text Search
     @Query(value = "SELECT p.*, " +
@@ -36,19 +35,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             nativeQuery = true)
     Page<Product> findProductsByFullTextSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-
     @Query("SELECT DISTINCT p FROM Product p " +
             "JOIN p.categories c " +
             "WHERE (:categoryIds IS NULL OR c.id IN :categoryIds) AND " +
-            "(:minPrice IS NULL OR p.originalPrice >= :minPrice) AND " +
-            "(:maxPrice IS NULL OR p.originalPrice <= :maxPrice)")
+            "(:minPrice IS NULL OR p.discountedPrice >= :minPrice) AND " +
+            "(:maxPrice IS NULL OR p.discountedPrice <= :maxPrice)")
     Page<Product> findAllWithFilters(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
-
 
     Page<Product> findByCategories_IdInAndIdNot(Set<Long> categoryIds, Long productId, Pageable pageable);
 
-    @Query(value = "SELECT p FROM Product p WHERE p.isFeatured = true  ORDER BY p.createdTime DESC")
-    List<Product> findTopFeaturedProducts(int limit);
+    @Query(value = "SELECT * FROM products p WHERE p.is_featured = true  ORDER BY p.created_time DESC LIMIT :limit", nativeQuery = true)
+    List<Product> findTopFeaturedProducts(@Param("limit") int limit);
 
     @Query("SELECT DISTINCT p FROM Product p " +
             "JOIN p.categories c " +
@@ -58,30 +55,3 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "p.discountedPrice < p.originalPrice")
     Page<Product> findDiscountedProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 }
-
-
-// Levenshtein Search
-//    @Query(value = "SELECT p.*, (1.0 / (1 + levenshtein(p.name, :searchTerm))) AS relevance " +
-//            "FROM products p " +
-//            "WHERE levenshtein(p.name, :searchTerm) < 20 " +
-//            "ORDER BY relevance DESC",
-//            countQuery = "SELECT COUNT(*) " +
-//                    "FROM products p " +
-//                    "WHERE levenshtein(p.name, :searchTerm) < 20",
-//            nativeQuery = true)
-//    Page<Product> findProductsByLevenshteinSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
-
-
-// Trigram Search
-//    @Query(value = "SELECT p.*, similarity(p.name, :searchTerm) AS relevance " +
-//            "FROM products p " +
-//            "WHERE similarity(p.name, :searchTerm) > 0.2 " +
-//            "ORDER BY relevance DESC",
-//            countQuery = "SELECT COUNT(*) " +
-//                    "FROM products p " +
-//                    "WHERE similarity(p.name, :searchTerm) > 0.2",
-//            nativeQuery = true)
-//    Page<Product> findProductsByTrigramSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
-
-
-

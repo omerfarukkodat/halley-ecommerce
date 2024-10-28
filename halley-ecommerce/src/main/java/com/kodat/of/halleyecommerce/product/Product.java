@@ -24,7 +24,6 @@ import java.util.Set;
 @Table(name = "products")
 @EntityListeners(AuditingEntityListener.class)
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,10 +40,9 @@ public class Product {
     @Column(nullable = false)
     private Integer stock;
     @ManyToMany
-   @JoinTable(name = "product_category",
+    @JoinTable(name = "product_category",
            joinColumns = @JoinColumn(name = "product_id"),
-           inverseJoinColumns = @JoinColumn(name = "category_id")
-   )
+           inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories;
     @Column(unique = true)
     private String slug;
