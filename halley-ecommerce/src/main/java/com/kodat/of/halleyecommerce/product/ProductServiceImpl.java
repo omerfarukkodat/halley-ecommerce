@@ -19,9 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -79,6 +77,7 @@ public class ProductServiceImpl implements ProductService {
         LOGGER.info("Product with ID: {} updated successfully", productId);
         return ProductMapper.toProductDto(updatedProduct);
     }
+
     @Cacheable(value = "products" , key = "'all_products_' + #page + '_' + #size + '_' + #sortBy + '_' + #sortDirection")
     @Override
     public PageResponse<ProductDto> findAllProducts(int page, int size, String sortBy, String sortDirection) {
@@ -156,9 +155,11 @@ public class ProductServiceImpl implements ProductService {
     public PageResponse<ProductDto> getDiscountedProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size, String sortBy, String sortDirection) {
        Pageable pageable = createPageable(page, size, sortBy, sortDirection);
        Page<Product> discountedProducts = productRepository.findDiscountedProducts(categoryIds,minPrice,maxPrice,pageable);
+       if (discountedProducts.isEmpty()){
+           throw new ProductNotFoundException("Cannot find discounted products.");
+       }
        return createPageResponse(discountedProducts);
     }
-
 
     private PageResponse<ProductDto> createPageResponse(Page<Product> products) {
         List<ProductDto> productDtos = products.stream()

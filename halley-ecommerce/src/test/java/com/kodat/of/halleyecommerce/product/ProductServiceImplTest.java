@@ -4,7 +4,7 @@ import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.common.SlugService;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
-import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
+import com.kodat.of.halleyecommerce.exception.*;
 import com.kodat.of.halleyecommerce.mapper.product.ProductMapper;
 import com.kodat.of.halleyecommerce.util.CategoryUtils;
 import com.kodat.of.halleyecommerce.validator.CategoryValidator;
@@ -76,7 +76,6 @@ public class ProductServiceImplTest {
                 .build();
 
     }
-
     @Test
     void when_addProduct_validInput_productIsAdded() {
 
@@ -85,10 +84,7 @@ public class ProductServiceImplTest {
         doNothing().when(categoryValidator).validateCategoryIds(any());
         doNothing().when(productValidator).validateProductCode(any());
 
-        Category mockCategory = new Category();
-        mockCategory.setId(1L);
-        mockCategory.setCategoryName("Test Category");
-
+        Category mockCategory = sampleCategory;
         when(categoryUtils.findCategoryById(mockCategory.getId())).thenReturn(mockCategory);
         String generatedSlug = "test-product-slug";
         when(slugService.generateSlug(anyString(), anyString())).thenReturn(generatedSlug);
@@ -104,10 +100,47 @@ public class ProductServiceImplTest {
         assertEquals(productDto.getStock(), result.getStock());
         assertEquals(productDto.getProductCode(), result.getProductCode());
         assertEquals(productDto.getCategoryIds(), result.getCategoryIds());
+        verify(categoryUtils).findCategoryById(mockCategory.getId());
+        verify(slugService).generateSlug(anyString(), anyString());
         verify(roleValidator).verifyAdminRole(mockAuthentication);
         verify(categoryValidator).validateCategoryIds(productDto.getCategoryIds());
         verify(productValidator).validateProductCode(productDto.getProductCode());
         verify(productRepository).save(any(Product.class));
+    }
+    @Test
+    void when_addProduct_userIsNotAdmin_thenThrowsAUnauthorizedAdminAccessException(){
+        Authentication mockAuthentication = mock(Authentication.class);
+        doThrow(new UnauthorizedAdminAccessException("Unauthorized Admin Access"))
+                .when(roleValidator).verifyAdminRole(mockAuthentication);
+
+        assertThrows(UnauthorizedAdminAccessException.class, () -> productService.addProduct(productDto,mockAuthentication));
+        verify(roleValidator).verifyAdminRole(mockAuthentication);
+        verifyNoInteractions(categoryValidator, productValidator, categoryUtils, slugService);
+    }
+    @Test
+    void when_addProduct_invalidCategoryId_thenThrowsCategoryDoesNotExistException(){
+        Authentication mockAuthentication = mock(Authentication.class);
+        doNothing().when(roleValidator).verifyAdminRole(mockAuthentication);
+        doThrow(new CategoryDoesNotExistsException("Invalid category Ids")).when(categoryValidator).validateCategoryIds(any());
+        assertThrows(CategoryDoesNotExistsException.class, () -> productService.addProduct(productDto,mockAuthentication));
+
+        verify(roleValidator).verifyAdminRole(mockAuthentication);
+        verify(categoryValidator).validateCategoryIds(productDto.getCategoryIds());
+        verifyNoInteractions(productValidator, productRepository, categoryUtils, slugService);
+    }
+    @Test
+    void when_addProduct_duplicateProductCode_thenThrowsProductCodeExistException(){
+        Authentication mockAuthentication = mock(Authentication.class);
+        doNothing().when(roleValidator).verifyAdminRole(mockAuthentication);
+        doNothing().when(categoryValidator).validateCategoryIds(any());
+
+        doThrow(new ProductAlreadyExistsException("Product code already exists")).when(productValidator).validateProductCode(any());
+        assertThrows(ProductAlreadyExistsException.class,() -> productService.addProduct(productDto,mockAuthentication));
+
+        verify(roleValidator).verifyAdminRole(mockAuthentication);
+        verify(categoryValidator).validateCategoryIds(productDto.getCategoryIds());
+        verify(productValidator).validateProductCode(productDto.getProductCode());
+        verifyNoInteractions( productRepository, categoryUtils, slugService);
     }
     @Test
     void when_updateProduct_existingId_productIsUpdated() {
@@ -159,6 +192,55 @@ public class ProductServiceImplTest {
 
     }
     @Test
+    void when_updateProduct_userIsNotAdmin_thenThrowsUnauthorizedAdminAccessException(){
+        Long productId = 1L;
+        Authentication mockAuthentication = mock(Authentication.class);
+        doThrow(new UnauthorizedAdminAccessException("Unauthorized Admin Access")).when(roleValidator).verifyAdminRole(mockAuthentication);
+        ProductDto updatedProduct = productDto;
+        assertThrows(UnauthorizedAdminAccessException.class,()-> productService.updateProduct(productId,updatedProduct,mockAuthentication));
+        verify(roleValidator).verifyAdminRole(mockAuthentication);
+
+
+
+
+    }
+    @Test
+    void when_updateProduct_duplicateProductCode_thenThrowsProductAlreadyExistsException(){
+        Long productId = 1L;
+        Authentication mockAuthentication = mock(Authentication.class);
+        doNothing().when(roleValidator).verifyAdminRole(mockAuthentication);
+        doNothing().when(categoryValidator).validateCategoryIds(any());
+        ProductDto updatedProduct = productDto;
+        String duplicateProductCode = "duplicateProductCode";
+        updatedProduct.setProductCode(duplicateProductCode);
+
+        doThrow(new ProductAlreadyExistsException("Product code already exists"))
+                .when(productValidator).validateProductCode(updatedProduct.getProductCode(),productId);
+
+        assertThrows(ProductAlreadyExistsException.class,()->
+                productService.updateProduct(productId,updatedProduct,mockAuthentication));
+        verify(roleValidator).verifyAdminRole(mockAuthentication);
+        verify(categoryValidator).validateCategoryIds(updatedProduct.getCategoryIds());
+        verify(productValidator).validateProductCode(updatedProduct.getProductCode(),productId);
+
+    }
+    @Test
+    void when_updateProduct_invalidCategoryIds_thenThrowsCategoryDoesNotExistException(){
+    Long productId = 1L;
+    Authentication mockAuthentication = mock(Authentication.class);
+    doNothing().when(roleValidator).verifyAdminRole(mockAuthentication);
+    ProductDto updatedProduct = productDto;
+    Set<Long> categoryIds = Set.of(99L);
+    updatedProduct.setCategoryIds(categoryIds);
+    doThrow(new CategoryDoesNotExistsException("Category does not exist"))
+            .when(categoryValidator).validateCategoryIds(updatedProduct.getCategoryIds());
+
+    assertThrows(CategoryDoesNotExistsException.class,() -> productService.updateProduct(productId,updatedProduct,mockAuthentication));
+    verify(roleValidator).verifyAdminRole(mockAuthentication);
+    verify(categoryValidator).validateCategoryIds(productDto.getCategoryIds());
+    verifyNoInteractions(productValidator, productRepository, categoryUtils, slugService);
+    }
+    @Test
     void when_findAllProducts_validInput_productIsFound() {
         Product product1 = sampleProduct;
 
@@ -184,6 +266,17 @@ public class ProductServiceImplTest {
         verify(productRepository).findAll(any(Pageable.class));
     }
     @Test
+    void when_findAllProducts_noproductsFound_returnsEmptyPage(){
+        Pageable pageable = PageRequest.of(0, 10,Sort.by("name").ascending());
+        when(productRepository.findAll(pageable)).thenReturn(Page.empty());
+        PageResponse<ProductDto> result = productService.findAllProducts(0,10,"name","asc");
+
+        assertNotNull(result);
+        assertEquals(0,result.getTotalElements());
+        assertTrue(result.getContent().isEmpty());
+        verify(productRepository).findAll(pageable);
+    }
+    @Test
     void when_findProductById_productExists_returnsProduct() {
         Long productId = 1L;
         Product product = sampleProduct;
@@ -203,7 +296,7 @@ public class ProductServiceImplTest {
 
     }
     @Test
-    void when_findProductById_productDoesNotExist_throwsProductNotFoundException() {
+    void when_findProductById_productDoesNotExist_thenThrowsProductNotFoundException() {
         Long productId = 1L;
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
@@ -242,7 +335,7 @@ public class ProductServiceImplTest {
         verify(productRepository).deleteById(productId);
     }
     @Test
-    void when_deleteProductById_productDoesNotExist_throwsProductNotFoundException() {
+    void when_deleteProductById_productDoesNotExist_thenThrowsProductNotFoundException() {
         Long invalidProductId = 1L;
         Authentication mockAuthentication = mock(Authentication.class);
         doThrow(new ProductNotFoundException("Product not found")).when(productValidator).validateProductId(invalidProductId);
@@ -291,7 +384,7 @@ public class ProductServiceImplTest {
     verify(productRepository).findAllWithFilters(categoryIds,minPrice,maxPrice,pageable);
     }
     @Test
-    void when_filterProducts_productDoesNotExist_throwsProductNotFoundException() {
+    void when_filterProducts_productDoesNotExist_thenThrowsProductNotFoundException() {
         Set<Long> categoryIds = Set.of(1L, 2L);
         BigDecimal minPrice = BigDecimal.valueOf(300);
         BigDecimal maxPrice = BigDecimal.valueOf(400);
@@ -353,7 +446,7 @@ public class ProductServiceImplTest {
         verify(productRepository).findByCategories_IdInAndIdNot(categoryIds,productId,pageable);
     }
     @Test
-    void when_findSimilarProducts_productDoesNotExist_throwsProductNotFoundException() {
+    void when_findSimilarProducts_productDoesNotExist_thenThrowsProductNotFoundException() {
         Long productId = -1L;
 
         when(productValidator.validateProductAndFindById(productId))
@@ -387,7 +480,7 @@ public class ProductServiceImplTest {
         verify(productRepository).findTopFeaturedProducts(limit);
     }
     @Test
-    void when_findFeaturedProducts_productDoesNotExist_throwsProductNotFoundException() {
+    void when_findFeaturedProducts_productDoesNotExist_thenThrowsProductNotFoundException() {
     List<Product> productList = Collections.emptyList();
     int limit = 2;
     when(productRepository.findTopFeaturedProducts(limit)).thenReturn(productList);
@@ -398,6 +491,56 @@ public class ProductServiceImplTest {
 
 
 
+    }
+    @Test
+    void when_getDiscountedProducts_validInput_productIsFound() {
+        sampleProduct.setDiscountedPrice(BigDecimal.valueOf(100));
+        Product product = Product.builder()
+                .id(2L)
+                .name("Test Product2")
+                .description("Test Description2")
+                .originalPrice(BigDecimal.valueOf(200))
+                .discountedPrice(BigDecimal.valueOf(100))
+                .stock(19)
+                .productCode("TP002")
+                .categories(Set.of(sampleCategory))
+                .build();
+        List<Product> productList = List.of(sampleProduct,product);
+        Set<Long> categoryIds = productList.getFirst().getCategories().stream().map(Category::getId).collect(Collectors.toSet());
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+        when(productRepository.findDiscountedProducts(categoryIds,BigDecimal.valueOf(10),BigDecimal.valueOf(100),pageable))
+        .thenReturn(new PageImpl<>(productList));
+        PageResponse<ProductDto> response = productService
+                .getDiscountedProducts(categoryIds,BigDecimal.valueOf(10),BigDecimal.valueOf(100),0,10,"id","desc");
+
+        assertNotNull(response);
+        assertEquals(2,response.getContent().size());
+        assertEquals("Test Product",response.getContent().get(0).getName());
+        assertEquals("TP002",response.getContent().get(1).getProductCode());
+        verify(productRepository).findDiscountedProducts(categoryIds,BigDecimal.valueOf(10),BigDecimal.valueOf(100),pageable);
+
+
+    }
+    @Test
+    void when_getDiscountedProducts_productDoesNotExist_thenThrowsProductNotFoundException() {
+        Category childCategory = Category.builder()
+                .id(2L)
+                .categoryName("Test Main Category")
+                .parent(sampleCategory)
+                .build();
+        Set<Long> categoryIds = Set.of(sampleCategory.getId() , childCategory.getId());
+        BigDecimal minPrice = BigDecimal.valueOf(100);
+        BigDecimal maxPrice = BigDecimal.valueOf(200);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+        when(productRepository.findDiscountedProducts(categoryIds,minPrice,maxPrice,pageable))
+                .thenReturn(Page.empty());
+
+        assertThrows(ProductNotFoundException.class , () -> {
+            productService.getDiscountedProducts(categoryIds,minPrice,maxPrice,0,10,"id","desc");
+        });
+
+
+        verify(productRepository).findDiscountedProducts(categoryIds,minPrice,maxPrice,pageable);
     }
 
 
