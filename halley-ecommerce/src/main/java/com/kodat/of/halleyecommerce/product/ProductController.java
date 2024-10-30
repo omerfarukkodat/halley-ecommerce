@@ -67,7 +67,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.findAllProducts(page,size , sortBy , sortDirection));
     }
 
-    @GetMapping("/{categoryId}/")
+    @GetMapping("/{categoryId}")
     public ResponseEntity<PageResponse<ProductDto>> findProductsByCategoryId(
             @RequestParam(name = "page" , defaultValue = "0" , required = false) int page,
             @RequestParam(name = "size" , defaultValue = "10" , required = false) int size,

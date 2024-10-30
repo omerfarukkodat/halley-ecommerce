@@ -266,7 +266,7 @@ public class ProductServiceImplTest {
         verify(productRepository).findAll(any(Pageable.class));
     }
     @Test
-    void when_findAllProducts_noproductsFound_returnsEmptyPage(){
+    void when_findAllProducts_noProductsFound_returnsEmptyPage(){
         Pageable pageable = PageRequest.of(0, 10,Sort.by("name").ascending());
         when(productRepository.findAll(pageable)).thenReturn(Page.empty());
         PageResponse<ProductDto> result = productService.findAllProducts(0,10,"name","asc");
@@ -319,6 +319,15 @@ public class ProductServiceImplTest {
         assertEquals("Test Product",result.getContent().getFirst().getName());
         assertEquals("TP002",result.getContent().getFirst().getProductCode());
         verify(productRepository).findByCategories_Id(category.getId(), pageable);
+        verify(categoryValidator).validateCategoryIds(Set.of(category.getId()));
+    }
+    @Test
+    void when_findProductsByCategoryId_invalidCategoryIds_returnsEmptyPage() {
+        Category category = sampleCategory;
+        category.setId(222L);
+        doThrow(new CategoryDoesNotExistsException("Category does not exist")).when(categoryValidator).validateCategoryIds(Set.of(category.getId()));
+
+        assertThrows(CategoryDoesNotExistsException.class,() -> productService.findProductsByCategoryId(0,10, category.getId(), "name","asc"));
         verify(categoryValidator).validateCategoryIds(Set.of(category.getId()));
 
 

@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.address;
 
 import com.kodat.of.halleyecommerce.dto.address.AddressDto;
 import com.kodat.of.halleyecommerce.exception.AddressNotFoundException;
+import com.kodat.of.halleyecommerce.exception.UserNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.address.AddressMapper;
 import com.kodat.of.halleyecommerce.user.User;
 import com.kodat.of.halleyecommerce.user.UserRepository;
@@ -32,9 +33,11 @@ public class AddressServiceImpl implements AddressService{
     public List<AddressDto> getAllAddresses(Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         String username = connectedUser.getName();
-        User user = userRepository.findByEmail(username).get();
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(()->new UserNotFoundException("User not found"));
         addressValidator.validateUserAddresses(user.getId());
-        List<Address> addresses = addressRepository.findAllByUserId(user.getId()).get();
+        List<Address> addresses = addressRepository.findAllByUserId(user.getId())
+                .orElseThrow(()->new AddressNotFoundException("Any addresses not found"));
         return  addresses.stream()
                 .map(AddressMapper::toAddressDto)
                 .toList();
@@ -44,9 +47,11 @@ public class AddressServiceImpl implements AddressService{
     public AddressDto getAddressById(Long addressId, Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         String username = connectedUser.getName();
-        User user = userRepository.findByEmail(username).get();
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(()->new UserNotFoundException("User not found"));
         addressValidator.validateUserAddress(user.getId());
-        Address address = addressRepository.findById(addressId).get();
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(()->new AddressNotFoundException("Any address not found"));
         return AddressMapper.toAddressDto(address);
     }
 
@@ -54,7 +59,8 @@ public class AddressServiceImpl implements AddressService{
     public AddressDto createAddress(AddressDto addressDto, Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         String username = connectedUser.getName();
-        User user = userRepository.findByEmail(username).get();
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(()->new UserNotFoundException("User not found"));
         Address newAddress = AddressMapper.toAddress(addressDto);
         newAddress.setUser(user);
         Address savedAddress = addressRepository.save(newAddress);
@@ -65,7 +71,8 @@ public class AddressServiceImpl implements AddressService{
     public AddressDto updateAddressById(Long addressId, AddressDto addressDto, Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         String username = connectedUser.getName();
-        User user = userRepository.findByEmail(username).get();
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(()->new UserNotFoundException("User not found"));
         addressValidator.validateUserAddress(user.getId());
         Address existingAddress = addressRepository.findById(addressId)
                 .orElseThrow(() -> new AddressNotFoundException("Address not found"));
@@ -77,7 +84,8 @@ public class AddressServiceImpl implements AddressService{
     public void deleteAddressById(Long addressId, Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         String username = connectedUser.getName();
-        User user = userRepository.findByEmail(username).get();
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(()->new UserNotFoundException("User not found"));
        Address address = addressValidator.validateUserAddress(addressId,user.getId());
         addressRepository.delete(address);
     }
