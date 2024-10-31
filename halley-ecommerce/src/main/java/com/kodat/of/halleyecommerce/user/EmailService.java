@@ -5,13 +5,19 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
+import java.util.Map;
 
 @Service
 public class EmailService {
     private final JavaMailSender mailSender;
+    private final SpringTemplateEngine templateEngine;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
         this.mailSender = mailSender;
+        this.templateEngine = templateEngine;
     }
     public void sendEmail(String to, String subject, String body) {
         try {
@@ -24,5 +30,13 @@ public class EmailService {
         }catch (MessagingException e) {
             throw new IllegalStateException("E-mail sending failed", e);
         }
+    }
+    public void sendOrderSummaryEmail(String to , Map<String, Object> orderData) {
+        Context context = new Context();
+        context.setVariables(orderData);
+        String orderSummaryHtml = templateEngine.process("order-summary",context);
+        sendEmail(to, "Sipariş Özeti", orderSummaryHtml);
+
+
     }
 }

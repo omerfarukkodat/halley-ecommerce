@@ -10,6 +10,7 @@ import com.kodat.of.halleyecommerce.exception.OrderNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.order.OrderMapper;
 import com.kodat.of.halleyecommerce.order.enums.Status;
 import com.kodat.of.halleyecommerce.user.CustomUserDetails;
+import com.kodat.of.halleyecommerce.user.EmailService;
 import com.kodat.of.halleyecommerce.user.User;
 import com.kodat.of.halleyecommerce.util.ShippingUtils;
 import com.kodat.of.halleyecommerce.validator.CartValidator;
@@ -18,8 +19,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -28,13 +36,15 @@ public class OrderServiceImpl implements OrderService {
     private final CartValidator cartValidator;
     private final AddressRepository addressRepository;
     private final ShippingUtils shippingUtils;
+    private final EmailService emailService;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RoleValidator roleValidator, CartValidator cartValidator, AddressRepository addressRepository, ShippingUtils shippingUtils) {
+    public OrderServiceImpl(OrderRepository orderRepository, RoleValidator roleValidator, CartValidator cartValidator, AddressRepository addressRepository, ShippingUtils shippingUtils, EmailService emailService) {
         this.orderRepository = orderRepository;
         this.roleValidator = roleValidator;
         this.cartValidator = cartValidator;
         this.addressRepository = addressRepository;
         this.shippingUtils = shippingUtils;
+        this.emailService = emailService;
     }
 
 
@@ -59,8 +69,8 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> orderItems = OrderMapper.toOrderItemList(cart.getItems(),order);
         order.setOrderItems(orderItems);
         orderRepository.save(order);
+        sendEmailForOrderSummary(order,user);
         return OrderMapper.toOrderDto(order);
-
     }
 
     @Override
@@ -132,7 +142,21 @@ public class OrderServiceImpl implements OrderService {
          return cartItems.stream()
                 .map(item-> item.getProduct().getDiscountedPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
-
+    private void sendEmailForOrderSummary(Order order, User user) {
+        Instant instant = Instant.now();
+        ZoneId zoneId = ZoneId.of("Asia/Istanbul");
+        ZonedDateTime zdt = instant.atZone(zoneId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM EEEE, HH:mm", Locale.forLanguageTag("tr"));
+        String formattedOrderDate = zdt.format(formatter);
+        Map<String,Object> orderData = new HashMap<>();
+        orderData.put("customerName", user.getFirstName());
+        orderData.put("customerLastName", user.getLastName());
+        orderData.put("orderDate", formattedOrderDate);
+        orderData.put("orderItems", order.getOrderItems());
+        orderData.put("shippingCost", order.getShippingCost());
+        orderData.put("finalPrice", order.getFinalPrice());
+        emailService.sendOrderSummaryEmail(user.getEmail(), orderData);
     }
 }

@@ -25,6 +25,13 @@ spring:
     redis:
       host: localhost
       port: 6379
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+
 server:
   servlet:
     context-path: /api/v1/
