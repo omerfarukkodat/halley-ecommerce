@@ -1,4 +1,10 @@
 spring:
+  data:
+    redis:
+      host: redis-halley
+      port: 6379
+      notifications:
+        key-events: "Ex"
   datasource:
     url: jdbc:postgresql://localhost:5433/halley_ecommerce
     username: postgres
@@ -13,6 +19,8 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
+
+
 application:
   security:
     jwt:

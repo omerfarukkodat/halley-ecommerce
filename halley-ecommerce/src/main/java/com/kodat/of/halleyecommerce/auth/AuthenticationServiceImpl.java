@@ -12,11 +12,15 @@ import com.kodat.of.halleyecommerce.exception.UserNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.auth.UserMapper;
 import com.kodat.of.halleyecommerce.user.UserRepository;
 import com.kodat.of.halleyecommerce.security.JwtService;
+import com.kodat.of.halleyecommerce.user.enums.Role;
+import com.kodat.of.halleyecommerce.util.AuthenticatedCartUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -29,14 +33,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final UserMapper userMapper;
     private final CartRepository cartRepository;
+    private final AuthenticatedCartUtils authenticatedCartUtils;
 
-    public AuthenticationServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager, JwtService jwtService, UserMapper userMapper, CartRepository cartRepository) {
+    public AuthenticationServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager, JwtService jwtService, UserMapper userMapper, CartRepository cartRepository, AuthenticatedCartUtils authenticatedCartUtils) {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userMapper = userMapper;
         this.cartRepository = cartRepository;
+        this.authenticatedCartUtils = authenticatedCartUtils;
     }
+
 
     @Override
     public void register(RegistrationRequest request) {
@@ -59,6 +66,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationResponse login(LoginRequest request) {
        User user = findUserByEmail(request.getEmail());
        String token = authenticationAndGenerateToken(request,user);
+       CustomUserDetails customUserDetails = new CustomUserDetails(user);
+        Authentication connectedUser = new UsernamePasswordAuthenticationToken(customUserDetails,null,customUserDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(connectedUser);
+        if (!user.getRole().equals(Role.ADMIN)) {
+            authenticatedCartUtils.mergeCarts(connectedUser);
+        }
         LOGGER.info("Authenticated user: {}", user.getEmail());
         return AuthenticationResponse.builder().token(token).build();
         }

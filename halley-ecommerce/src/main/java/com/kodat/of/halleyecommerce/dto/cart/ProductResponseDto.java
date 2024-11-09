@@ -3,7 +3,6 @@ package com.kodat.of.halleyecommerce.dto.cart;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 import java.math.BigDecimal;
 
 @Getter
@@ -11,7 +10,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductResponseDto {
+public class ProductResponseDto  {
     private Long id;
     @NotBlank(message = "Product name cannot be empty")
     private String name;
@@ -22,6 +21,7 @@ public class ProductResponseDto {
     @NotNull(message = "Discounted price cannot be null")
     private BigDecimal discountedPrice;
     private String imageUrl;
+
 
 
 }

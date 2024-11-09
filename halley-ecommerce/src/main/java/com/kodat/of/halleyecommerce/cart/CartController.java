@@ -1,17 +1,13 @@
 package com.kodat.of.halleyecommerce.cart;
 
 import com.kodat.of.halleyecommerce.cart.service.CartService;
-import com.kodat.of.halleyecommerce.dto.cart.AddToCartRequest;
 import com.kodat.of.halleyecommerce.dto.cart.CartDto;
-import com.kodat.of.halleyecommerce.dto.cart.CartSummaryDto;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping("/cart")
@@ -23,55 +19,58 @@ public class CartController {
     }
 
     @GetMapping
-    public ResponseEntity<CartDto> getCart(Authentication connectedUser, HttpSession session) {
-        return ResponseEntity.ok(cartService.handleGetCart(connectedUser, session));
-
+    public ResponseEntity<CartDto> getCart(Authentication connectedUser) {
+        return ResponseEntity.ok(cartService.getCart(connectedUser));
     }
 
-    @PostMapping
-    public ResponseEntity<CartDto> addToCart(Authentication connectedUser, HttpSession session, @Valid @RequestBody AddToCartRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addToCart(connectedUser, session, request));
-    }
-
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<CartDto> removeFromCart(Authentication connectedUser, HttpSession session,
-                                                  @PathVariable Long productId) {
-        return ResponseEntity.ok(cartService.removeFromCart(connectedUser, session, productId));
-    }
-
-    @PatchMapping("/{productId}/decrease")
-    public ResponseEntity<CartDto> decreaseProductQuantity(
-            Authentication connectedUser,
-            HttpSession session,
-            @PathVariable Long productId,
-            @Valid @RequestParam Integer quantity) {
-        return ResponseEntity.ok(cartService.decreaseProductQuantity(connectedUser, session, productId, quantity));
+    @PostMapping("/{productId}")
+    public ResponseEntity<Void> addToCart(Authentication connectedUser, @PathVariable Long productId) {
+        cartService.addToCart(connectedUser, productId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/clear")
-    public ResponseEntity<Void> clearCart(Authentication connectedUser, HttpSession session) {
-        cartService.clearCart(connectedUser,session);
+    public ResponseEntity<Void> removeAllCartItemFromCart(Authentication connectedUser) {
+        cartService.removeAllCartItemFromCart(connectedUser);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/summary")
-    public ResponseEntity<CartSummaryDto> getCartSummary(Authentication connectedUser, HttpSession session) {
-        return ResponseEntity.ok(cartService.getCartSummary(connectedUser,session));
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> removeCartItemFromCart(
+            Authentication connectedUser,
+            @PathVariable Long productId) {
+        cartService.removeCartItemFromCart(connectedUser, productId);
+        return ResponseEntity.status(HttpStatus.OK).body("Successfully removed cart items from cart");
+    }
+
+    @DeleteMapping("/remove")
+    public ResponseEntity<String> removeSelectedCartItemsFromCart(
+            @RequestBody List<Long> productIds,
+            Authentication connectedUser) {
+        cartService.removeSelectedCartItemsFromCart(productIds, connectedUser);
+        return ResponseEntity.status(HttpStatus.OK).body("Cart items removed from Cart.");
+    }
+
+    @PatchMapping("/{productId}/decrease")
+    public ResponseEntity<Void> decreaseProductQuantity(
+            Authentication connectedUser,
+            @PathVariable Long productId) {
+        cartService.decreaseProductQuantity(connectedUser, productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{productId}/increase")
+    public ResponseEntity<Void> increaseProductQuantity(
+            @PathVariable Long productId,
+            Authentication connectedUser) {
+        cartService.increaseProductQuantity(connectedUser,productId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/isEmpty")
-    public ResponseEntity<Boolean> isEmptyCart(Authentication connectedUser , HttpSession session) {
-        return ResponseEntity.ok(cartService.isEmptyCart(connectedUser,session));
+    public ResponseEntity<Boolean> isEmptyCart(Authentication connectedUser) {
+        return ResponseEntity.ok(cartService.isEmptyCart(connectedUser));
     }
-
-    @PatchMapping("/updateQuantities")
-    public ResponseEntity<CartDto> updateAllQuantities(
-            Authentication connectedUser,
-            HttpSession session,
-            @RequestBody Map <Long , Integer> productQuantities) {
-        return ResponseEntity.ok(cartService.updateAllQuantities(connectedUser,session , productQuantities));
-    }
-
 
 
 }

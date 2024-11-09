@@ -4,12 +4,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemDto {
+public class CartItemDto{
     private Long id;
     @NotNull(message = "Product cannot be null")
     private ProductResponseDto product;

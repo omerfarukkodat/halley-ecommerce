@@ -1,7 +1,7 @@
 package com.kodat.of.halleyecommerce.handler;
 
 import com.kodat.of.halleyecommerce.exception.*;
-import com.kodat.of.halleyecommerce.validator.AddressAlreadyExistsException;
+import com.kodat.of.halleyecommerce.exception.AddressAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

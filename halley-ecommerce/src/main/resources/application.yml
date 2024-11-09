@@ -10,7 +10,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: ${SPRING.MAIL.USERNAME}
-    password:  ${SPRING.MAIL.PASSWORD}
+    password: ${SPRING.MAIL.PASSWORD}
     properties:
       mail:
         smtp:
@@ -19,18 +19,16 @@ spring:
             enable: true
             required: true
   admin:
-    email: ${"SPRING.ADMIN.EMAIL"}
-    password: ${"SPRING.ADMIN.PASSWORD"}
-  data:
-    redis:
-      host: localhost
-      port: 6379
+    email: ${SPRING.ADMIN.EMAIL}
+    password: ${SPRING.ADMIN.PASSWORD}
+  docker:
+    compose:
+      lifecycle-management: start_only
   devtools:
     restart:
       enabled: true
     livereload:
       enabled: true
-
 
 server:
   servlet:
@@ -38,11 +36,7 @@ server:
 logging:
   level:
     root: info
-
   file:
     name: logs/halley-dev.log
-
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-
-

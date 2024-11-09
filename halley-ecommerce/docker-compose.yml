@@ -14,6 +14,16 @@ services:
     networks:
       - spring-demo
     restart: unless-stopped
+  redis:
+    container_name: redis-halley
+    image: redis:latest
+    command: redis-server --notify-keyspace-events Ex
+    ports:
+      - 6379:6379
+    networks:
+      - spring-demo
+    restart: unless-stopped
+
       
 volumes:
   postgres:

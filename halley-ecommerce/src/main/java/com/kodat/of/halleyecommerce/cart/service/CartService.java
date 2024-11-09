@@ -1,28 +1,26 @@
 package com.kodat.of.halleyecommerce.cart.service;
 
-import com.kodat.of.halleyecommerce.dto.cart.AddToCartRequest;
 import com.kodat.of.halleyecommerce.dto.cart.CartDto;
-import com.kodat.of.halleyecommerce.dto.cart.CartSummaryDto;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 
-import java.util.Map;
+import java.util.List;
+
 
 public interface CartService {
 
-    CartDto handleGetCart(Authentication connectedUser, HttpSession session);
+    CartDto getCart(Authentication connectedUser);
 
-    CartDto addToCart(Authentication connectedUser, HttpSession session, AddToCartRequest request);
+    void addToCart(Authentication connectedUser,  Long productId);
 
-    CartDto removeFromCart(Authentication connectedUser, HttpSession session, Long productId);
+    void removeCartItemFromCart(Authentication connectedUser, Long productId);
 
-    CartDto decreaseProductQuantity(Authentication connectedUser, HttpSession session, Long productId, Integer quantity);
+    void decreaseProductQuantity(Authentication connectedUser, Long productId);
 
-    void clearCart(Authentication connectedUser, HttpSession session);
+    void removeAllCartItemFromCart(Authentication connectedUser);
 
-    CartSummaryDto getCartSummary(Authentication connectedUser, HttpSession session);
+    Boolean isEmptyCart(Authentication connectedUser);
 
-    Boolean isEmptyCart(Authentication connectedUser, HttpSession session);
+    void increaseProductQuantity(Authentication connectedUser , Long productId);
 
-    CartDto updateAllQuantities(Authentication connectedUser, HttpSession session , Map<Long,Integer> productQuantities);
+    void removeSelectedCartItemsFromCart(List<Long> productIds, Authentication connectedUser);
 }

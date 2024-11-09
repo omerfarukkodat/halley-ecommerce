@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartDto {
+public class CartDto  {
     private Long id;
     @NotEmpty(message = "Cart items cannot be empty")
     private List<CartItemDto> items = new ArrayList<>();
