@@ -1,9 +1,11 @@
 package com.kodat.of.halleyecommerce.mapper.order;
 
+import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.cart.CartItem;
 import com.kodat.of.halleyecommerce.dto.order.OrderDto;
 import com.kodat.of.halleyecommerce.order.Order;
 import com.kodat.of.halleyecommerce.order.OrderItem;
+import com.kodat.of.halleyecommerce.user.User;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -42,4 +44,17 @@ public class OrderMapper {
                 .addressId(order.getAddressId())
                 .build();
     }
+    public static OrderDto toOrderDtoForGuestUser(Order order) {
+        return OrderDto.builder()
+                .id(order.getId())
+                .guestUserId(order.getGuestUser().getId())
+                .orderItems(OrderItemMapper.toOrderItemDtoList(order.getOrderItems()))
+                .totalPrice(order.getTotalPrice())
+                .shippingCost(order.getShippingCost())
+                .finalPrice(order.getFinalPrice())
+                .status(order.getStatus())
+                .addressId(order.getAddressId())
+                .build();
+    }
+
 }

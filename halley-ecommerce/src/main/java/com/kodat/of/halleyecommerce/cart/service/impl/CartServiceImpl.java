@@ -19,7 +19,6 @@ public class CartServiceImpl implements CartService {
         this.authenticatedService = authenticatedService;
     }
 
-
     @Override
     public CartDto getCart(Authentication connectedUser) {
         if (isAuthenticated(connectedUser)) {
@@ -33,7 +32,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public void addToCart(Authentication connectedUser, Long productId) {
         if (isAuthenticated(connectedUser)) {
-             authenticatedService.addToCart(connectedUser, productId);
+            authenticatedService.addToCart(connectedUser, productId);
         } else {
             unauthenticatedService.addToCart(productId);
         }
@@ -42,18 +41,18 @@ public class CartServiceImpl implements CartService {
     @Override
     public void removeCartItemFromCart(Authentication connectedUser, Long productId) {
         if (isAuthenticated(connectedUser)) {
-             authenticatedService.removeCartItemFromCart(productId, connectedUser);
+            authenticatedService.removeCartItemFromCart(productId, connectedUser);
         } else {
-             unauthenticatedService.removeCartItemFromCart(productId);
+            unauthenticatedService.removeCartItemFromCart(productId);
         }
     }
 
     @Override
-    public void decreaseProductQuantity(Authentication connectedUser,  Long productId) {
+    public void decreaseProductQuantity(Authentication connectedUser, Long productId) {
         if (isAuthenticated(connectedUser)) {
             authenticatedService.decreaseProductQuantityForAuthenticatedUser(productId, connectedUser);
         } else {
-             unauthenticatedService.decreaseProductQuantityForUnauthenticatedUser(productId);
+            unauthenticatedService.decreaseProductQuantityForUnauthenticatedUser(productId);
         }
     }
 
@@ -77,20 +76,20 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void increaseProductQuantity(Authentication connectedUser ,Long productId) {
-        if (isAuthenticated(connectedUser)){
-            authenticatedService.increaseQuantityForAuthenticated(connectedUser,productId);
-        }else{
-         unauthenticatedService.increaseQuantityForUnauthenticated(productId);
+    public void increaseProductQuantity(Authentication connectedUser, Long productId) {
+        if (isAuthenticated(connectedUser)) {
+            authenticatedService.increaseQuantityForAuthenticated(connectedUser, productId);
+        } else {
+            unauthenticatedService.increaseQuantityForUnauthenticated(productId);
         }
     }
 
     @Override
     public void removeSelectedCartItemsFromCart(List<Long> productIds, Authentication connectedUser) {
-        if (isAuthenticated(connectedUser)){
-            authenticatedService.removeSelectedCartItemsFromCart(productIds,connectedUser);
-        }else{
-         unauthenticatedService.removeSelectedCartItemsFromCart(productIds);
+        if (isAuthenticated(connectedUser)) {
+            authenticatedService.removeSelectedCartItemsFromCart(productIds, connectedUser);
+        } else {
+            unauthenticatedService.removeSelectedCartItemsFromCart(productIds);
         }
     }
 

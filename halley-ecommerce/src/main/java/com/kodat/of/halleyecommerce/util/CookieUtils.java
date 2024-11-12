@@ -45,6 +45,7 @@ public class CookieUtils {
         Cookie cookie = new Cookie(CART_TOKEN_COOKIE_NAME, cartToken);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setMaxAge(60 * 60 * 24 * 3); // 3 gün
         response.addCookie(cookie);
     }

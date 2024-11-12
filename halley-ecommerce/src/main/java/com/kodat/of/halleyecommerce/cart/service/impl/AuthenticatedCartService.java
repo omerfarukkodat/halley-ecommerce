@@ -17,6 +17,7 @@ import com.kodat.of.halleyecommerce.validator.ProductValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -87,7 +88,8 @@ public class AuthenticatedCartService {
     public void removeAllCartItemFromCart(Authentication connectedUser) {
         Cart cart = cartValidator.validateCartAndUser(connectedUser);
         if (cart != null) {
-            cartItemRepository.deleteAllByCartId(cart.getId());
+            cart.getItems().clear();
+            cartRepository.save(cart);
         } else {
             throw new EmptyCartException("There is no authenticated cart to delete");
         }

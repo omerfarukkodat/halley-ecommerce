@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.address;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kodat.of.halleyecommerce.address.enums.AddressType;
+import com.kodat.of.halleyecommerce.user.GuestUser;
 import com.kodat.of.halleyecommerce.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -53,4 +54,7 @@ public class Address {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
+    @ManyToOne
+    @JoinColumn(name = "guest_id")
+    private GuestUser guestUser;
 }

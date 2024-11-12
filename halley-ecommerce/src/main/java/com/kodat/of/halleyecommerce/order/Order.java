@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.order;
 
 import com.kodat.of.halleyecommerce.order.enums.Status;
+import com.kodat.of.halleyecommerce.user.GuestUser;
 import com.kodat.of.halleyecommerce.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +27,8 @@ public class Order {
     private Long id;
     @ManyToOne
     private User user;
+    @ManyToOne
+    private GuestUser guestUser;
     @OneToMany(mappedBy = "order" , cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
     private BigDecimal totalPrice;

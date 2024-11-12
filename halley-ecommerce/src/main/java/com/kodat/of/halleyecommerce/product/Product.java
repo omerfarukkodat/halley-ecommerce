@@ -47,7 +47,7 @@ public class Product {
     @Column(unique = true)
     private String slug;
     private boolean isFeatured = false;
-    @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL )
     private List<CartItem> cartItem;
     @ManyToOne
     @JoinColumn(name = "discount_id")

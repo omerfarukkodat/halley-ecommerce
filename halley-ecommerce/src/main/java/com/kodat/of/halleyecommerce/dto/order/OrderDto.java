@@ -15,14 +15,16 @@ import java.util.List;
 public class OrderDto {
     private Long id;
     private Long userId;
+    private Long guestUserId;
     @NotNull
     private List<OrderItemDto> orderItems;
     @NotNull
     private BigDecimal totalPrice;
     @NotNull
     private Status status;
-    @NotNull
+   // @NotNull
     private Long addressId;
     private BigDecimal shippingCost;
     private BigDecimal finalPrice;
+    private NonMemberInfoDto nonMemberInfoDto;
 }

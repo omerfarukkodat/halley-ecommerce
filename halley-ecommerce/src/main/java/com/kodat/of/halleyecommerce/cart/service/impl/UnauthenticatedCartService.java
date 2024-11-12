@@ -14,7 +14,6 @@ import com.kodat.of.halleyecommerce.util.CookieUtils;
 import com.kodat.of.halleyecommerce.util.RedisUtils;
 import com.kodat.of.halleyecommerce.util.UnauthenticatedUtils;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 
@@ -34,8 +33,6 @@ public class UnauthenticatedCartService {
         this.redisUtils = redisUtils;
         this.cookieUtils = cookieUtils;
     }
-
-
     // Add a product to the cart
     public void addToCart(Long productId) {
         Cart cart = unauthenticatedUtils.getOrCreateCart();
@@ -70,6 +67,7 @@ public class UnauthenticatedCartService {
         if (existingItem != null) {
             sessionCart.getItems().remove(existingItem);
             redisUtils.saveCartToRedis(cart.getCartToken(), sessionCart);
+            cartItemRepository.deleteById(existingItem.getId());
         } else {
             throw new CartItemNotFoundException("Product does not exist in session");
         }
@@ -127,10 +125,12 @@ public class UnauthenticatedCartService {
         if (sessionCart.getItems().isEmpty()) {
             throw new CartNotFoundException("Cart is already empty");
         }
-        cartItemRepository.deleteAllByCartId(cart.getId());
+        else {
+        cart.getItems().clear();
+        cartRepository.save(cart);
         sessionCart.getItems().clear();
-        redisUtils.clearCartFromRedis(cart.getCartToken());
-    }
+        redisUtils.saveCartToRedis(cart.getCartToken(), sessionCart);
+    }}
 
     // Check if cart is empty for unauthenticated user
     public Boolean isEmptyForUnauthenticated() {
@@ -152,11 +152,9 @@ public class UnauthenticatedCartService {
                 sessionCart.getItems().removeIf(item -> item.getId().equals(cartItem.getId()));
             } else {
                 throw new CartItemNotFoundException("Product with ID " + productId + " does not exist in session");
-
             }
         }
         redisUtils.saveCartToRedis(cart.getCartToken(), sessionCart);
-
     }
 }
 

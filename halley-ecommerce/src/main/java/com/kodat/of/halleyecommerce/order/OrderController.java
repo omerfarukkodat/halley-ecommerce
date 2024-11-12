@@ -22,7 +22,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @Secured("USER")
+   // @Secured("USER")
     @PostMapping
     public ResponseEntity<OrderDto> createOrderFromCart(
             @Valid @RequestBody OrderDto orderDto,

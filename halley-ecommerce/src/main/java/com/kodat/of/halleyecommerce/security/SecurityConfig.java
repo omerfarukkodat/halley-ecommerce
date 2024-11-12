@@ -41,7 +41,8 @@ public class SecurityConfig {
                                 "kategoriler/tree",
                                 "kategoriler/findAll",
                                 "users/reset-password/request",
-                                "users/reset-password"
+                                "users/reset-password",
+                                "/order"
                         ).permitAll()
                                 .requestMatchers(HttpMethod.GET , "products/**")
                                 .permitAll()
