@@ -4,8 +4,6 @@ import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.cart.CartItem;
 import com.kodat.of.halleyecommerce.cart.CartItemRepository;
 import com.kodat.of.halleyecommerce.cart.CartRepository;
-import com.kodat.of.halleyecommerce.dto.cart.CartDto;
-import com.kodat.of.halleyecommerce.dto.cart.CartItemDto;
 import com.kodat.of.halleyecommerce.exception.InsufficientStockException;
 import com.kodat.of.halleyecommerce.mapper.cart.CartMapper;
 import com.kodat.of.halleyecommerce.product.Product;
@@ -113,10 +111,4 @@ public class AuthenticatedCartUtils {
         return cartRepository.save(cart);
     }
 
-    public CartItemDto findItemByProductId(CartDto cartDto, Long productId) {
-        return cartDto.getItems().stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst()
-                .orElse(null);
-    }
 }

@@ -29,6 +29,23 @@ spring:
       enabled: true
     livereload:
       enabled: true
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    stream:
+      username: guest
+      password: guest
+    queue:
+      orderMailQueueMember: orderMailQueueMember
+      orderMailQueueNonMember: orderMailQueueNonMember
+    template:
+      routing-key:
+        member: halley_routing_key_member
+        nonmember: halley_routing_key_non_member
+      exchange: halley_exchange
+  main:
+    allow-bean-definition-overriding: true
+
 
 server:
   servlet:
@@ -40,3 +57,4 @@ logging:
     name: logs/halley-dev.log
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+

@@ -5,8 +5,10 @@ import com.kodat.of.halleyecommerce.address.AddressRepository;
 import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.cart.service.impl.CartServiceImpl;
 import com.kodat.of.halleyecommerce.dto.address.AddressDto;
+import com.kodat.of.halleyecommerce.dto.order.EmailConsumerDto;
 import com.kodat.of.halleyecommerce.dto.order.NonMemberInfoDto;
 import com.kodat.of.halleyecommerce.dto.order.OrderDto;
+import com.kodat.of.halleyecommerce.dto.order.OrderResponseDto;
 import com.kodat.of.halleyecommerce.exception.*;
 import com.kodat.of.halleyecommerce.mapper.address.AddressMapper;
 import com.kodat.of.halleyecommerce.mapper.order.OrderMapper;
@@ -36,10 +38,11 @@ public class OrderServiceImpl implements OrderService {
     private final GuestUserRepository guestUserRepository;
     private final CartServiceImpl cartService;
     private final StockUtils stockUtils;
-    private final OrderEmailUtils orderEmailUtils;
     private final OrderUtils orderUtils;
+    private final OrderEmailProducer orderEmailProducer;
+    private final OrderEmailUtils orderEmailUtils;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RoleValidator roleValidator, CartValidator cartValidator, AddressRepository addressRepository, ShippingUtils shippingUtils, UnauthenticatedUtils unauthenticatedUtils, GuestUserRepository guestUserRepository, CartServiceImpl cartService, StockUtils stockUtils, OrderEmailUtils orderEmailUtils, OrderUtils orderUtils) {
+    public OrderServiceImpl(OrderRepository orderRepository, RoleValidator roleValidator, CartValidator cartValidator, AddressRepository addressRepository, ShippingUtils shippingUtils, UnauthenticatedUtils unauthenticatedUtils, GuestUserRepository guestUserRepository, CartServiceImpl cartService, StockUtils stockUtils, OrderUtils orderUtils, OrderEmailProducer orderEmailProducer, OrderEmailUtils orderEmailUtils) {
         this.orderRepository = orderRepository;
         this.roleValidator = roleValidator;
         this.cartValidator = cartValidator;
@@ -49,26 +52,26 @@ public class OrderServiceImpl implements OrderService {
         this.guestUserRepository = guestUserRepository;
         this.cartService = cartService;
         this.stockUtils = stockUtils;
-        this.orderEmailUtils = orderEmailUtils;
         this.orderUtils = orderUtils;
+        this.orderEmailProducer = orderEmailProducer;
+        this.orderEmailUtils = orderEmailUtils;
     }
 
 
     @Transactional
     @Override
-    public OrderDto createOrderFromCart(OrderDto orderDto, Authentication connectedUser) {
+    public OrderResponseDto createOrderFromCart(OrderDto orderDto, Authentication connectedUser) {
         if (cartService.isEmptyCart(connectedUser)) {
             throw new EmptyCartException("You can't create an order without a cart.");
         }
-        OrderDto createdOrder = isAuthenticated(connectedUser)
+        OrderResponseDto createdOrder = isAuthenticated(connectedUser)
                 ? createOrderForMember(orderDto, connectedUser)
                 : createOrderForNonMember(orderDto);
-
         cartService.removeAllCartItemFromCart(connectedUser);
         return createdOrder;
     }
 
-    public OrderDto createOrderForMember(OrderDto orderDto, Authentication connectedUser) {
+    public OrderResponseDto createOrderForMember(OrderDto orderDto, Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         CustomUserDetails customUserDetails = (CustomUserDetails) connectedUser.getPrincipal();
         User user = customUserDetails.getUser();
@@ -79,18 +82,19 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new AddressNotFoundException("Address not found"));
         BigDecimal totalPrice = orderUtils.calculateTotalPrice(cart.getItems());
         BigDecimal shippingCost = shippingUtils.calculateShippingCost(totalPrice);
-        Order order = orderUtils.createOrderForMemberUser(user, totalPrice, shippingCost, address.getId());
+        Order order = OrderMapper.createOrderForMemberUser(user, totalPrice, shippingCost, address.getId());
         List<OrderItem> orderItems = OrderMapper.toOrderItemList(cart.getItems(), order);
         order.setOrderItems(orderItems);
         orderRepository.save(order);
-        orderEmailUtils.sendEmailForOrderSummary(order, user);
         orderItems.forEach(item ->
                 stockUtils.updateStock(item.getProduct().getId(), item.getQuantity()));
-        return OrderMapper.toOrderDto(order);
+        EmailConsumerDto emailConsumerDto = orderEmailUtils.setEmailConsumerDto(user , order);
+        orderEmailProducer.sendOrderToQueueForMember(emailConsumerDto);
+        return OrderMapper.toOrderResponseDto(order);
     }
 
 
-    public OrderDto createOrderForNonMember(OrderDto orderDto) {
+    public OrderResponseDto createOrderForNonMember(OrderDto orderDto) {
         NonMemberInfoDto nonMemberInfoDto = orderDto.getNonMemberInfoDto();
         GuestUser guestUser = orderUtils.getOrCreateGuestUser(nonMemberInfoDto);
         orderUtils.validateRegisteredUserForGuestOrder(guestUser);
@@ -104,18 +108,19 @@ public class OrderServiceImpl implements OrderService {
         orderDto.setAddressId(address.getId());
         BigDecimal totalPrice = orderUtils.calculateTotalPrice(cart.getItems());
         BigDecimal shippingCost = shippingUtils.calculateShippingCost(totalPrice);
-        Order order = orderUtils.createOrderEntityForNonMember(guestUser, totalPrice, shippingCost, address.getId());
+        Order order = OrderMapper.createOrderEntityForNonMember(guestUser, totalPrice, shippingCost, address.getId());
         List<OrderItem> orderItems = OrderMapper.toOrderItemList(cart.getItems(), order);
         order.setOrderItems(orderItems);
         orderRepository.save(order);
         orderItems.forEach(item ->
                 stockUtils.updateStock(item.getProduct().getId(), item.getQuantity()));
-        orderEmailUtils.sendEmailForOrderSummaryNonMember(order, guestUser);
-        return OrderMapper.toOrderDtoForGuestUser(order);
+        EmailConsumerDto emailConsumerDto = orderEmailUtils.setEmailConsumerDto(guestUser,order);
+        orderEmailProducer.sendOrderToQueueNonMember(emailConsumerDto);
+        return OrderMapper.toOrderResponseDto(order);
     }
 
     @Override
-    public List<OrderDto> getAllOrders(Authentication connectedUser) {
+    public List<OrderResponseDto> getAllOrders(Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         CustomUserDetails customUserDetails = (CustomUserDetails) connectedUser.getPrincipal();
         User user = customUserDetails.getUser();
@@ -123,47 +128,47 @@ public class OrderServiceImpl implements OrderService {
         List<Order> order = orderRepository.findAllByUser(user)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
         return order.stream()
-                .map(OrderMapper::toOrderDto)
+                .map(OrderMapper::toOrderResponseDto)
                 .toList();
     }
 
     @Override
-    public OrderDto getOrderById(Long orderId, Authentication connectedUser) {
+    public OrderResponseDto getOrderById(Long orderId, Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         cartValidator.validateCartAndUser(connectedUser);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
-        return OrderMapper.toOrderDto(order);
+        return OrderMapper.toOrderResponseDto(order);
     }
 
     @Override
-    public List<OrderDto> getAllOrdersForAdmin(Authentication connectedUser) {
+    public List<OrderResponseDto> getAllOrdersForAdmin(Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
         List<Order> allOrders = orderRepository.findAll();
         return allOrders.stream()
-                .map(OrderMapper::toOrderDto)
+                .map(OrderMapper::toOrderResponseDto)
                 .toList();
     }
 
     @Override
-    public OrderDto updateOrderStatus(Long orderId, Status status, Authentication connectedUser) {
+    public OrderResponseDto updateOrderStatus(Long orderId, Status status, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
         order.setStatus(status);
         orderRepository.save(order);
-        return OrderMapper.toOrderDto(order);
+        return OrderMapper.toOrderResponseDto(order);
     }
 
     @Override
-    public List<OrderDto> getOrdersByDateRange(String startDate, String endDate, Authentication connectedUser) {
+    public List<OrderResponseDto> getOrdersByDateRange(String startDate, String endDate, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
         LocalDateTime startDateTime = LocalDateTime.parse(startDate);
         LocalDateTime endDateTime = LocalDateTime.parse(endDate);
         List<Order> orderList = orderRepository.findByCreatedAtBetween(startDateTime, endDateTime)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
         return orderList.stream()
-                .map(OrderMapper::toOrderDto)
+                .map(OrderMapper::toOrderResponseDto)
                 .toList();
     }
 
@@ -179,7 +184,7 @@ public class OrderServiceImpl implements OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public boolean isAuthenticated(Authentication connectedUser) {
+    private boolean isAuthenticated(Authentication connectedUser) {
         return connectedUser != null && connectedUser.isAuthenticated();
     }
 

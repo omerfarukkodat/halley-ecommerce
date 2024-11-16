@@ -29,7 +29,7 @@ public class AdminInitializer {
     CommandLineRunner initAdminUser(){
         return args -> {
             // If admin exist , don't create again
-            if (userRepository.findByEmail("farukkodat@gmail.com").isEmpty()) {
+            if (userRepository.findByEmail(email).isEmpty()) {
                 User admin = User.builder()
                         .firstName("Faruk")
                         .lastName("Kodat")

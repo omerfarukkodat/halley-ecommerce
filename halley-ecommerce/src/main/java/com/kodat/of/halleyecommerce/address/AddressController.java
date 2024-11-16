@@ -19,22 +19,22 @@ public class AddressController {
     public AddressController(AddressService addressService) {
         this.addressService = addressService;
     }
+
     @Secured("USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AddressDto> createAddress(
-           @Valid @RequestBody AddressDto addressDto,
+            @Valid @RequestBody AddressDto addressDto,
             Authentication connectedUser) {
-        AddressDto createdAddress = addressService.createAddress(addressDto,connectedUser);
+        AddressDto createdAddress = addressService.createAddress(addressDto, connectedUser);
         return new ResponseEntity<>(createdAddress, HttpStatus.CREATED);
     }
-
 
     @Secured("USER")
     @GetMapping("/{addressId}")
     public ResponseEntity<AddressDto> getAddressById(
-            @PathVariable Long addressId , Authentication connectedUser) {
-        return ResponseEntity.ok(addressService.getAddressById(addressId,connectedUser));
+            @PathVariable Long addressId, Authentication connectedUser) {
+        return ResponseEntity.ok(addressService.getAddressById(addressId, connectedUser));
     }
 
     @Secured("USER")
@@ -42,21 +42,23 @@ public class AddressController {
     public ResponseEntity<List<AddressDto>> getAllAddresses(Authentication connectedUser) {
         return ResponseEntity.ok(addressService.getAllAddresses(connectedUser));
     }
+
     @Secured("USER")
     @PutMapping("/{addressId}")
     public ResponseEntity<AddressDto> updateAddressById(
             @PathVariable Long addressId,
             @Valid @RequestBody AddressDto addressDto,
             Authentication connectedUser
-    ){
-        return ResponseEntity.ok(addressService.updateAddressById(addressId,addressDto,connectedUser));
+    ) {
+        return ResponseEntity.ok(addressService.updateAddressById(addressId, addressDto, connectedUser));
     }
+
     @Secured("USER")
     @DeleteMapping("/{addressId}")
     public ResponseEntity<Void> deleteAddressById(
-            @PathVariable Long addressId , Authentication connectedUser
-    ){
-        addressService.deleteAddressById(addressId,connectedUser);
+            @PathVariable Long addressId, Authentication connectedUser
+    ) {
+        addressService.deleteAddressById(addressId, connectedUser);
         return ResponseEntity.noContent().build();
     }
 

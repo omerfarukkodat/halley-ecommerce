@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 public class ShippingUtils {
 
     public BigDecimal calculateShippingCost(BigDecimal totalPrice){
-        BigDecimal freeShippingThreshold = new BigDecimal("1000");
-        BigDecimal shippingCost = new BigDecimal("150"); // Current shipping payment
+        BigDecimal freeShippingThreshold = new BigDecimal("1000.00");
+        BigDecimal shippingCost = new BigDecimal("150.00"); // Current shipping payment
 
         if (totalPrice.compareTo(freeShippingThreshold) > 0){
             return BigDecimal.ZERO;

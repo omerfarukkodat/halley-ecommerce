@@ -23,6 +23,15 @@ services:
     networks:
       - spring-demo
     restart: unless-stopped
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" #For connection
+      - "15672:15672" # for management framework
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
 
       
 volumes:

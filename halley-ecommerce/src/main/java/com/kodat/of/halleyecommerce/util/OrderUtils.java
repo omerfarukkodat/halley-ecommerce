@@ -4,11 +4,8 @@ import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.cart.CartItem;
 import com.kodat.of.halleyecommerce.dto.order.NonMemberInfoDto;
 import com.kodat.of.halleyecommerce.exception.UserAlreadyExistsException;
-import com.kodat.of.halleyecommerce.order.Order;
-import com.kodat.of.halleyecommerce.order.enums.Status;
 import com.kodat.of.halleyecommerce.user.GuestUser;
 import com.kodat.of.halleyecommerce.user.GuestUserRepository;
-import com.kodat.of.halleyecommerce.user.User;
 import com.kodat.of.halleyecommerce.user.UserRepository;
 import org.springframework.stereotype.Component;
 
@@ -44,27 +41,7 @@ public class OrderUtils {
         }
     }
 
-public Order createOrderEntityForNonMember(GuestUser guestUser , BigDecimal totalPrice , BigDecimal shippingCost , Long addressId) {
-    return Order.builder()
-            .guestUser(guestUser)
-            .totalPrice(totalPrice)
-            .shippingCost(shippingCost)
-            .finalPrice(totalPrice.add(shippingCost))
-            .addressId(addressId)
-            .status(Status.HAZIRLANIYOR)
-            .build();
-}
 
-    public Order createOrderForMemberUser(User user , BigDecimal totalPrice , BigDecimal shippingCost , Long addressId) {
-        return Order.builder()
-                .user(user)
-                .totalPrice(totalPrice)
-                .shippingCost(shippingCost)
-                .finalPrice(totalPrice.add(shippingCost))
-                .addressId(addressId)
-                .status(Status.HAZIRLANIYOR)
-                .build();
-    }
 
     public void validateRegisteredUserForGuestOrder(GuestUser guestUser){
         if (userRepository.findByEmail(guestUser.getEmail()).isPresent()) {

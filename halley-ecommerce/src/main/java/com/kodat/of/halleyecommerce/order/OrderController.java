@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.order;
 
 import com.kodat.of.halleyecommerce.dto.order.OrderDto;
+import com.kodat.of.halleyecommerce.dto.order.OrderResponseDto;
 import com.kodat.of.halleyecommerce.dto.order.UpdateOrderStatusDto;
 import com.kodat.of.halleyecommerce.order.enums.Status;
 import jakarta.validation.Valid;
@@ -22,9 +23,8 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-   // @Secured("USER")
     @PostMapping
-    public ResponseEntity<OrderDto> createOrderFromCart(
+    public ResponseEntity<OrderResponseDto> createOrderFromCart(
             @Valid @RequestBody OrderDto orderDto,
             Authentication connectedUser
     ) {
@@ -33,44 +33,43 @@ public class OrderController {
 
     @Secured("USER")
     @GetMapping
-    public ResponseEntity<List<OrderDto>> getAllOrders(Authentication connectedUser) {
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders(Authentication connectedUser) {
         return ResponseEntity.ok(orderService.getAllOrders(connectedUser));
     }
 
     @Secured("USER")
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderDto> getOrderById(
+    public ResponseEntity<OrderResponseDto> getOrderById(
             @PathVariable Long orderId,
             Authentication connectedUser) {
         return ResponseEntity.ok(orderService.getOrderById(orderId, connectedUser));
 
     }
 
-
     @Secured("ADMIN")
     @GetMapping("/admin")
-    public ResponseEntity<List<OrderDto>> getAllOrdersForAdmin(Authentication connectedUser) {
+    public ResponseEntity<List<OrderResponseDto>> getAllOrdersForAdmin(Authentication connectedUser) {
         return ResponseEntity.ok(orderService.getAllOrdersForAdmin(connectedUser));
     }
 
     @Secured("ADMIN")
     @PutMapping("{orderId}/status")
-    public ResponseEntity<OrderDto> updateOrderStatus(
+    public ResponseEntity<OrderResponseDto> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody UpdateOrderStatusDto orderStatusDto,
             Authentication connectedUser
-    ){
+    ) {
         Status status = orderStatusDto.getStatus();
-        return ResponseEntity.ok(orderService.updateOrderStatus(orderId,status,connectedUser));
+        return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status, connectedUser));
     }
 
     @Secured("ADMIN")
     @GetMapping("/admin/filter")
-    public ResponseEntity<List<OrderDto>> getOrdersByDateRange(
+    public ResponseEntity<List<OrderResponseDto>> getOrdersByDateRange(
             @RequestParam String startDate,
             @RequestParam String endDate,
             Authentication connectedUser) {
-        return ResponseEntity.ok(orderService.getOrdersByDateRange(startDate,endDate,connectedUser));
+        return ResponseEntity.ok(orderService.getOrdersByDateRange(startDate, endDate, connectedUser));
     }
 
     @Secured("ADMIN")
@@ -79,6 +78,6 @@ public class OrderController {
             @RequestParam String startDate,
             @RequestParam String endDate,
             Authentication connectedUser) {
-        return ResponseEntity.ok(orderService.getTotalSalesForAdmin(startDate,endDate,connectedUser));
+        return ResponseEntity.ok(orderService.getTotalSalesForAdmin(startDate, endDate, connectedUser));
     }
 }

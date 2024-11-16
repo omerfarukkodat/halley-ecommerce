@@ -38,6 +38,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
     private boolean accountLocked;
+
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true )

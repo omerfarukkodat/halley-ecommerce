@@ -1,5 +1,7 @@
 package com.kodat.of.halleyecommerce.util;
 
+import com.kodat.of.halleyecommerce.dto.order.EmailConsumerDto;
+import com.kodat.of.halleyecommerce.mapper.order.OrderItemMapper;
 import com.kodat.of.halleyecommerce.order.Order;
 import com.kodat.of.halleyecommerce.user.EmailService;
 import com.kodat.of.halleyecommerce.user.GuestUser;
@@ -22,36 +24,44 @@ public class OrderEmailUtils {
         this.emailService = emailService;
     }
 
-
-    public void sendEmailForOrderSummary(Order order, User user) {
+    public void sendEmailForOrderSummary(EmailConsumerDto emailConsumerDto) {
         Instant instant = Instant.now();
         ZoneId zoneId = ZoneId.of("Asia/Istanbul");
         ZonedDateTime zdt = instant.atZone(zoneId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM EEEE, HH:mm", Locale.forLanguageTag("tr"));
         String formattedOrderDate = zdt.format(formatter);
         Map<String, Object> orderData = new HashMap<>();
-        orderData.put("customerName", user.getFirstName());
-        orderData.put("customerLastName", user.getLastName());
+        orderData.put("customerName", emailConsumerDto.getFirstName());
+        orderData.put("customerLastName", emailConsumerDto.getLastName());
         orderData.put("orderDate", formattedOrderDate);
-        orderData.put("orderItems", order.getOrderItems());
-        orderData.put("shippingCost", order.getShippingCost());
-        orderData.put("finalPrice", order.getFinalPrice());
-        emailService.sendOrderSummaryEmail(user.getEmail(), orderData);
+        orderData.put("orderItems", emailConsumerDto.getOrderItems());
+        orderData.put("shippingCost", emailConsumerDto.getShippingCost());
+        orderData.put("finalPrice", emailConsumerDto.getFinalPrice());
+        emailService.sendOrderSummaryEmail(emailConsumerDto.getEmail(), orderData);
     }
 
-    public void sendEmailForOrderSummaryNonMember(Order order, GuestUser guestUser) {
-        Instant instant = Instant.now();
-        ZoneId zoneId = ZoneId.of("Asia/Istanbul");
-        ZonedDateTime zdt = instant.atZone(zoneId);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM EEEE, HH:mm", Locale.forLanguageTag("tr"));
-        String formattedOrderDate = zdt.format(formatter);
-        Map<String, Object> orderData = new HashMap<>();
-        orderData.put("customerName", guestUser.getFirstName());
-        orderData.put("customerLastName", guestUser.getLastName());
-        orderData.put("orderDate", formattedOrderDate);
-        orderData.put("orderItems", order.getOrderItems());
-        orderData.put("shippingCost", order.getShippingCost());
-        orderData.put("finalPrice", order.getFinalPrice());
-        emailService.sendOrderSummaryEmail(guestUser.getEmail(), orderData);
+    public EmailConsumerDto setEmailConsumerDto(Object object, Order order) {
+        User user;
+        GuestUser guestUser;
+        EmailConsumerDto emailConsumerDto;
+        if (object instanceof User) {
+            user = (User) object;
+            emailConsumerDto = EmailConsumerDto.builder()
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .email(user.getEmail())
+                    .build();
+        } else {
+            guestUser = (GuestUser) object;
+            emailConsumerDto = EmailConsumerDto.builder()
+                    .firstName(guestUser.getFirstName())
+                    .lastName(guestUser.getLastName())
+                    .email(guestUser.getEmail())
+                    .build();
+        }
+        emailConsumerDto.setOrderItems(OrderItemMapper.toEmailOrderItemDtoList(order.getOrderItems()));
+        emailConsumerDto.setShippingCost(order.getShippingCost());
+        emailConsumerDto.setFinalPrice(order.getFinalPrice());
+        return emailConsumerDto;
     }
 }
