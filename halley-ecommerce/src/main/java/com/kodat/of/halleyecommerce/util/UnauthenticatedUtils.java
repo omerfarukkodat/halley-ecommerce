@@ -20,14 +20,12 @@ public class UnauthenticatedUtils {
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final RedisUtils redisUtils;
     private final CookieUtils cookieUtils;
 
-    public UnauthenticatedUtils(ProductRepository productRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, RedisUtils redisUtils, CookieUtils cookieUtils) {
+    public UnauthenticatedUtils(ProductRepository productRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, CookieUtils cookieUtils) {
         this.productRepository = productRepository;
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
-        this.redisUtils = redisUtils;
         this.cookieUtils = cookieUtils;
     }
 
@@ -45,7 +43,7 @@ public class UnauthenticatedUtils {
         } else {
             addNewCartItem(cart, cartDto, product);
         }
-        redisUtils.saveCartToRedis(cart.getCartToken(), cartDto);
+
         cartDto.setId(cart.getId());
     }
 

@@ -1,7 +1,6 @@
 package com.kodat.of.halleyecommerce.config;
 
 import com.github.slugify.Slugify;
-import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;

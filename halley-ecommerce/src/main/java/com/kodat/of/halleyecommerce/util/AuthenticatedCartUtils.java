@@ -20,41 +20,39 @@ public class AuthenticatedCartUtils {
     private final UnauthenticatedUtils unauthenticatedUtils;
     private final RoleValidator roleValidator;
     private final StockUtils stockUtils;
-    private final RedisUtils redisUtils;
 
-    public AuthenticatedCartUtils(CartRepository cartRepository, CartItemRepository cartItemRepository, UnauthenticatedUtils unauthenticatedUtils, RoleValidator roleValidator, StockUtils stockUtils, RedisUtils redisUtils) {
+    public AuthenticatedCartUtils(CartRepository cartRepository, CartItemRepository cartItemRepository, UnauthenticatedUtils unauthenticatedUtils, RoleValidator roleValidator, StockUtils stockUtils) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.unauthenticatedUtils = unauthenticatedUtils;
         this.roleValidator = roleValidator;
         this.stockUtils = stockUtils;
-        this.redisUtils = redisUtils;
     }
+
 
     public void mergeCarts(Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         CustomUserDetails customUserDetails = (CustomUserDetails) connectedUser.getPrincipal();
         User user = customUserDetails.getUser();
-        Cart sessionCart = unauthenticatedUtils.getOrCreateCart();
+        Cart nonMemberCart = unauthenticatedUtils.getOrCreateCart();
         Cart userCart = cartRepository.findByUser(user)
                 .orElseGet(() -> createNewCartForUser(user));
-        for (CartItem sessionItem : sessionCart.getItems()) {
-            mergeCartItem(userCart, sessionItem);
+        for (CartItem nonMemberCartItem : nonMemberCart.getItems()) {
+            mergeCartItem(userCart, nonMemberCartItem);
         }
-        sessionCart.getItems().clear();
-        redisUtils.clearCartFromRedis(sessionCart.getCartToken());
-        cartRepository.delete(sessionCart);
+        nonMemberCart.getItems().clear();
+        cartRepository.delete(nonMemberCart);
         cartRepository.save(userCart);
         CartMapper.INSTANCE.toCartDto(userCart);
     }
 
-    private void mergeCartItem(Cart userCart, CartItem sessionItem) {
-        CartItem existingItem = findExistingCartItem(userCart, sessionItem.getProduct().getId());
+    private void mergeCartItem(Cart userCart, CartItem nonMemberCartItem) {
+        CartItem existingItem = findExistingCartItem(userCart, nonMemberCartItem.getProduct().getId());
 
         if (existingItem != null) {
             int combinedQuantity = Math.min(
-                    existingItem.getQuantity() + sessionItem.getQuantity(),
-                    sessionItem.getProduct().getStock()
+                    existingItem.getQuantity() + nonMemberCartItem.getQuantity(),
+                    nonMemberCartItem.getProduct().getStock()
             );
             if (combinedQuantity != existingItem.getQuantity()) {
                 existingItem.setQuantity(combinedQuantity);
@@ -62,9 +60,9 @@ public class AuthenticatedCartUtils {
             }
         }
         else {
-            int quantityToAdd = Math.min(sessionItem.getQuantity(), sessionItem.getProduct().getStock());
+            int quantityToAdd = Math.min(nonMemberCartItem.getQuantity(), nonMemberCartItem.getProduct().getStock());
             CartItem newUserCartItem = CartItem.builder()
-                    .product(sessionItem.getProduct())
+                    .product(nonMemberCartItem.getProduct())
                     .quantity(quantityToAdd)
                     .cart(userCart)
                     .build();
