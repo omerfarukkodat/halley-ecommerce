@@ -21,19 +21,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<Product> findByCategories_Id(Long categoryId, Pageable pageable);
 
-    //Full-text Search
-    @Query(value = "SELECT p.*, " +
-            "ts_rank_cd(to_tsvector('turkish', p.name), plainto_tsquery('turkish', :searchTerm)) AS relevance " +
-            "FROM products p " +
-            "WHERE to_tsvector('turkish', p.name) @@ plainto_tsquery('turkish', :searchTerm) " +
-            "OR p.name ILIKE CONCAT('%', :searchTerm, '%') " +
-            "ORDER BY relevance DESC",
-            countQuery = "SELECT COUNT(*) " +
-                    "FROM products p " +
-                    "WHERE to_tsvector('turkish', p.name) @@ plainto_tsquery('turkish', :searchTerm) " +
-                    "OR p.name ILIKE CONCAT('%', :searchTerm, '%')",
-            nativeQuery = true)
-    Page<Product> findProductsByFullTextSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
+//    //Full-text Search
+//    @Query(value = "SELECT p.*, " +
+//            "ts_rank_cd(to_tsvector('turkish', p.name), plainto_tsquery('turkish', :searchTerm)) AS relevance " +
+//            "FROM products p " +
+//            "WHERE to_tsvector('turkish', p.name) @@ plainto_tsquery('turkish', :searchTerm) " +
+//            "OR p.name ILIKE CONCAT('%', :searchTerm, '%') " +
+//            "ORDER BY relevance DESC",
+//            countQuery = "SELECT COUNT(*) " +
+//                    "FROM products p " +
+//                    "WHERE to_tsvector('turkish', p.name) @@ plainto_tsquery('turkish', :searchTerm) " +
+//                    "OR p.name ILIKE CONCAT('%', :searchTerm, '%')",
+//            nativeQuery = true)
+//    Page<Product> findProductsByFullTextSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     @Query("SELECT DISTINCT p FROM Product p " +
             "JOIN p.categories c " +
@@ -54,4 +54,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "(:maxPrice IS NULL OR p.originalPrice <= :maxPrice) AND " +
             "p.discountedPrice < p.originalPrice")
     Page<Product> findDiscountedProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+
+    @Query("SELECT p FROM Product p WHERE p.id IN :ids")
+    Page<Product> findAllByIdsWithPagination(@Param("ids") List<Long> productIds, Pageable pageable);
 }

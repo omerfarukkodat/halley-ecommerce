@@ -3,8 +3,7 @@ spring:
     redis:
       host: redis-halley
       port: 6379
-      notifications:
-        key-events: "Ex"
+
   datasource:
     url: jdbc:postgresql://localhost:5433/halley_ecommerce
     username: postgres

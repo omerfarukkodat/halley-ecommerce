@@ -34,8 +34,9 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryUtils categoryUtils;
     private final SearchService searchService;
     private final SlugService slugService;
+    private final ProductSearchRepository productSearchRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, SearchService searchService, SlugService slugService) {
+    public ProductServiceImpl(ProductRepository productRepository, RoleValidator roleValidator, CategoryValidator categoryValidator, ProductValidator productValidator, CategoryUtils categoryUtils, SearchService searchService, SlugService slugService, ProductSearchRepository productSearchRepository) {
         this.productRepository = productRepository;
         this.roleValidator = roleValidator;
         this.categoryValidator = categoryValidator;
@@ -43,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
         this.categoryUtils = categoryUtils;
         this.searchService = searchService;
         this.slugService = slugService;
-
+        this.productSearchRepository = productSearchRepository;
     }
 
     @Override
@@ -57,6 +58,11 @@ public class ProductServiceImpl implements ProductService {
         String slug = slugService.generateSlug(productDto.getName() , productDto.getProductCode()); //Create slug for friendly-url
         Product product = productRepository.save(ProductMapper.toProduct(productDto, categories , slug));
         LOGGER.info("Product: {} added successfully with product code: {}", productDto.getName(), product.getProductCode());
+        ProductSearch productSearch = ProductSearch.builder()
+                .id(product.getId().toString())
+                .name(product.getName())
+                .build();
+        productSearchRepository.save(productSearch);
         return ProductMapper.toProductDto(product);
     }
 
@@ -74,6 +80,10 @@ public class ProductServiceImpl implements ProductService {
         Product updatedProduct = ProductMapper.updateProductFromDto(productDto, exsistingProduct, category);
         updatedProduct.setSlug(slug);
         productRepository.save(updatedProduct);
+        ProductSearch productSearch = productSearchRepository.findById(updatedProduct.getId().toString()).orElseThrow(()-> new ProductNotFoundException("Product not found with id: " + updatedProduct.getId()));
+        productSearch.setId(updatedProduct.getId().toString());
+        productSearch.setName(updatedProduct.getName());
+        productSearchRepository.save(productSearch);
         LOGGER.info("Product with ID: {} updated successfully", productId);
         return ProductMapper.toProductDto(updatedProduct);
     }
@@ -108,12 +118,13 @@ public class ProductServiceImpl implements ProductService {
         productValidator.validateProductId(productId);
         LOGGER.info("Product with ID: {} deleted successfully", productId);
         productRepository.deleteById(productId);
+        productSearchRepository.deleteById(productId.toString());
     }
 
     @Override
     public PageResponse<ProductDto> findProductsBySearch(String searchTerm, int page, int size, String sortBy, String sortDirection) {
         Pageable pageable = createPageable(page, size, sortBy, sortDirection);
-        Page<Product> productsPage = searchService.searchProducts(searchTerm, pageable);
+        Page<Product> productsPage = searchService.findProductsByIdsFromSearch(searchTerm, pageable);
         return createPageResponse(productsPage);
     }
 

@@ -3,6 +3,7 @@ package com.kodat.of.halleyecommerce.mapper.product;
 import com.kodat.of.halleyecommerce.dto.product.ProductDto;
 import com.kodat.of.halleyecommerce.category.Category;
 import com.kodat.of.halleyecommerce.product.Product;
+import com.kodat.of.halleyecommerce.product.ProductSearch;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,4 +52,6 @@ public class ProductMapper {
         existingProduct.setFeatured(productDto.isFeatured());
         return existingProduct;
     }
+
+
 }
