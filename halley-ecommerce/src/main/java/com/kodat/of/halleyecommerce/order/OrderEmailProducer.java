@@ -1,8 +1,6 @@
 package com.kodat.of.halleyecommerce.order;
 
 import com.kodat.of.halleyecommerce.dto.order.EmailConsumerDto;
-import com.kodat.of.halleyecommerce.user.GuestUser;
-import com.kodat.of.halleyecommerce.user.User;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +20,9 @@ public class OrderEmailProducer {
     @Value("${spring.rabbitmq.template.routing-key.nonmember}")
     private String routingKeyNonmember;
 
+    @Value("${spring.rabbitmq.template.routing-key.shipped}")
+    private String routingKeyShipped;
+
 
     public OrderEmailProducer(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
@@ -36,4 +37,7 @@ public class OrderEmailProducer {
     }
 
 
+    public void sendOrderShippedQueue(EmailConsumerDto emailConsumerDto) {
+        rabbitTemplate.convertAndSend(exchangeName,routingKeyShipped, emailConsumerDto);
+    }
 }

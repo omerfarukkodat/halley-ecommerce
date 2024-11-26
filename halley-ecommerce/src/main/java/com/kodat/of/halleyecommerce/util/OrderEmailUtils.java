@@ -40,7 +40,22 @@ public class OrderEmailUtils {
         emailService.sendOrderSummaryEmail(emailConsumerDto.getEmail(), orderData);
     }
 
-    public EmailConsumerDto setEmailConsumerDto(Object object, Order order) {
+    public void sendEmailForOrderShipped(EmailConsumerDto emailConsumerDto) {
+        Instant instant = Instant.now();
+        ZoneId zoneId = ZoneId.of("Asia/Istanbul");
+        ZonedDateTime zdt = instant.atZone(zoneId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM EEEE, HH:mm", Locale.forLanguageTag("tr"));
+        String formattedOrderDate = zdt.format(formatter);
+        Map<String, Object> orderData = new HashMap<>();
+        orderData.put("customerName", emailConsumerDto.getFirstName());
+        orderData.put("customerLastName", emailConsumerDto.getLastName());
+        orderData.put("shippedDate", formattedOrderDate);
+        orderData.put("shippingCost", emailConsumerDto.getShippingCost());
+        orderData.put("finalPrice", emailConsumerDto.getFinalPrice());
+        emailService.sendOrderShippedEmail(emailConsumerDto.getEmail(), orderData);
+    }
+
+    public EmailConsumerDto setEmailConsumerDto(Object object, Order order, boolean includeOrderItems) {
         User user;
         GuestUser guestUser;
         EmailConsumerDto emailConsumerDto;
@@ -59,7 +74,9 @@ public class OrderEmailUtils {
                     .email(guestUser.getEmail())
                     .build();
         }
-        emailConsumerDto.setOrderItems(OrderItemMapper.toEmailOrderItemDtoList(order.getOrderItems()));
+        if (includeOrderItems) {
+            emailConsumerDto.setOrderItems(OrderItemMapper.toEmailOrderItemDtoList(order.getOrderItems()));
+        }
         emailConsumerDto.setShippingCost(order.getShippingCost());
         emailConsumerDto.setFinalPrice(order.getFinalPrice());
         return emailConsumerDto;

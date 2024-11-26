@@ -1,8 +1,5 @@
 package com.kodat.of.halleyecommerce.config;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -21,6 +18,10 @@ public class RabbitConfig {
     @Value("${spring.rabbitmq.queue.orderMailQueueNonMember}")
     private String orderMailQueueNonMember;
 
+    @Value("${spring.rabbitmq.queue.orderShippedQueue}")
+    private String orderShippedQueue;
+
+
     @Value("${spring.rabbitmq.template.exchange}")
     private String exchangeName;
 
@@ -30,27 +31,42 @@ public class RabbitConfig {
     @Value("${spring.rabbitmq.template.routing-key.nonmember}")
     private String routingKeyForNonMember;
 
+    @Value("${spring.rabbitmq.template.routing-key.shipped}")
+    private String routingKeyForShipped;
+
+
+
     @Bean
-    public Queue orderMailQueueMember(){
-        return new Queue(orderMailQueueMember , true);
+    public Queue orderMailQueueMember() {
+        return new Queue(orderMailQueueMember, true);
     }
+
     @Bean
-    public Queue orderMailQueueNonMember(){
-        return new Queue(orderMailQueueNonMember , true);
+    public Queue orderMailQueueNonMember() {
+        return new Queue(orderMailQueueNonMember, true);
     }
+
     @Bean
-    public TopicExchange orderMailExchange(){
+    public Queue orderShippedQueueMember() {
+        return new Queue(orderShippedQueue, true);
+    }
+
+
+    @Bean
+    public TopicExchange orderMailExchange() {
         return new TopicExchange(exchangeName);
     }
+
     @Bean
-    public Binding orderMailBindingMember(){
+    public Binding orderMailBindingMember() {
         return BindingBuilder
                 .bind(orderMailQueueMember())
                 .to(orderMailExchange())
                 .with(routingKeyForMember);
     }
+
     @Bean
-    public Binding orderMailBindingNonMember(){
+    public Binding orderMailBindingNonMember() {
         return BindingBuilder
                 .bind(orderMailQueueNonMember())
                 .to(orderMailExchange())
@@ -58,17 +74,25 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Binding orderShippedBinding() {
+        return BindingBuilder
+                .bind(orderShippedQueueMember())
+                .to(orderMailExchange())
+                .with(routingKeyForShipped);
+    }
+
+
+    @Bean
     public MessageConverter jacksonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 
     @Bean
-    public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory , MessageConverter messageConverter) {
+    public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter);
         return rabbitTemplate;
     }
-
 
 
 }

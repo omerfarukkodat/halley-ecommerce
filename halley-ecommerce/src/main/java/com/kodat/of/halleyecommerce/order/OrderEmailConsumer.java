@@ -22,5 +22,9 @@ public class OrderEmailConsumer {
     public void consumeOrderEmailForNonMember(EmailConsumerDto emailConsumerDto){
         orderEmailUtils.sendEmailForOrderSummary(emailConsumerDto);
     }
+    @RabbitListener(queues = "${spring.rabbitmq.queue.orderShippedQueue}")
+    public void consumeOrderShippedQueue(EmailConsumerDto emailConsumerDto){
+        orderEmailUtils.sendEmailForOrderShipped(emailConsumerDto);
+    }
 
 }

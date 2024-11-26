@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siparişiniz Oluşturuldu</title>
+    <title>Siparişiniz Kargoya Verildi</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,7 +19,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .logo  {
+        .logo {
             background-color: #ffffff;
             padding: 10px 5px;
             text-align: left;
@@ -36,20 +36,6 @@
             border-bottom: 2px solid #000000;
             padding-bottom: 5px;
             margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #000000;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #2b2b2b;
-            color: #ffffff;
         }
         .footer {
             text-align: center;
@@ -84,13 +70,12 @@
             font-style: italic;
         }
         .follow-us {
-            margin-top : 15px;
+            margin-top: 15px;
             font-size: 14px;
             font-weight: bold;
             color: #545454;
             text-align: center;
         }
-
     </style>
 </head>
 <body>
@@ -98,44 +83,24 @@
 <!-- Logo Bölümü -->
 <div class="logo">
     <a href="https://halleywall.com.tr" target="_blank">
-    <img src="https://res.cloudinary.com/dxhftwif6/image/upload/f_auto,q_auto/Halley_uawh6p" alt="Halley Dekor Logo"/>
-        </a>
+        <img src="https://res.cloudinary.com/dxhftwif6/image/upload/f_auto,q_auto/Halley_uawh6p" alt="Halley Dekor Logo"/>
+    </a>
 </div>
 
 <!-- Ana İçerik Bölümü -->
 <div class="container">
     <div class="content">
         <h2>Merhaba, [[${customerName}]] [[${customerLastName}]]</h2>
-        <p>Siparişiniz başarıyla alındı. Sipariş detaylarınızı aşağıda bulabilirsiniz:</p>
+        <p>Siparişiniz kargoya verilmiştir. Sipariş detaylarınızı aşağıda bulabilirsiniz:</p>
 
         <!-- Sipariş Bilgileri -->
         <h3 class="section-title">Sipariş Bilgileri</h3>
-        <p><strong>Sipariş Tarihi:</strong> [[${orderDate}]]</p>
+        <p><strong>Kargoya Verilme tarihi:</strong> [[${shippedDate}]]</p>
         <p><strong>Kargo Tutarı:</strong> [[${shippingCost}]] TL</p>
         <p><strong>Toplam Tutar:</strong> [[${finalPrice}]] TL</p>
 
-        <!-- Ürün Tablosu -->
-        <h3 class="section-title">Sipariş Edilen Ürünler</h3>
-        <table>
-            <thead>
-            <tr>
-                <th>Ürün Adı</th>
-                <th>Adet</th>
-                <th>Fiyat</th>
-                <th>Toplam</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${orderItems}">
-                <td>[[${item.product.name}]]</td>
-                <td>[[${item.quantity}]]</td>
-                <td>[[${item.price}]] TL</td>
-                <td>[[${item.totalPrice}]] TL</td>
-            </tr>
-            </tbody>
-        </table>
-        <p class="kdv">*Ürünlere kdv dahildir.</p>
-        <p style="margin-top: 20px;">Herhangi bir sorunuz varsa, bizimle iletişime geçmekten çekinmeyin. İyi günlerde kullanmanız dileğiyle!</p>
+        <p>Kargo takip numarası tedarik firması tarafından SMS ile tarafınıza iletilecektir. Kargonuzun durumunu öğrenmek için web sitemizi ziyaret edebilir veya tedarikçi firmadan bilgi alabilirsiniz.</p>
+
         <p>Teşekkür ederiz,<br/>Halley Dekor</p>
 
         <!-- İlham Verici Söz -->
@@ -145,13 +110,13 @@
         <div class="social-links">
             <p class="follow-us">Bizi takip edin!</p>
             <a href="https://www.facebook.com/dekorhalley" target="_blank">
-                <img src="https://res.cloudinary.com/dxhftwif6/image/upload/v1730384334/4102573_applications_facebook_media_social_icon.png"  alt="Facebook" />
+                <img src="https://res.cloudinary.com/dxhftwif6/image/upload/v1730384334/4102573_applications_facebook_media_social_icon.png" alt="Facebook"/>
             </a>
             <a href="https://www.instagram.com/dekorhalley" target="_blank">
-                <img src="https://res.cloudinary.com/dxhftwif6/image/upload/v1730384335/4102579_applications_instagram_media_social_icon.png" alt="Instagram" />
+                <img src="https://res.cloudinary.com/dxhftwif6/image/upload/v1730384335/4102579_applications_instagram_media_social_icon.png" alt="Instagram"/>
             </a>
             <a aria-label="Chat on WhatsApp" href="https://wa.me/905428473954">
-                <img src="https://res.cloudinary.com/dxhftwif6/image/upload/v1730383710/4102606_applications_media_social_whatsapp_icon_1.png" alt="WhatsApp" />
+                <img src="https://res.cloudinary.com/dxhftwif6/image/upload/v1730383710/4102606_applications_media_social_whatsapp_icon_1.png" alt="WhatsApp"/>
             </a>
         </div>
 

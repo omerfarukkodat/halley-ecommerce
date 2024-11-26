@@ -35,8 +35,13 @@ public class EmailService {
         Context context = new Context();
         context.setVariables(orderData);
         String orderSummaryHtml = templateEngine.process("order-summary",context);
-        sendEmail(to, "Sipariş Özeti", orderSummaryHtml);
+        sendEmail(to, "Sipariş Özetiniz", orderSummaryHtml);
+    }
 
-
+    public void sendOrderShippedEmail(String to , Map<String, Object> orderData) {
+        Context context = new Context();
+        context.setVariables(orderData);
+        String orderShippedHtml = templateEngine.process("order-shipped",context);
+        sendEmail(to,"Siparişiniz Kargoya Verildi", orderShippedHtml);
     }
 }

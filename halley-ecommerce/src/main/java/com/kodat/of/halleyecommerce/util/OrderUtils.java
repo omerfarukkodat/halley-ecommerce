@@ -35,7 +35,7 @@ public class OrderUtils {
                 .build());
     }
 
-    public void validateCartStock(Cart cart) {
+    public void validateCartItemStock(Cart cart) {
         for (CartItem item : cart.getItems()) {
             stockUtils.validateStockBeforeCheckout(item.getProduct().getId(), item.getQuantity());
         }

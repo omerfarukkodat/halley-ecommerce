@@ -5,10 +5,7 @@ import com.kodat.of.halleyecommerce.address.AddressRepository;
 import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.cart.service.impl.CartServiceImpl;
 import com.kodat.of.halleyecommerce.dto.address.AddressDto;
-import com.kodat.of.halleyecommerce.dto.order.EmailConsumerDto;
-import com.kodat.of.halleyecommerce.dto.order.NonMemberInfoDto;
-import com.kodat.of.halleyecommerce.dto.order.OrderDto;
-import com.kodat.of.halleyecommerce.dto.order.OrderResponseDto;
+import com.kodat.of.halleyecommerce.dto.order.*;
 import com.kodat.of.halleyecommerce.exception.*;
 import com.kodat.of.halleyecommerce.mapper.address.AddressMapper;
 import com.kodat.of.halleyecommerce.mapper.order.OrderMapper;
@@ -22,8 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -77,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
         User user = customUserDetails.getUser();
         Cart cart = cartValidator.validateCartAndUser(connectedUser);
         //Validate stock before to check out
-        orderUtils.validateCartStock(cart);
+        orderUtils.validateCartItemStock(cart);
         Address address = addressRepository.findById(orderDto.getAddressId())
                 .orElseThrow(() -> new AddressNotFoundException("Address not found"));
         BigDecimal totalPrice = orderUtils.calculateTotalPrice(cart.getItems());
@@ -88,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         orderItems.forEach(item ->
                 stockUtils.updateStock(item.getProduct().getId(), item.getQuantity()));
-        EmailConsumerDto emailConsumerDto = orderEmailUtils.setEmailConsumerDto(user , order);
+        EmailConsumerDto emailConsumerDto = orderEmailUtils.setEmailConsumerDto(user , order , true);
         orderEmailProducer.sendOrderToQueueForMember(emailConsumerDto);
         return OrderMapper.toOrderResponseDto(order);
     }
@@ -99,7 +98,7 @@ public class OrderServiceImpl implements OrderService {
         GuestUser guestUser = orderUtils.getOrCreateGuestUser(nonMemberInfoDto);
         orderUtils.validateRegisteredUserForGuestOrder(guestUser);
         Cart cart = unauthenticatedUtils.getOrCreateCart();
-        orderUtils.validateCartStock(cart);
+        orderUtils.validateCartItemStock(cart);
         guestUserRepository.save(guestUser);
         AddressDto addressDto = nonMemberInfoDto.getAddress();
         Address address = AddressMapper.toAddress(addressDto);
@@ -114,7 +113,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         orderItems.forEach(item ->
                 stockUtils.updateStock(item.getProduct().getId(), item.getQuantity()));
-        EmailConsumerDto emailConsumerDto = orderEmailUtils.setEmailConsumerDto(guestUser,order);
+        EmailConsumerDto emailConsumerDto = orderEmailUtils.setEmailConsumerDto(guestUser,order , true);
         orderEmailProducer.sendOrderToQueueNonMember(emailConsumerDto);
         return OrderMapper.toOrderResponseDto(order);
     }
@@ -151,20 +150,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto updateOrderStatus(Long orderId, Status status, Authentication connectedUser) {
+    public void updateOrderStatus(Long orderId, Status status, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
         order.setStatus(status);
         orderRepository.save(order);
-        return OrderMapper.toOrderResponseDto(order);
+        EmailConsumerDto emailConsumerDto = orderEmailUtils.setEmailConsumerDto(order.getUser() != null ? order.getUser() : order.getGuestUser(), order , false);
+        orderEmailProducer.sendOrderShippedQueue(emailConsumerDto);
     }
 
     @Override
     public List<OrderResponseDto> getOrdersByDateRange(String startDate, String endDate, Authentication connectedUser) {
         roleValidator.verifyAdminRole(connectedUser);
-        LocalDateTime startDateTime = LocalDateTime.parse(startDate);
-        LocalDateTime endDateTime = LocalDateTime.parse(endDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime startDateTime = LocalDate.parse(startDate,formatter).atStartOfDay();
+        LocalDateTime endDateTime = LocalDate.parse(endDate,formatter).atTime(23,59,59);
         List<Order> orderList = orderRepository.findByCreatedAtBetween(startDateTime, endDateTime)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
         return orderList.stream()
@@ -182,6 +183,13 @@ public class OrderServiceImpl implements OrderService {
         return orderList.stream()
                 .map(Order::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Override
+    public OrderSummaryDto getOrderSummary(Long orderId) {
+       Order order = orderRepository.findById(orderId)
+               .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+        return OrderMapper.toOrderSummaryDto(order);
     }
 
     private boolean isAuthenticated(Authentication connectedUser) {

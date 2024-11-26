@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.mapper.order;
 
 import com.kodat.of.halleyecommerce.cart.CartItem;
 import com.kodat.of.halleyecommerce.dto.order.OrderResponseDto;
+import com.kodat.of.halleyecommerce.dto.order.OrderSummaryDto;
 import com.kodat.of.halleyecommerce.order.Order;
 import com.kodat.of.halleyecommerce.order.OrderItem;
 import com.kodat.of.halleyecommerce.order.enums.Status;
@@ -61,6 +62,15 @@ public class OrderMapper {
                 .finalPrice(totalPrice.add(shippingCost))
                 .addressId(addressId)
                 .status(Status.HAZIRLANIYOR)
+                .build();
+    }
+
+    public static OrderSummaryDto toOrderSummaryDto(Order order) {
+        return OrderSummaryDto.builder()
+                .totalItems(order.getOrderItems().stream().map(OrderItem::getQuantity).reduce(0, Integer::sum))
+                .shippingCost(order.getShippingCost())
+                .totalPrice(order.getTotalPrice())
+                .finalPrice(order.getFinalPrice())
                 .build();
     }
 

@@ -38,10 +38,12 @@ spring:
     queue:
       orderMailQueueMember: orderMailQueueMember
       orderMailQueueNonMember: orderMailQueueNonMember
+      orderShippedQueue: orderShippedQueue
     template:
       routing-key:
         member: halley_routing_key_member
         nonmember: halley_routing_key_non_member
+        shipped: halley_routing_key_shipped_member
       exchange: halley_exchange
   main:
     allow-bean-definition-overriding: true

@@ -47,10 +47,12 @@ services:
       memlock:
         soft: -1
         hard: -1
+    networks:
+      - spring-demo
+    restart: unless-stopped
 
 
 
-      
 volumes:
   postgres:
     driver: local

@@ -17,6 +17,7 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class BeansConfig {
@@ -48,7 +49,7 @@ public class BeansConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:4200" , "http://localhost:9200"));
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
         config.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.ORIGIN,
                 HttpHeaders.CONTENT_TYPE,

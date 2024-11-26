@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.order;
 
 import com.kodat.of.halleyecommerce.dto.order.OrderDto;
 import com.kodat.of.halleyecommerce.dto.order.OrderResponseDto;
+import com.kodat.of.halleyecommerce.dto.order.OrderSummaryDto;
 import com.kodat.of.halleyecommerce.dto.order.UpdateOrderStatusDto;
 import com.kodat.of.halleyecommerce.order.enums.Status;
 import jakarta.validation.Valid;
@@ -31,6 +32,13 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrderFromCart(orderDto, connectedUser));
     }
 
+    @GetMapping("/ordersummary/{orderId}")
+    public ResponseEntity<OrderSummaryDto> getOrderSummary(
+            @PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.getOrderSummary(orderId));
+    }
+
+
     @Secured("USER")
     @GetMapping
     public ResponseEntity<List<OrderResponseDto>> getAllOrders(Authentication connectedUser) {
@@ -53,14 +61,15 @@ public class OrderController {
     }
 
     @Secured("ADMIN")
-    @PutMapping("{orderId}/status")
-    public ResponseEntity<OrderResponseDto> updateOrderStatus(
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<Void> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody UpdateOrderStatusDto orderStatusDto,
             Authentication connectedUser
     ) {
         Status status = orderStatusDto.getStatus();
-        return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status, connectedUser));
+        orderService.updateOrderStatus(orderId, status, connectedUser);
+        return ResponseEntity.noContent().build();
     }
 
     @Secured("ADMIN")
