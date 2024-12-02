@@ -25,11 +25,7 @@ public class OrderEmailUtils {
     }
 
     public void sendEmailForOrderSummary(EmailConsumerDto emailConsumerDto) {
-        Instant instant = Instant.now();
-        ZoneId zoneId = ZoneId.of("Asia/Istanbul");
-        ZonedDateTime zdt = instant.atZone(zoneId);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM EEEE, HH:mm", Locale.forLanguageTag("tr"));
-        String formattedOrderDate = zdt.format(formatter);
+        String formattedOrderDate = createDate();
         Map<String, Object> orderData = new HashMap<>();
         orderData.put("customerName", emailConsumerDto.getFirstName());
         orderData.put("customerLastName", emailConsumerDto.getLastName());
@@ -41,11 +37,7 @@ public class OrderEmailUtils {
     }
 
     public void sendEmailForOrderShipped(EmailConsumerDto emailConsumerDto) {
-        Instant instant = Instant.now();
-        ZoneId zoneId = ZoneId.of("Asia/Istanbul");
-        ZonedDateTime zdt = instant.atZone(zoneId);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM EEEE, HH:mm", Locale.forLanguageTag("tr"));
-        String formattedOrderDate = zdt.format(formatter);
+        String formattedOrderDate = createDate();
         Map<String, Object> orderData = new HashMap<>();
         orderData.put("customerName", emailConsumerDto.getFirstName());
         orderData.put("customerLastName", emailConsumerDto.getLastName());
@@ -81,4 +73,14 @@ public class OrderEmailUtils {
         emailConsumerDto.setFinalPrice(order.getFinalPrice());
         return emailConsumerDto;
     }
+
+    private static String createDate() {
+        Instant instant = Instant.now();
+        ZoneId zoneId = ZoneId.of("Asia/Istanbul");
+        ZonedDateTime zdt = instant.atZone(zoneId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM EEEE, HH:mm", Locale.forLanguageTag("tr"));
+        return zdt.format(formatter);
+    }
+
+
 }

@@ -44,4 +44,13 @@ public class EmailService {
         String orderShippedHtml = templateEngine.process("order-shipped",context);
         sendEmail(to,"Siparişiniz Kargoya Verildi", orderShippedHtml);
     }
+
+    public void sendRegistrationEmail(String to ,  Map<String, Object> registrationData) {
+        Context context = new Context();
+        context.setVariables(registrationData);
+        String registrationHtml = templateEngine.process("registration",context);
+        sendEmail(to,"Kayıt İşleminiz Başarıyla Tamamlandı",registrationHtml);
+    }
+
+
 }
