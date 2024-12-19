@@ -21,8 +21,13 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "products")
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "products",
+        indexes = {
+        @Index(name = "idx_product_code", columnList = "product_code", unique = true),
+        @Index(name = "idx_product_discounted_price", columnList = "discounted_price"),
+        @Index(name = "idx_product_featured_created", columnList = "is_featured, created_time")
+})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +47,11 @@ public class Product {
     @ManyToMany
     @JoinTable(name = "product_category",
            joinColumns = @JoinColumn(name = "product_id"),
-           inverseJoinColumns = @JoinColumn(name = "category_id"))
+           inverseJoinColumns = @JoinColumn(name = "category_id"),
+            indexes = {
+                    @Index(name = "idx_product_category_product_id", columnList = "product_id"),
+                    @Index(name = "idx_product_category_category_id", columnList = "category_id")
+            })
     private Set<Category> categories;
     @Column(unique = true)
     private String slug;
@@ -56,7 +65,6 @@ public class Product {
     @CreationTimestamp()
     @Column(updatable = false , nullable = false)
     private LocalDateTime createdTime;
-    @Column(nullable = false)
     @UpdateTimestamp()
     private LocalDateTime updatedTime;
 

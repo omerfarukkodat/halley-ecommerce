@@ -24,15 +24,14 @@ public class OrderUtils {
         this.userRepository = userRepository;
     }
 
-
     public GuestUser getOrCreateGuestUser(NonMemberInfoDto nonMemberInfoDto) {
-         return  guestUserRepository.findByEmail(nonMemberInfoDto.getEmail())
-                 .orElseGet(() -> GuestUser.builder()
-                .firstName(nonMemberInfoDto.getFirstName())
-                .lastName(nonMemberInfoDto.getLastName())
-                .email(nonMemberInfoDto.getEmail())
-                .phoneNumber(nonMemberInfoDto.getPhoneNumber())
-                .build());
+        return guestUserRepository.findByEmail(nonMemberInfoDto.getEmail())
+                .orElseGet(() -> GuestUser.builder()
+                        .firstName(nonMemberInfoDto.getFirstName())
+                        .lastName(nonMemberInfoDto.getLastName())
+                        .email(nonMemberInfoDto.getEmail())
+                        .phoneNumber(nonMemberInfoDto.getPhoneNumber())
+                        .build());
     }
 
     public void validateCartItemStock(Cart cart) {
@@ -41,9 +40,7 @@ public class OrderUtils {
         }
     }
 
-
-
-    public void validateRegisteredUserForGuestOrder(GuestUser guestUser){
+    public void validateRegisteredUserForGuestOrder(GuestUser guestUser) {
         if (userRepository.findByEmail(guestUser.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("You can not create order with this email.Because this email address already registered.");
         }
@@ -54,11 +51,6 @@ public class OrderUtils {
                 .map(item -> item.getProduct().getDiscountedPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
-
-
-
-
 
 
 }

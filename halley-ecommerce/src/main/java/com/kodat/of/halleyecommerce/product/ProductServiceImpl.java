@@ -130,6 +130,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageResponse<ProductDto> filterProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size, String sortBy, String sortDirection) {
+        if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
+            throw new IllegalArgumentException("Minimum price cannot be greater than maximum price");
+        }
         Pageable pageable = createPageable(page, size, sortBy, sortDirection);
         Page<Product> products = productRepository.findAllWithFilters(categoryIds,minPrice,maxPrice,pageable);
         if (products.isEmpty()){
@@ -164,6 +167,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageResponse<ProductDto> getDiscountedProducts(Set<Long> categoryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size, String sortBy, String sortDirection) {
+        if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
+            throw new IllegalArgumentException("Minimum price cannot be greater than maximum price");
+        }
        Pageable pageable = createPageable(page, size, sortBy, sortDirection);
        Page<Product> discountedProducts = productRepository.findDiscountedProducts(categoryIds,minPrice,maxPrice,pageable);
        if (discountedProducts.isEmpty()){

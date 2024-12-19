@@ -4,7 +4,6 @@ import com.kodat.of.halleyecommerce.dto.order.EmailConsumerDto;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderEmailProducer {
@@ -14,13 +13,13 @@ public class OrderEmailProducer {
     @Value("${spring.rabbitmq.template.exchange}")
     private String exchangeName;
 
-    @Value("${spring.rabbitmq.template.routing-key.member}")
+    @Value("${spring.rabbitmq.template.routing-key.order.member}")
     private String routingKeyMember;
 
-    @Value("${spring.rabbitmq.template.routing-key.nonmember}")
+    @Value("${spring.rabbitmq.template.routing-key.order.nonmember}")
     private String routingKeyNonmember;
 
-    @Value("${spring.rabbitmq.template.routing-key.shipped}")
+    @Value("${spring.rabbitmq.template.routing-key.order.shipped}")
     private String routingKeyShipped;
 
 
@@ -31,11 +30,10 @@ public class OrderEmailProducer {
     public void sendOrderToQueueForMember(EmailConsumerDto emailConsumerDto) {
         rabbitTemplate.convertAndSend(exchangeName,routingKeyMember, emailConsumerDto);
     }
-    @Transactional
+
     public void sendOrderToQueueNonMember(EmailConsumerDto emailConsumerDto) {
         rabbitTemplate.convertAndSend(exchangeName,routingKeyNonmember, emailConsumerDto);
     }
-
 
     public void sendOrderShippedQueue(EmailConsumerDto emailConsumerDto) {
         rabbitTemplate.convertAndSend(exchangeName,routingKeyShipped, emailConsumerDto);

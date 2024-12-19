@@ -24,18 +24,14 @@ public class AddressDto {
     @NotBlank(message = "Neighborhood is mandatory")
     private String neighborhood;
 
-    @NotBlank(message = "Street is mandatory")
-    private String street;
+    @NotBlank(message = "General address is mandatory")
+    private String generalAddress;
 
     @NotBlank(message = "Zip code is mandatory")
     @Pattern(regexp = "\\d{5}", message = "Zip code must be 5 digits")
     private String zipCode;
 
-    @NotBlank(message = "Building number is mandatory")
-    private String buildingNumber;
 
-    private String floor;
-    private String apartmentNumber;
     @NotNull( message = "AddressType is mandatory")
     private AddressType addressType;
 

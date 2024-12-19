@@ -39,11 +39,16 @@ spring:
       orderMailQueueMember: orderMailQueueMember
       orderMailQueueNonMember: orderMailQueueNonMember
       orderShippedQueue: orderShippedQueue
+      registrationQueue: registrationQueue
+      resetPassword: resetPassword
     template:
       routing-key:
-        member: halley_routing_key_member
-        nonmember: halley_routing_key_non_member
-        shipped: halley_routing_key_shipped_member
+        order:
+          member: halley_routing_key_member
+          nonmember: halley_routing_key_non_member
+          shipped: halley_routing_key_shipped_member
+        registration: halley_registration_routing_key
+        reset-password: halley_routing_key_reset_password
       exchange: halley_exchange
   main:
     allow-bean-definition-overriding: true

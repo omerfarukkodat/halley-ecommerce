@@ -2,7 +2,6 @@ package com.kodat.of.halleyecommerce.user;
 
 import com.kodat.of.halleyecommerce.address.Address;
 import com.kodat.of.halleyecommerce.cart.Cart;
-import com.kodat.of.halleyecommerce.order.Order;
 import com.kodat.of.halleyecommerce.user.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;

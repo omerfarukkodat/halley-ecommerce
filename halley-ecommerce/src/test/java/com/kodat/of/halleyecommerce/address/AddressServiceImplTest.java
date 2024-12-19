@@ -49,11 +49,8 @@ class AddressServiceImplTest {
                 .city("İstanbul")
                 .district("Üsküdar")
                 .neighborhood("Altunizade")
-                .street("Trablus Sokağı")
+                .generalAddress("Trablus Sokağı")
                 .zipCode("34200")
-                .buildingNumber("7")
-                .floor("5")
-                .apartmentNumber("20")
                 .addressType(AddressType.HOME)
                 .build();
         user = User.builder()
@@ -91,11 +88,8 @@ class AddressServiceImplTest {
         assertEquals(addressDto.getCity(), result.getCity());
         assertEquals(addressDto.getDistrict(), result.getDistrict());
         assertEquals(addressDto.getNeighborhood(), result.getNeighborhood());
-        assertEquals(addressDto.getStreet(), result.getStreet());
+        assertEquals(addressDto.getGeneralAddress(), result.getGeneralAddress());
         assertEquals(addressDto.getZipCode(), result.getZipCode());
-        assertEquals(addressDto.getBuildingNumber(), result.getBuildingNumber());
-        assertEquals(addressDto.getFloor(), result.getFloor());
-        assertEquals(addressDto.getApartmentNumber(), result.getApartmentNumber());
         assertEquals(addressDto.getAddressType(), result.getAddressType());
         verify(roleValidator).verifyUserRole(mockAuth);
         verify(userRepository).findByEmail(user.getEmail());
@@ -123,11 +117,8 @@ class AddressServiceImplTest {
     assertEquals(addressDto.getCity(), response.getFirst().getCity());
     assertEquals(addressDto.getDistrict(), response.getFirst().getDistrict());
     assertEquals(addressDto.getNeighborhood(), response.getFirst().getNeighborhood());
-    assertEquals(addressDto.getStreet(), response.getFirst().getStreet());
+    assertEquals(addressDto.getGeneralAddress(), response.getFirst().getGeneralAddress());
     assertEquals(addressDto.getZipCode(), response.getFirst().getZipCode());
-    assertEquals(addressDto.getBuildingNumber(), response.getFirst().getBuildingNumber());
-    assertEquals(addressDto.getFloor(), response.getFirst().getFloor());
-    assertEquals(addressDto.getApartmentNumber(), response.getFirst().getApartmentNumber());
     assertEquals(addressDto.getAddressType(), response.getFirst().getAddressType());
     verify(roleValidator).verifyUserRole(mockAuth);
     verify(userRepository).findByEmail(user.getEmail());
@@ -174,11 +165,8 @@ class AddressServiceImplTest {
         assertEquals(addressDto.getCity(), response.getCity());
         assertEquals(addressDto.getDistrict(), response.getDistrict());
         assertEquals(addressDto.getNeighborhood(), response.getNeighborhood());
-        assertEquals(addressDto.getStreet(), response.getStreet());
+        assertEquals(addressDto.getGeneralAddress(), response.getGeneralAddress());
         assertEquals(addressDto.getZipCode(), response.getZipCode());
-        assertEquals(addressDto.getBuildingNumber(), response.getBuildingNumber());
-        assertEquals(addressDto.getFloor(), response.getFloor());
-        assertEquals(addressDto.getApartmentNumber(), response.getApartmentNumber());
         assertEquals(addressDto.getAddressType(), response.getAddressType());
         verify(roleValidator).verifyUserRole(mockAuth);
         verify(userRepository).findByEmail(user.getEmail());
@@ -233,11 +221,8 @@ class AddressServiceImplTest {
                 .id(address.getId())
                 .city(address.getCity())
                 .district(address.getDistrict())
-                .street(address.getStreet())
+                .generalAddress(address.getGeneralAddress())
                 .zipCode(address.getZipCode())
-                .buildingNumber(address.getBuildingNumber())
-                .floor(address.getFloor())
-                .apartmentNumber("19")
                 .addressType(address.getAddressType())
                 .build();
      Address updatedAddress = AddressMapper.updateAddressToDto(address, updatedAddressDto);
@@ -249,11 +234,8 @@ class AddressServiceImplTest {
         assertEquals(updatedAddressDto.getId(), response.getId());
         assertEquals(updatedAddressDto.getCity(), response.getCity());
         assertEquals(updatedAddressDto.getDistrict(), response.getDistrict());
-        assertEquals(updatedAddressDto.getStreet(), response.getStreet());
+        assertEquals(updatedAddressDto.getGeneralAddress(), response.getGeneralAddress());
         assertEquals(updatedAddressDto.getZipCode(), response.getZipCode());
-        assertEquals(updatedAddressDto.getBuildingNumber(), response.getBuildingNumber());
-        assertEquals(updatedAddressDto.getFloor(), response.getFloor());
-        assertEquals(updatedAddressDto.getApartmentNumber(), response.getApartmentNumber());
         assertEquals(updatedAddressDto.getAddressType(), response.getAddressType());
         verify(roleValidator).verifyUserRole(mockAuth);
         verify(userRepository).findByEmail(user.getEmail());

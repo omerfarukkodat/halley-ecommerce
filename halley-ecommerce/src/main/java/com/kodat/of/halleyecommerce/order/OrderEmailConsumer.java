@@ -1,7 +1,7 @@
 package com.kodat.of.halleyecommerce.order;
 
 import com.kodat.of.halleyecommerce.dto.order.EmailConsumerDto;
-import com.kodat.of.halleyecommerce.util.OrderEmailUtils;
+import com.kodat.of.halleyecommerce.email.OrderEmailUtils;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 

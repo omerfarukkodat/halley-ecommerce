@@ -37,7 +37,7 @@ public class AdminInitializer {
                         .email(email)
                         .enabled(true)
                         .accountLocked(false)
-                        .phone("05468732334")
+                        .phone("+905468732334")
                         .role(Role.ADMIN)
                         .build();
                 userRepository.save(admin);

@@ -6,6 +6,7 @@ import com.kodat.of.halleyecommerce.cart.Cart;
 import com.kodat.of.halleyecommerce.cart.service.impl.CartServiceImpl;
 import com.kodat.of.halleyecommerce.dto.address.AddressDto;
 import com.kodat.of.halleyecommerce.dto.order.*;
+import com.kodat.of.halleyecommerce.email.OrderEmailUtils;
 import com.kodat.of.halleyecommerce.exception.*;
 import com.kodat.of.halleyecommerce.mapper.address.AddressMapper;
 import com.kodat.of.halleyecommerce.mapper.order.OrderMapper;

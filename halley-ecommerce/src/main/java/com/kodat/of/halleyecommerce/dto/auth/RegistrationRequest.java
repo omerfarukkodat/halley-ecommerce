@@ -3,6 +3,7 @@ package com.kodat.of.halleyecommerce.dto.auth;
 import com.kodat.of.halleyecommerce.cart.Cart;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,10 @@ public class RegistrationRequest {
     @Size(min = 8 , message = "Password should be 8 characters long minimum")
     private String password;
     @NotBlank(message = "Phone number is mandatory")
+    @Pattern(
+            regexp = "^\\+90\\d{10}$",
+            message = "Phone number must start with +90 and followed by 10 digits"
+    )
     private String phone;
 
 }

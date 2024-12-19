@@ -1,4 +1,4 @@
-package com.kodat.of.halleyecommerce.user;
+package com.kodat.of.halleyecommerce.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -19,6 +19,7 @@ public class EmailService {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
     }
+
     public void sendEmail(String to, String subject, String body) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -31,6 +32,7 @@ public class EmailService {
             throw new IllegalStateException("E-mail sending failed", e);
         }
     }
+
     public void sendOrderSummaryEmail(String to , Map<String, Object> orderData) {
         Context context = new Context();
         context.setVariables(orderData);
@@ -50,6 +52,13 @@ public class EmailService {
         context.setVariables(registrationData);
         String registrationHtml = templateEngine.process("registration",context);
         sendEmail(to,"Kayıt İşleminiz Başarıyla Tamamlandı",registrationHtml);
+    }
+
+    public void sendPasswordResetEmail(String to , Map<String, Object> passwordResetData) {
+        Context context = new Context();
+        context.setVariables(passwordResetData);
+        String passwordResetHtml = templateEngine.process("reset-password", context);
+        sendEmail(to,"Şifre Sıfırlama Talebi" , passwordResetHtml);
     }
 
 

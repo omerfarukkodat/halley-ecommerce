@@ -314,6 +314,19 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(RateLimiterAttemptException.class)
+    public ResponseEntity<ExceptionResponse> handleRateLimiterAttemptException(RateLimiterAttemptException e) {
+        LOGGER.warn("Rate limiter attempt exception: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.RATE_LIMITER_ATTEMPT.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.RATE_LIMITER_ATTEMPT.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
 
 
 

@@ -33,18 +33,12 @@ public class Address {
     private String neighborhood;
 
     @NotBlank(message = "Street cannot be blank")
-    @Size(max = 100, message = "Street name must not exceed 100 characters")
-    private String street;
+    @Size(max = 300, message = "General address must not exceed 300 characters")
+    private String generalAddress;
 
     @NotBlank(message = "Zip Code cannot be blank")
     @Pattern(regexp = "\\d{5}", message = "Zip Code must be exactly 5 digits")
     private String zipCode;
-
-    private String buildingNumber;
-    private String floor;
-
-    @Size(max = 10, message = "Apartment number must not exceed 10 characters")
-    private String apartmentNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false , name = "address_type")

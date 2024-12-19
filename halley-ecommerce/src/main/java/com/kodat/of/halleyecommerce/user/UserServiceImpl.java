@@ -1,6 +1,9 @@
 package com.kodat.of.halleyecommerce.user;
 
+import com.kodat.of.halleyecommerce.dto.user.ResetPasswordEmailDto;
 import com.kodat.of.halleyecommerce.dto.user.UserProfileDto;
+import com.kodat.of.halleyecommerce.email.EmailService;
+import com.kodat.of.halleyecommerce.email.UserResetPasswordUtils;
 import com.kodat.of.halleyecommerce.exception.UserNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.user.UserMapper;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
@@ -13,14 +16,17 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final RoleValidator roleValidator;
     private final TokenService tokenService;
-    private final EmailService emailService;
+    private final UserResetPasswordProducer userResetPasswordProducer;
+    private final UserResetPasswordUtils userResetPasswordUtils;
 
-    public UserServiceImpl(UserRepository userRepository, RoleValidator roleValidator, TokenService tokenService, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, RoleValidator roleValidator, TokenService tokenService, UserResetPasswordProducer userResetPasswordProducer, UserResetPasswordUtils userResetPasswordUtils) {
         this.userRepository = userRepository;
         this.roleValidator = roleValidator;
         this.tokenService = tokenService;
-        this.emailService = emailService;
+        this.userResetPasswordProducer = userResetPasswordProducer;
+        this.userResetPasswordUtils = userResetPasswordUtils;
     }
+
 
     @Override
     public UserProfileDto getProfile(Authentication connectedUser) {
@@ -45,19 +51,10 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
         String token = tokenService.generateResetTokenForUser(user);
-
         // Create password reset link
         String resetLink = "https://localhost:8088/reset-password?token=" + token;
-
-        // Using email service , we send an email
-        String subject = "Password Reset Request";
-        String body = "<p>Dear " + user.getFirstName() + ",</p>"
-                + "<p>We received a request to reset your password.</p>"
-                + "<p>Click the link below to reset your password:</p>"
-                + "<a href=\"" + resetLink + "\">Reset Password</a>"
-                + "<p>If you did not request this, please ignore this email.</p>";
-        emailService.sendEmail(user.getEmail(), subject, body);
-
+        ResetPasswordEmailDto resetPasswordEmailDto = userResetPasswordUtils.sendResetPasswordEmail(user,resetLink);
+        userResetPasswordProducer.sendResetPasswordQueue(resetPasswordEmailDto);
     }
 
     @Override

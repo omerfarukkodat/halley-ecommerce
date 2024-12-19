@@ -21,19 +21,30 @@ public class RabbitConfig {
     @Value("${spring.rabbitmq.queue.orderShippedQueue}")
     private String orderShippedQueue;
 
+    @Value("${spring.rabbitmq.queue.registrationQueue}")
+    private String registrationQueue;
+
+    @Value("${spring.rabbitmq.queue.resetPassword}")
+    private String resetPasswordQueue;
+
 
     @Value("${spring.rabbitmq.template.exchange}")
     private String exchangeName;
 
-    @Value("${spring.rabbitmq.template.routing-key.member}")
+    @Value("${spring.rabbitmq.template.routing-key.order.member}")
     private String routingKeyForMember;
 
-    @Value("${spring.rabbitmq.template.routing-key.nonmember}")
+    @Value("${spring.rabbitmq.template.routing-key.order.nonmember}")
     private String routingKeyForNonMember;
 
-    @Value("${spring.rabbitmq.template.routing-key.shipped}")
+    @Value("${spring.rabbitmq.template.routing-key.order.shipped}")
     private String routingKeyForShipped;
 
+    @Value("${spring.rabbitmq.template.routing-key.registration}")
+    private String routingKeyForRegistration;
+
+    @Value("${spring.rabbitmq.template.routing-key.reset-password}")
+    private String routingKeyForResetPassword;
 
 
     @Bean
@@ -50,10 +61,18 @@ public class RabbitConfig {
     public Queue orderShippedQueueMember() {
         return new Queue(orderShippedQueue, true);
     }
-
+    @Bean
+    public Queue registrationQueue() {
+        return new Queue(registrationQueue, true);
+    }
 
     @Bean
-    public TopicExchange orderMailExchange() {
+    public Queue resetPasswordQueue() {
+        return new Queue(resetPasswordQueue, true);
+    }
+
+    @Bean
+    public TopicExchange mailExchange() {
         return new TopicExchange(exchangeName);
     }
 
@@ -61,7 +80,7 @@ public class RabbitConfig {
     public Binding orderMailBindingMember() {
         return BindingBuilder
                 .bind(orderMailQueueMember())
-                .to(orderMailExchange())
+                .to(mailExchange())
                 .with(routingKeyForMember);
     }
 
@@ -69,7 +88,7 @@ public class RabbitConfig {
     public Binding orderMailBindingNonMember() {
         return BindingBuilder
                 .bind(orderMailQueueNonMember())
-                .to(orderMailExchange())
+                .to(mailExchange())
                 .with(routingKeyForNonMember);
     }
 
@@ -77,8 +96,24 @@ public class RabbitConfig {
     public Binding orderShippedBinding() {
         return BindingBuilder
                 .bind(orderShippedQueueMember())
-                .to(orderMailExchange())
+                .to(mailExchange())
                 .with(routingKeyForShipped);
+    }
+
+    @Bean
+    public Binding registrationBinding() {
+        return BindingBuilder
+                .bind(registrationQueue())
+                .to(mailExchange())
+                .with(routingKeyForRegistration);
+    }
+
+    @Bean
+    public Binding resetPasswordBinding() {
+        return BindingBuilder
+                .bind(resetPasswordQueue())
+                .to(mailExchange())
+                .with(routingKeyForResetPassword);
     }
 
 

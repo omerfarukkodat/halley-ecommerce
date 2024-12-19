@@ -29,7 +29,8 @@ public enum BusinessErrorCodes {
     ADDRESS_ALREADY_EXISTS_EXCEPTION(409,HttpStatus.CONFLICT,"Address already exists"),
     INSUFFICIENT_STOCK(409 , HttpStatus.CONFLICT,"Insufficient stock"),
     INVALID_TOKEN(409,HttpStatus.CONFLICT,"Invalid or expired token"),
-    DUPLICATE_PASSWORD(409,HttpStatus.CONFLICT,"Using existing password exception")
+    DUPLICATE_PASSWORD(409,HttpStatus.CONFLICT,"Using existing password exception"),
+    RATE_LIMITER_ATTEMPT(429,HttpStatus.TOO_MANY_REQUESTS,"Too many requests exception.")
             {
     };
 

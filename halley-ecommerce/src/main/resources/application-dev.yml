@@ -18,6 +18,16 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
+resilience4j.ratelimiter:
+    instances:
+      registerRateLimiter:
+        limit-for-period: 10
+        limit-refresh-period: 10m
+        timeout-duration: 0
+      loginRateLimiter:
+        limit-for-period: 10
+        limit-refresh-period: 10m
+        timeout-duration: 0
 
 
 application:

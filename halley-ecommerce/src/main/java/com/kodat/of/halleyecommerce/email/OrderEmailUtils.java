@@ -1,9 +1,8 @@
-package com.kodat.of.halleyecommerce.util;
+package com.kodat.of.halleyecommerce.email;
 
 import com.kodat.of.halleyecommerce.dto.order.EmailConsumerDto;
 import com.kodat.of.halleyecommerce.mapper.order.OrderItemMapper;
 import com.kodat.of.halleyecommerce.order.Order;
-import com.kodat.of.halleyecommerce.user.EmailService;
 import com.kodat.of.halleyecommerce.user.GuestUser;
 import com.kodat.of.halleyecommerce.user.User;
 import org.springframework.stereotype.Component;
