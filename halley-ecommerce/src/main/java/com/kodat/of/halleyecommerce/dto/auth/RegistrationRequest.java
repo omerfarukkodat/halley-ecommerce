@@ -16,14 +16,21 @@ public class RegistrationRequest {
 
     @NotBlank(message = "First name is mandatory")
     private String firstName;
+
     @NotBlank(message = "Last name is mandatory")
     private String lastName;
+
     @Email(message = "Email is not formatted")
     @NotBlank(message = "Email is mandatory")
     private String email;
+
     @NotBlank(message = "Password is mandatory")
-    @Size(min = 8 , message = "Password should be 8 characters long minimum")
+    @Pattern(
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,15}$",
+            message = "Password must be 8-15 characters long, contain at least one uppercase letter, one lowercase letter, and one digit."
+    )
     private String password;
+
     @NotBlank(message = "Phone number is mandatory")
     @Pattern(
             regexp = "^\\+90\\d{10}$",

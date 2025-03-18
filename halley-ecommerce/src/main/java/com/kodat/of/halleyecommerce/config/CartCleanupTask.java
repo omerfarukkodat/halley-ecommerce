@@ -27,21 +27,21 @@ public class CartCleanupTask {
     @Transactional
     public void cleanUpExpiredCarts() {
         LOGGER.info("Cleaning up expired carts for non-registered users...");
-        // Get expired guestCart (has cartToken)
-        List<Cart> expiredCart = cartRepository.findAllByCartTokenIsNotNullAndCreatedAtBefore(LocalDateTime.now());
+
+        LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
+
+        List<Cart> expiredCart = cartRepository.findAllByCartTokenIsNotNullAndCreatedAtBefore(twoDaysAgo);
+
         if (!expiredCart.isEmpty()) {
             List<String> expiredCartTokens = expiredCart.stream()
                     .map(Cart::getCartToken)
                     .toList();
             LOGGER.info("Found {} expired carts.", expiredCartTokens.size());
+
             cartItemRepository.deleteAllByCart_CartTokenIn(expiredCartTokens);
+
             cartRepository.deleteAllByCartTokens(expiredCartTokens);
             LOGGER.info("Deleted expired carts and their items successfully.");
-//            for (Cart cart : expiredCart) {
-//                LOGGER.info("Deleting cart with token: {}", cart.getCartToken());
-//                cartItemRepository.deleteCartItemByCart_CartToken(cart.getCartToken());
-//                cartRepository.delete(cart);
-//            }
         } else {
             LOGGER.info("No expired carts found");
         }

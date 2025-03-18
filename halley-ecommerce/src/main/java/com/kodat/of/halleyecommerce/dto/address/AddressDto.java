@@ -31,7 +31,6 @@ public class AddressDto {
     @Pattern(regexp = "\\d{5}", message = "Zip code must be 5 digits")
     private String zipCode;
 
-
     @NotNull( message = "AddressType is mandatory")
     private AddressType addressType;
 

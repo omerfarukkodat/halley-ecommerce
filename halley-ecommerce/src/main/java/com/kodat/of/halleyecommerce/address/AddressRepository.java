@@ -12,4 +12,9 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     Optional<Address> findFirstByUserId(Integer user_id);
 
     Optional<Address> findByIdAndUserId(Long addressId, Integer user_id);
+
+    Optional<Address> findByIdAndIsDeletedFalse(Long addressId);
+
+    Optional<List<Address>> findAllByUserIdAndIsDeletedFalse(Integer user_id);
+
 }

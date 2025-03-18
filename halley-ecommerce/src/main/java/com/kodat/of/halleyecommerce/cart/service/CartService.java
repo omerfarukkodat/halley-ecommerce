@@ -1,6 +1,7 @@
 package com.kodat.of.halleyecommerce.cart.service;
 
 import com.kodat.of.halleyecommerce.dto.cart.CartDto;
+import com.kodat.of.halleyecommerce.dto.cart.CartSummaryDto;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
@@ -23,4 +24,8 @@ public interface CartService {
     void increaseProductQuantity(Authentication connectedUser , Long productId);
 
     void removeSelectedCartItemsFromCart(List<Long> productIds, Authentication connectedUser);
+
+    Integer getProductQuantity(Long productId, Authentication connectedUser);
+
+    CartSummaryDto getCartSummary(Authentication connectedUser);
 }

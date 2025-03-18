@@ -2,6 +2,8 @@ package com.kodat.of.halleyecommerce.cart.service.impl;
 
 import com.kodat.of.halleyecommerce.cart.service.CartService;
 import com.kodat.of.halleyecommerce.dto.cart.CartDto;
+import com.kodat.of.halleyecommerce.dto.cart.CartSummaryDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,15 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
     private final UnauthenticatedCartService unauthenticatedService;
     private final AuthenticatedCartService authenticatedService;
 
-    public CartServiceImpl(UnauthenticatedCartService unauthenticatedService, AuthenticatedCartService authenticatedService) {
-        this.unauthenticatedService = unauthenticatedService;
-        this.authenticatedService = authenticatedService;
-    }
 
     @Override
     public CartDto getCart(Authentication connectedUser) {
@@ -90,6 +89,24 @@ public class CartServiceImpl implements CartService {
             authenticatedService.removeSelectedCartItemsFromCart(productIds, connectedUser);
         } else {
             unauthenticatedService.removeSelectedCartItemsFromCart(productIds);
+        }
+    }
+
+    @Override
+    public Integer getProductQuantity(Long productId, Authentication connectedUser) {
+        if (isAuthenticated(connectedUser)) {
+            return authenticatedService.getProductQuantity(productId, connectedUser);
+        } else {
+            return unauthenticatedService.getProductQuantity(productId);
+        }
+    }
+
+    @Override
+    public CartSummaryDto getCartSummary(Authentication connectedUser) {
+        if (isAuthenticated(connectedUser)) {
+            return authenticatedService.getCartSummary(connectedUser);
+        } else {
+            return unauthenticatedService.getCartSummary();
         }
     }
 

@@ -11,32 +11,31 @@ import com.kodat.of.halleyecommerce.exception.ProductNotFoundException;
 import com.kodat.of.halleyecommerce.mapper.cart.CartMapper;
 import com.kodat.of.halleyecommerce.product.Product;
 import com.kodat.of.halleyecommerce.product.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.List;
 
+@RequiredArgsConstructor
 @Component
 public class UnauthenticatedUtils {
+
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final CookieUtils cookieUtils;
-
-    public UnauthenticatedUtils(ProductRepository productRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, CookieUtils cookieUtils) {
-        this.productRepository = productRepository;
-        this.cartRepository = cartRepository;
-        this.cartItemRepository = cartItemRepository;
-        this.cookieUtils = cookieUtils;
-    }
+    private final ShippingUtils shippingUtils;
 
 
     @Transactional
-    public void addProduct(CartDto cartDto, Long productId) {
+    public void addProduct(Cart cart, Long productId) {
         Product product = fetchProductById(productId);
         if (product.getStock() <= 0) {
             throw new InsufficientStockException("Insufficient stock for product: " + product.getName());
         }
-        Cart cart = getOrCreateCart();
+        CartDto cartDto = CartMapper.INSTANCE.toCartDto(cart);
         CartItemDto existingItem = findItemByProductId(cartDto, productId);
         if (existingItem != null) {
             updateExistingCartItem(cart, existingItem, product.getStock());
@@ -61,7 +60,7 @@ public class UnauthenticatedUtils {
         }
     }
 
-    public Cart getOrCreateCart() {
+    public synchronized Cart getOrCreateCart() {
         String cartToken = cookieUtils.getOrCreateCartToken();
         return cartRepository.findByCartToken(cartToken)
                 .orElseGet(() -> {
@@ -102,5 +101,15 @@ public class UnauthenticatedUtils {
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
+        return cartItems.stream()
+                .map(item -> item.getProduct().getDiscountedPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal calculateShippingCoast(BigDecimal totalPrice) {
+        return shippingUtils.calculateShippingCost(totalPrice);
     }
 }

@@ -8,6 +8,7 @@ import com.kodat.of.halleyecommerce.user.User;
 import com.kodat.of.halleyecommerce.user.UserRepository;
 import com.kodat.of.halleyecommerce.validator.AddressValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService{
 
     private final AddressRepository addressRepository;
@@ -22,22 +24,19 @@ public class AddressServiceImpl implements AddressService{
     private final UserRepository userRepository;
     private final AddressValidator addressValidator;
 
-    public AddressServiceImpl(AddressRepository addressRepository, RoleValidator roleValidator, UserRepository userRepository, AddressValidator addressValidator) {
-        this.addressRepository = addressRepository;
-        this.roleValidator = roleValidator;
-        this.userRepository = userRepository;
-        this.addressValidator = addressValidator;
-    }
 
     @Override
     public List<AddressDto> getAllAddresses(Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
+
         String username = connectedUser.getName();
         User user = userRepository.findByEmail(username)
                 .orElseThrow(()->new UserNotFoundException("User not found"));
         addressValidator.validateUserAddresses(user.getId());
-        List<Address> addresses = addressRepository.findAllByUserId(user.getId())
+
+        List<Address> addresses = addressRepository.findAllByUserIdAndIsDeletedFalse(user.getId())
                 .orElseThrow(()->new AddressNotFoundException("Any addresses not found"));
+
         return  addresses.stream()
                 .map(AddressMapper::toAddressDto)
                 .toList();
@@ -49,35 +48,39 @@ public class AddressServiceImpl implements AddressService{
         String username = connectedUser.getName();
         User user = userRepository.findByEmail(username)
                 .orElseThrow(()->new UserNotFoundException("User not found"));
+
         addressValidator.validateUserAddress(user.getId());
-        Address address = addressRepository.findById(addressId)
+
+        Address address = addressRepository.findByIdAndIsDeletedFalse(addressId)
                 .orElseThrow(()->new AddressNotFoundException("Any address not found"));
+
         return AddressMapper.toAddressDto(address);
     }
 
     @Override
-    public AddressDto createAddress(AddressDto addressDto, Authentication connectedUser) {
+    public void createAddress(AddressDto addressDto, Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         String username = connectedUser.getName();
         User user = userRepository.findByEmail(username)
                 .orElseThrow(()->new UserNotFoundException("User not found"));
         Address newAddress = AddressMapper.toAddress(addressDto);
         newAddress.setUser(user);
-        Address savedAddress = addressRepository.save(newAddress);
-        return AddressMapper.toAddressDto(savedAddress);
+        newAddress.setIsDeleted(false);
+        addressRepository.save(newAddress);
     }
 
     @Override
-    public AddressDto updateAddressById(Long addressId, AddressDto addressDto, Authentication connectedUser) {
+    public void updateAddressById(Long addressId, AddressDto addressDto, Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         String username = connectedUser.getName();
         User user = userRepository.findByEmail(username)
                 .orElseThrow(()->new UserNotFoundException("User not found"));
         addressValidator.validateUserAddress(user.getId());
-        Address existingAddress = addressRepository.findById(addressId)
+
+        Address existingAddress = addressRepository.findByIdAndIsDeletedFalse(addressId)
                 .orElseThrow(() -> new AddressNotFoundException("Address not found"));
-        Address updatedAddress = addressRepository.save(AddressMapper.updateAddressToDto(existingAddress, addressDto));
-        return AddressMapper.toAddressDto(updatedAddress);
+
+        addressRepository.save(AddressMapper.updateAddressToDto(existingAddress, addressDto));
     }
     @Transactional
     @Override
@@ -87,6 +90,7 @@ public class AddressServiceImpl implements AddressService{
         User user = userRepository.findByEmail(username)
                 .orElseThrow(()->new UserNotFoundException("User not found"));
        Address address = addressValidator.validateUserAddress(addressId,user.getId());
-        addressRepository.delete(address);
+       address.setIsDeleted(true);
+       addressRepository.save(address);
     }
 }

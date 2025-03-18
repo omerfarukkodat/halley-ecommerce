@@ -9,11 +9,13 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CategoryDto {
+
     private Long categoryId;
+
     @NotBlank(message = "Category name is mandatory")
     private String categoryName;
     private String mainCategoryName;
-
-    private Long parentId; // Upper category id
+    private Long parentId;
     private String slug;
+    private String imageUrl;
 }

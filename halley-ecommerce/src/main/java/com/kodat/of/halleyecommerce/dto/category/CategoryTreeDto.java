@@ -12,5 +12,8 @@ import java.util.List;
 public class CategoryTreeDto {
     private Long categoryId;
     private String categoryName;
+    private String description;
     private List<CategoryTreeDto> subCategories;
+    private String slug;
+    private String imageUrl;
 }

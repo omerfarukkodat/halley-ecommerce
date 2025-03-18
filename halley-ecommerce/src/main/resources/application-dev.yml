@@ -12,7 +12,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -26,7 +26,7 @@ resilience4j.ratelimiter:
         timeout-duration: 0
       loginRateLimiter:
         limit-for-period: 10
-        limit-refresh-period: 10m
+        limit-refresh-period: 1m
         timeout-duration: 0
 
 
@@ -34,7 +34,7 @@ application:
   security:
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-      expiration: 86400000
+      expiration: 2592000000
 
 server:
   port: 8088

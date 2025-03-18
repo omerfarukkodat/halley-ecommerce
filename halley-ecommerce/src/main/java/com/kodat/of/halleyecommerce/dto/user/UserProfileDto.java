@@ -2,6 +2,7 @@ package com.kodat.of.halleyecommerce.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,10 @@ public class UserProfileDto {
     @NotBlank(message = "Email is mandatory")
     private String email;
     @NotBlank(message = "Phone number is mandatory")
+    @Pattern(
+            regexp = "^\\+90\\d{10}$",
+            message = "Phone number must start with +90 and followed by 10 digits"
+    )
     private String phone;
 
 }

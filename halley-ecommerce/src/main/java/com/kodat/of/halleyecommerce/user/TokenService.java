@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 public class TokenService {
-    private static final long EXPIRATION_TIME = 3600000;
+    private static final long EXPIRATION_TIME = 60000;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 

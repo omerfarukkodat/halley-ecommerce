@@ -18,4 +18,5 @@ public class OrderResponseDto {
     private BigDecimal finalPrice;
     private Status status;
     private String createdAt;
+    private String paymentDetails;
 }

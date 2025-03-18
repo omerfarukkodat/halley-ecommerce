@@ -2,13 +2,15 @@ package com.kodat.of.halleyecommerce.cart;
 
 import com.kodat.of.halleyecommerce.cart.service.CartService;
 import com.kodat.of.halleyecommerce.dto.cart.CartDto;
+import com.kodat.of.halleyecommerce.dto.cart.CartSummaryDto;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-
+@Tag(name = "Cart")
 @RestController
 @RequestMapping("/cart")
 public class CartController {
@@ -36,33 +38,25 @@ public class CartController {
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<String> removeCartItemFromCart(
-            Authentication connectedUser,
-            @PathVariable Long productId) {
+    public ResponseEntity<String> removeCartItemFromCart(Authentication connectedUser, @PathVariable Long productId) {
         cartService.removeCartItemFromCart(connectedUser, productId);
         return ResponseEntity.status(HttpStatus.OK).body("Successfully removed cart items from cart");
     }
 
     @DeleteMapping("/remove")
-    public ResponseEntity<String> removeSelectedCartItemsFromCart(
-            @RequestBody List<Long> productIds,
-            Authentication connectedUser) {
+    public ResponseEntity<String> removeSelectedCartItemsFromCart(@RequestBody List<Long> productIds, Authentication connectedUser) {
         cartService.removeSelectedCartItemsFromCart(productIds, connectedUser);
         return ResponseEntity.status(HttpStatus.OK).body("Cart items removed from Cart.");
     }
 
     @PatchMapping("/{productId}/decrease")
-    public ResponseEntity<Void> decreaseProductQuantity(
-            Authentication connectedUser,
-            @PathVariable Long productId) {
+    public ResponseEntity<Void> decreaseProductQuantity(Authentication connectedUser, @PathVariable Long productId) {
         cartService.decreaseProductQuantity(connectedUser, productId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{productId}/increase")
-    public ResponseEntity<Void> increaseProductQuantity(
-            @PathVariable Long productId,
-            Authentication connectedUser) {
+    public ResponseEntity<Void> increaseProductQuantity(@PathVariable Long productId, Authentication connectedUser) {
         cartService.increaseProductQuantity(connectedUser,productId);
         return ResponseEntity.noContent().build();
     }
@@ -70,6 +64,16 @@ public class CartController {
     @GetMapping("/isEmpty")
     public ResponseEntity<Boolean> isEmptyCart(Authentication connectedUser) {
         return ResponseEntity.ok(cartService.isEmptyCart(connectedUser));
+    }
+
+    @GetMapping("/getProductQuantity/{productId}")
+    public ResponseEntity<Integer> getProductQuantity(@PathVariable Long productId , Authentication connectedUser) {
+        return ResponseEntity.ok(cartService.getProductQuantity(productId,connectedUser));
+    }
+
+    @GetMapping("/cartSummary")
+    public ResponseEntity<CartSummaryDto> getCartSummary(Authentication connectedUser) {
+        return ResponseEntity.ok(cartService.getCartSummary(connectedUser));
     }
 
 

@@ -10,9 +10,9 @@ public interface AddressService {
 
     AddressDto getAddressById(Long addressId, Authentication connectedUser);
 
-    AddressDto createAddress(AddressDto addressDto, Authentication connectedUser);
+    void createAddress(AddressDto addressDto, Authentication connectedUser);
 
-    AddressDto updateAddressById(Long addressId, AddressDto addressDto, Authentication connectedUser);
+    void updateAddressById(Long addressId, AddressDto addressDto, Authentication connectedUser);
 
     void deleteAddressById(Long addressId, Authentication connectedUser);
 }

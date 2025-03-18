@@ -48,7 +48,24 @@ public class Address {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
+
     @ManyToOne
     @JoinColumn(name = "guest_id")
     private GuestUser guestUser;
+
+    private Boolean isDeleted;
+
+
+
+    @Override
+    public String toString() {
+        return
+                "şehir='" + city + '\'' +
+                ", ilçe='" + district + '\'' +
+                ", mahalle='" + neighborhood + '\'' +
+                ", genel adres='" + generalAddress + '\'' +
+                ", posta kodu='" + zipCode + '\'' +
+                ", adres tipi=" + addressType +
+                '}';
+    }
 }

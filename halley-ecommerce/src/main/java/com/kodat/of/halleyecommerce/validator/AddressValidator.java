@@ -17,11 +17,11 @@ public class AddressValidator {
 
 
     public void validateUserAddress(Integer userId){
-        Address address = addressRepository.findFirstByUserId(userId)
+         addressRepository.findFirstByUserId(userId)
                 .orElseThrow(() -> new AddressNotFoundException("User has no registered address"));
     }
     public void validateUserAddresses(Integer userId){
-        List<Address> addresses = addressRepository.findAllByUserId(userId)
+         addressRepository.findAllByUserId(userId)
                 .orElseThrow(() -> new AddressNotFoundException("User has no registered addresses"));
     }
     public Address validateUserAddress(Long addressId , Integer userId){

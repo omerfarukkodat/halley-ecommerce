@@ -11,9 +11,14 @@ import java.util.List;
 @Setter
 @Builder
 public class CartSummaryDto {
-    private List<CartItemDto> cartItems;
+
     private BigDecimal totalPrice;
-    private int totalItems;
+
+    private BigDecimal productPrices;
+
+    private int totalQuantity;
+
+    private BigDecimal totalShippingCost;
 
 
 }

@@ -3,14 +3,23 @@ package com.kodat.of.halleyecommerce.category;
 import com.kodat.of.halleyecommerce.common.PageResponse;
 import com.kodat.of.halleyecommerce.common.SlugService;
 import com.kodat.of.halleyecommerce.dto.category.CategoryDto;
+import com.kodat.of.halleyecommerce.dto.category.CategoryPathDto;
 import com.kodat.of.halleyecommerce.dto.category.CategoryTreeDto;
+import com.kodat.of.halleyecommerce.dto.category.MainCategoryDto;
+import com.kodat.of.halleyecommerce.exception.CartNotFoundException;
+import com.kodat.of.halleyecommerce.exception.CategoryDoesNotExistsException;
+import com.kodat.of.halleyecommerce.exception.ParentCategoryDoesNotExistsException;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryMapper;
+import com.kodat.of.halleyecommerce.mapper.category.CategoryPathMapper;
 import com.kodat.of.halleyecommerce.mapper.category.CategoryTreeMapper;
+import com.kodat.of.halleyecommerce.mapper.category.MainCategoryMapper;
 import com.kodat.of.halleyecommerce.util.CategoryUtils;
 import com.kodat.of.halleyecommerce.validator.CategoryValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,12 +28,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     private final CategoryRepository categoryRepository;
@@ -33,13 +47,6 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryUtils categoryUtils;
     private final SlugService slugService;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryValidator categoryValidator, RoleValidator roleValidator, CategoryUtils categoryUtils, SlugService slugService) {
-        this.categoryRepository = categoryRepository;
-        this.categoryValidator = categoryValidator;
-        this.roleValidator = roleValidator;
-        this.categoryUtils = categoryUtils;
-        this.slugService = slugService;
-    }
 
     @Override
     public CategoryDto addParentCategory(CategoryDto categoryDto , Authentication connectedAdmin) {
@@ -76,7 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
         List<CategoryDto> categoryDtoPage = categoryPage.
                 stream().
                 map(CategoryMapper::toCategoryDto)
-                .collect(Collectors.toList());
+                .collect(toList());
         return new PageResponse<>(
                 categoryDtoPage,
                 categoryPage.getNumber(),
@@ -87,13 +94,13 @@ public class CategoryServiceImpl implements CategoryService {
                 categoryPage.isLast()
         );
     }
-
+    @Cacheable(value = "categoryTree")
     @Override
     public List<CategoryTreeDto> getCategoryTree() {
         List<Category> rootCategories = categoryRepository.findByParentIsNull();
         return rootCategories.stream()
                 .map(CategoryTreeMapper::toCategoryTreeDto)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Override
@@ -122,5 +129,43 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.deleteById(categoryId);
     }
 
+    @Cacheable(value = "mainCategories")
+    @Override
+    public List<MainCategoryDto> getMainCategories() {
+        List<Category> mainCategories = categoryRepository.findByParentIsNull();
+        if (!mainCategories.isEmpty()) {
+            return mainCategories.stream()
+                    .map(MainCategoryMapper::toMainCategoryDto)
+                    .toList();
+        }
+        throw new ParentCategoryDoesNotExistsException("There are not any main categories");
+    }
+
+    @Override
+    public CategoryTreeDto getCategory(String categorySlug) {
+
+       Category category = categoryRepository.findCategoryBySlug(categorySlug)
+               .orElseThrow(() -> new CategoryDoesNotExistsException("There is no category with id: " + categorySlug));
+       return CategoryTreeMapper.toCategoryTreeDto(category);
+    }
+
+    @Override
+    public List<CategoryPathDto> getCategoryPaths(String categorySlug) {
+
+            Category category = categoryRepository.findCategoryBySlug(categorySlug)
+                    .orElseThrow(() -> new CartNotFoundException("Category with id " + categorySlug + " not found"));
+
+            List<CategoryPathDto> categoryPathDtos = new ArrayList<>();
+
+        categoryPathDtos.add(CategoryPathMapper.toCategoryPath(category));
+
+        if (category.getParent() == null){
+             return categoryPathDtos;
+            }
+
+        categoryPathDtos.add(CategoryPathMapper.toCategoryPath(category.getParent()));
+        Collections.reverse(categoryPathDtos);
+        return categoryPathDtos;
+    }
 
 }

@@ -1,10 +1,8 @@
 package com.kodat.of.halleyecommerce.order;
 
-import com.kodat.of.halleyecommerce.dto.order.OrderDto;
-import com.kodat.of.halleyecommerce.dto.order.OrderResponseDto;
-import com.kodat.of.halleyecommerce.dto.order.OrderSummaryDto;
-import com.kodat.of.halleyecommerce.dto.order.UpdateOrderStatusDto;
+import com.kodat.of.halleyecommerce.dto.order.*;
 import com.kodat.of.halleyecommerce.order.enums.Status;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-
+@Tag(name = "Orders")
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -32,7 +30,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrderFromCart(orderDto, connectedUser));
     }
 
-    @GetMapping("/ordersummary/{orderId}")
+    @GetMapping("/orderSummary/{orderId}")
     public ResponseEntity<OrderSummaryDto> getOrderSummary(
             @PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.getOrderSummary(orderId));
@@ -47,7 +45,7 @@ public class OrderController {
 
     @Secured("USER")
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponseDto> getOrderById(
+    public ResponseEntity<UserOrderSummaryDto> getOrderById(
             @PathVariable Long orderId,
             Authentication connectedUser) {
         return ResponseEntity.ok(orderService.getOrderById(orderId, connectedUser));

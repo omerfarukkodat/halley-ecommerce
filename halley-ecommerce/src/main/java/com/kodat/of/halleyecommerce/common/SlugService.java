@@ -1,24 +1,29 @@
 package com.kodat.of.halleyecommerce.common;
 
 import com.github.slugify.Slugify;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SlugService {
 
     private final Slugify slugify;
 
-    public SlugService(Slugify slugify) {
-        this.slugify = slugify;
-    }
 
-    public String generateSlug(String name , String productCode){
+    public String generateSlug(String name, String productCode) {
         String combinedString = name + "-" + productCode;
         combinedString = replaceTurkishCharacters(combinedString);
         return slugify.slugify(combinedString);
     }
 
-    private String replaceTurkishCharacters(String input){
+    public String generateSlugWithNoCode(String name) {
+        String combinedString = replaceTurkishCharacters(name);
+        return slugify.slugify(combinedString);
+    }
+
+
+    private String replaceTurkishCharacters(String input) {
         return input
                 .replace("ç", "c")
                 .replace("ğ", "g")

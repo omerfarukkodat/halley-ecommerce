@@ -9,4 +9,6 @@ public interface AuthenticationService {
     void register(RegistrationRequest request);
 
     AuthenticationResponse login(LoginRequest request);
+
+    AuthenticationResponse adminLogin(LoginRequest request);
 }

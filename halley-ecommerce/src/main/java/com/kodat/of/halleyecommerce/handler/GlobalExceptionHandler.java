@@ -3,16 +3,55 @@ package com.kodat.of.halleyecommerce.handler;
 import com.kodat.of.halleyecommerce.exception.*;
 import com.kodat.of.halleyecommerce.exception.AddressAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> handleException(Exception e) {
+        LOGGER.error("Unexpected error occurred: {}", e.getMessage(), e);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.INTERNAL_SERVER_ERROR.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.INTERNAL_SERVER_ERROR.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException e) {
+        LOGGER.warn("Validation error: {}", e.getMessage());
+        Map<String, String> errors = new HashMap<>();
+        e.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException e) {
+        LOGGER.warn("Constraint violation: {}", e.getMessage());
+        Map<String, String> errors = new HashMap<>();
+        e.getConstraintViolations().forEach(violation ->
+                errors.put(violation.getPropertyPath().toString(), violation.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleEntityNotFoundException(EntityNotFoundException e) {
@@ -28,6 +67,36 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthenticationException e) {
+        LOGGER.warn("Authentication failed: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.AUTHENTICATION_FAILED.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.AUTHENTICATION_FAILED.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ExceptionResponse> handleBadCredentialsException(BadCredentialsException e) {
+        LOGGER.warn("Bad credentials: {}", e.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.BAD_CREDENTIALS_ACCESS.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.BAD_CREDENTIALS_ACCESS.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
         LOGGER.warn(e.getMessage());
@@ -41,6 +110,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleUserNotFoundException(UserNotFoundException e) {
         LOGGER.warn("User does not exist: {}", e.getMessage());
@@ -54,6 +124,51 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
+    @ExceptionHandler(BrandNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleBrandNotFoundException(BrandNotFoundException e) {
+        LOGGER.warn("Brand not found: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.BRAND_NOT_FOUND.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.BRAND_NOT_FOUND.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(ProductAttributeNotFound.class)
+    public ResponseEntity<ExceptionResponse> handleProductAttributeNotFountException(ProductAttributeNotFound e) {
+        LOGGER.warn("Product attribute not found: {}", e.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.PRODUCT_ATTRIBUTE_NOT_FOUND.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.PRODUCT_ATTRIBUTE_NOT_FOUND.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(ProductAttributeAlreadyExists.class)
+    public ResponseEntity<ExceptionResponse> handleProductAttributeAlreadyExists(ProductAttributeAlreadyExists e) {
+        LOGGER.warn("Product attribute already exists: {}", e.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.PRODUCT_ATTRIBUTE_ALREADY_EXISTS.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.PRODUCT_ATTRIBUTE_ALREADY_EXISTS.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+
     @ExceptionHandler(CategoryAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleCategoryAlreadyExistsException(CategoryAlreadyExistsException e) {
         LOGGER.warn("Category already exists: {}", e.getMessage());
@@ -67,6 +182,21 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
+    @ExceptionHandler(BrandAlreadyExists.class)
+    public ResponseEntity<ExceptionResponse> handleCategoryNotFoundException(BrandAlreadyExists message) {
+        LOGGER.warn("Brand already exists: {}", message.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.BRAND_ALREADY_EXISTS.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.BRAND_ALREADY_EXISTS.getDescription())
+                                .error(message.getMessage())
+                                .build()
+                );
+    }
+
     @ExceptionHandler(UnauthorizedAdminAccessException.class)
     public ResponseEntity<ExceptionResponse> handleUnauthorizedAdminAccessException(UnauthorizedAdminAccessException e) {
         LOGGER.warn("Unauthorized admin access: {}", e.getMessage());
@@ -80,6 +210,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(ParentCategoryDoesNotExistsException.class)
     public ResponseEntity<ExceptionResponse> handleParentCategoryDoesNotExistsException(ParentCategoryDoesNotExistsException e) {
         LOGGER.warn("Parent category does not exists: {}", e.getMessage());
@@ -93,6 +224,38 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
+    @ExceptionHandler(BlogPostNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleBlogPostNotFoundException(BlogPostNotFoundException e) {
+        LOGGER.warn("Blog post not found: {}", e.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.BLOGPOST_NOT_FOUND.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.BLOGPOST_NOT_FOUND.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(ShowcaseNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleShowcaseNotFoundException(ShowcaseNotFoundException e) {
+        LOGGER.warn("Showcase not found: {}", e.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BusinessErrorCodes.SHOWCASE_NOT_FOUND.getCode())
+                                .businessErrorDescription(BusinessErrorCodes.SHOWCASE_NOT_FOUND.getDescription())
+                                .error(e.getMessage())
+                                .build()
+                );
+    }
+
+
     @ExceptionHandler(ProductAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleProductAlreadyExistsException(ProductAlreadyExistsException e) {
         LOGGER.warn("Product already exists: {}", e.getMessage());
@@ -106,6 +269,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(CategoryDoesNotExistsException.class)
     public ResponseEntity<ExceptionResponse> handleCategoryDoesNotExistsException(CategoryDoesNotExistsException e) {
         LOGGER.warn("Category does not exists: {}", e.getMessage());
@@ -119,6 +283,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleProductNotFoundException(ProductNotFoundException e) {
         LOGGER.warn("Product does not exist: {}", e.getMessage());
@@ -132,6 +297,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(ParentCategoryCycleException.class)
     public ResponseEntity<ExceptionResponse> handleParentCategoryCycleException(ParentCategoryCycleException e) {
         LOGGER.warn("Parent category cycle exception: {}", e.getMessage());
@@ -145,8 +311,9 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(InvalidParentCategoryException.class)
-    public ResponseEntity<ExceptionResponse> handleInvalidParentCategoryException(InvalidParentCategoryException e){
+    public ResponseEntity<ExceptionResponse> handleInvalidParentCategoryException(InvalidParentCategoryException e) {
         LOGGER.warn("Invalid parent category: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -158,6 +325,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(InvalidDiscountException.class)
     public ResponseEntity<ExceptionResponse> handleInvalidDiscountException(InvalidDiscountException e) {
         LOGGER.warn("Invalid discount: {}", e.getMessage());
@@ -170,6 +338,7 @@ public class GlobalExceptionHandler {
                                 .error(e.getMessage())
                                 .build());
     }
+
     @ExceptionHandler(DiscountNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleDiscountNotFoundException(DiscountNotFoundException e) {
         LOGGER.warn("Discount not found: {}", e.getMessage());
@@ -184,8 +353,9 @@ public class GlobalExceptionHandler {
                 );
 
     }
+
     @ExceptionHandler(UnauthorizedUserAccessException.class)
-    public ResponseEntity<ExceptionResponse> handleUnauthroizedUserAccessException(UnauthorizedUserAccessException e){
+    public ResponseEntity<ExceptionResponse> handleUnauthroizedUserAccessException(UnauthorizedUserAccessException e) {
         LOGGER.warn("Unauthorized user: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
@@ -197,6 +367,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(AddressNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleAddressNotFoundException(AddressNotFoundException e) {
         LOGGER.warn("Address does not exist: {}", e.getMessage());
@@ -210,6 +381,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(AddressAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleAddressAlreadyExistsException(AddressAlreadyExistsException e) {
         LOGGER.warn("Address already exists: {}", e.getMessage());
@@ -223,6 +395,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(EmptyCartException.class)
     public ResponseEntity<ExceptionResponse> handleEmptyCartException(EmptyCartException e) {
         LOGGER.warn("Empty cart exception: {}", e.getMessage());
@@ -236,6 +409,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(CartNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleCartNotFoundException(CartNotFoundException e) {
         LOGGER.warn("Cart not found: {}", e.getMessage());
@@ -249,6 +423,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(CartItemNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleCartItemNotFoundException(CartItemNotFoundException e) {
         LOGGER.warn("Cart item not found: {}", e.getMessage());
@@ -262,6 +437,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<ExceptionResponse> handleInsufficientStockException(InsufficientStockException e) {
         LOGGER.warn("Insufficient stock: {}", e.getMessage());
@@ -275,6 +451,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleOrderNotFoundException(OrderNotFoundException e) {
         LOGGER.warn("Order not found: {}", e.getMessage());
@@ -288,6 +465,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ExceptionResponse> handleInvalidTokenException(InvalidTokenException e) {
         LOGGER.warn("Invalid token: {}", e.getMessage());
@@ -301,6 +479,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(DuplicatePasswordException.class)
     public ResponseEntity<ExceptionResponse> handleDuplicatePasswordException(DuplicatePasswordException e) {
         LOGGER.warn("Duplicate password: {}", e.getMessage());
@@ -314,6 +493,7 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
     @ExceptionHandler(RateLimiterAttemptException.class)
     public ResponseEntity<ExceptionResponse> handleRateLimiterAttemptException(RateLimiterAttemptException e) {
         LOGGER.warn("Rate limiter attempt exception: {}", e.getMessage());
@@ -327,10 +507,6 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
-
-
-
-
 
 
 }

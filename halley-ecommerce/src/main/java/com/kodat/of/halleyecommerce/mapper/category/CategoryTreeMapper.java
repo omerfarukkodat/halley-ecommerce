@@ -11,7 +11,10 @@ public class CategoryTreeMapper {
         return CategoryTreeDto.builder()
                 .categoryId(category.getId())
                 .categoryName(category.getCategoryName())
+                .description(category.getDescription())
                 .subCategories(toCategoryTreeDtoList(category.getSubCategories()))
+                .slug(category.getSlug())
+                .imageUrl(category.getImageUrl())
                 .build();
     }
 

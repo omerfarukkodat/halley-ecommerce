@@ -8,6 +8,7 @@ import com.kodat.of.halleyecommerce.product.Product;
 import com.kodat.of.halleyecommerce.product.ProductRepository;
 import com.kodat.of.halleyecommerce.validator.DiscountValidator;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DiscountServiceImpl implements DiscountService{
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscountServiceImpl.class);
 
@@ -27,13 +29,7 @@ public class DiscountServiceImpl implements DiscountService{
     private final DiscountCalculator discountCalculator;
     private final DiscountValidator discountValidator;
 
-    public DiscountServiceImpl(DiscountRepository discountRepository, RoleValidator roleValidator, ProductRepository productRepository, DiscountCalculator discountCalculator, DiscountValidator discountValidator) {
-        this.discountRepository = discountRepository;
-        this.roleValidator = roleValidator;
-        this.productRepository = productRepository;
-        this.discountCalculator = discountCalculator;
-        this.discountValidator = discountValidator;
-    }
+
 
     @Override
     public DiscountDto createDiscount(DiscountDto discountDto, Authentication connectedUser) {
@@ -42,7 +38,6 @@ public class DiscountServiceImpl implements DiscountService{
         Discount discount = DiscountMapper.toDiscount(discountDto, products);
         Discount savedDiscount = discountRepository.save(discount);
         applyDiscountToProducts(savedDiscount);
-
         return DiscountMapper.toDiscountDto(savedDiscount);
     }
 

@@ -4,6 +4,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.UUID;
 
 @Component
@@ -17,7 +19,7 @@ public class CookieUtils {
         this.response = response;
     }
 
-    public String getOrCreateCartToken() {
+    public  String getOrCreateCartToken() {
         Cookie[] cookies = request.getCookies();
         String cartToken = getCookieValue(cookies);
 
@@ -35,7 +37,6 @@ public class CookieUtils {
                 if (CART_TOKEN_COOKIE_NAME.equals(cookie.getName())) {
                     return cookie.getValue();
                 }
-                System.out.println(cookie.getValue());
             }
         }
         return null;
@@ -45,8 +46,11 @@ public class CookieUtils {
         Cookie cookie = new Cookie(CART_TOKEN_COOKIE_NAME, cartToken);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setMaxAge(60 * 60 * 24 * 3); // 3 gün
+        cookie.setSecure(false);
+        cookie.setMaxAge(60 * 60 * 24 * 30);
+        cookie.setAttribute("SameSite", "Lax");
+
         response.addCookie(cookie);
+
     }
 }

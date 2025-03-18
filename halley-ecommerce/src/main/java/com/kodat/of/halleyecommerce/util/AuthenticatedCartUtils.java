@@ -10,24 +10,26 @@ import com.kodat.of.halleyecommerce.product.Product;
 import com.kodat.of.halleyecommerce.user.CustomUserDetails;
 import com.kodat.of.halleyecommerce.user.User;
 import com.kodat.of.halleyecommerce.validator.RoleValidator;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+@RequiredArgsConstructor
 @Component
 public class AuthenticatedCartUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticatedCartUtils.class);
+
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final UnauthenticatedUtils unauthenticatedUtils;
     private final RoleValidator roleValidator;
     private final StockUtils stockUtils;
-
-    public AuthenticatedCartUtils(CartRepository cartRepository, CartItemRepository cartItemRepository, UnauthenticatedUtils unauthenticatedUtils, RoleValidator roleValidator, StockUtils stockUtils) {
-        this.cartRepository = cartRepository;
-        this.cartItemRepository = cartItemRepository;
-        this.unauthenticatedUtils = unauthenticatedUtils;
-        this.roleValidator = roleValidator;
-        this.stockUtils = stockUtils;
-    }
+    private final ShippingUtils shippingUtils;
 
 
     public void mergeCarts(Authentication connectedUser) {
@@ -35,6 +37,9 @@ public class AuthenticatedCartUtils {
         CustomUserDetails customUserDetails = (CustomUserDetails) connectedUser.getPrincipal();
         User user = customUserDetails.getUser();
         Cart nonMemberCart = unauthenticatedUtils.getOrCreateCart();
+        if (nonMemberCart == null || nonMemberCart.getItems().isEmpty()) {
+            LOGGER.info("No items to merge from non-member cart");
+        }
         Cart userCart = cartRepository.findByUser(user)
                 .orElseGet(() -> createNewCartForUser(user));
         for (CartItem nonMemberCartItem : nonMemberCart.getItems()) {
@@ -107,6 +112,16 @@ public class AuthenticatedCartUtils {
         Cart cart = new Cart();
         cart.setUser(user);
         return cartRepository.save(cart);
+    }
+
+    public BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
+        return cartItems.stream()
+                .map(item -> item.getProduct().getDiscountedPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal calculateShippingCoast(BigDecimal totalPrice) {
+        return shippingUtils.calculateShippingCost(totalPrice);
     }
 
 }

@@ -24,11 +24,7 @@ spring:
   docker:
     compose:
       lifecycle-management: start_only
-  devtools:
-    restart:
-      enabled: true
-    livereload:
-      enabled: true
+
   rabbitmq:
     host: rabbitmq
     port: 5672
@@ -59,6 +55,13 @@ spring:
     socket-timeout: 5s
 
 
+  cache:
+    cache-names: allBrand,categoryTree,mainCategories,products,findById,findByCategoryId,find_by_search,similarProducts,
+                find_all_by_brand,findByColor
+    caffeine:
+      spec: maximum-size=100,expireAfterWrite=25s
+
+
 
 
 
@@ -70,6 +73,7 @@ logging:
     root: info
   file:
     name: logs/halley-dev.log
+
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 

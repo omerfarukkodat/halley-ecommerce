@@ -12,4 +12,5 @@ public class OrderDto {
    // @NotNull
     private Long addressId;
     private NonMemberInfoDto nonMemberInfoDto;
+    private PaymentMethod paymentMethod;
 }

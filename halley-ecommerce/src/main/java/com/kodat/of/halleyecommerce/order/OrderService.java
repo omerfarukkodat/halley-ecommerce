@@ -4,6 +4,7 @@ package com.kodat.of.halleyecommerce.order;
 import com.kodat.of.halleyecommerce.dto.order.OrderDto;
 import com.kodat.of.halleyecommerce.dto.order.OrderResponseDto;
 import com.kodat.of.halleyecommerce.dto.order.OrderSummaryDto;
+import com.kodat.of.halleyecommerce.dto.order.UserOrderSummaryDto;
 import com.kodat.of.halleyecommerce.order.enums.Status;
 import org.springframework.security.core.Authentication;
 
@@ -16,7 +17,7 @@ public interface OrderService {
 
     List<OrderResponseDto> getAllOrders(Authentication connectedUser);
 
-    OrderResponseDto getOrderById(Long orderId, Authentication connectedUser);
+    UserOrderSummaryDto getOrderById(Long orderId, Authentication connectedUser);
 
     List<OrderResponseDto> getAllOrdersForAdmin(Authentication connectedUser);
 

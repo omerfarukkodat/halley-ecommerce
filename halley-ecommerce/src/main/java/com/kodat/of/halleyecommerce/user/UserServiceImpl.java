@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.user;
 
+import com.kodat.of.halleyecommerce.dto.user.PasswordResetDto;
 import com.kodat.of.halleyecommerce.dto.user.ResetPasswordEmailDto;
 import com.kodat.of.halleyecommerce.dto.user.UserProfileDto;
 import com.kodat.of.halleyecommerce.email.EmailService;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleValidator roleValidator;
     private final TokenService tokenService;
@@ -40,30 +41,48 @@ public class UserServiceImpl implements UserService{
     public UserProfileDto updateProfile(UserProfileDto userProfileDto, Authentication connectedUser) {
         roleValidator.verifyUserRole(connectedUser);
         String username = connectedUser.getName();
-        User user = userRepository.findByEmail(username).get();
-        User updatedUser = UserMapper.updateUserFromDto(user,userProfileDto);
+        User user = userRepository.findByEmail(username).orElseThrow(
+                () -> new UserNotFoundException("User not found")
+        );
+
+        User updatedUser = UserMapper.updateUserFromDto(user, userProfileDto);
         userRepository.save(updatedUser);
         return UserMapper.toUserProfileDto(updatedUser);
+
+
+}
+
+@Override
+public void sendPasswordResetEmail(String email) {
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+    String token = tokenService.generateResetTokenForUser(user);
+    // Create password reset link
+    String resetLink = "http://localhost:3001/reset-password?token=" + token;
+    ResetPasswordEmailDto resetPasswordEmailDto = userResetPasswordUtils.sendResetPasswordEmail(user, resetLink);
+    userResetPasswordProducer.sendResetPasswordQueue(resetPasswordEmailDto);
+}
+
+@Override
+public void resetPassword(String token, PasswordResetDto passwordResetDto) {
+    User user = userRepository.findByResetPasswordToken(token)
+            .orElseThrow(() -> new UserNotFoundException("User not found with token: " + token));
+
+    if (!passwordResetDto.getNewPassword().equals(passwordResetDto.getConfirmPassword())) {
+        throw new IllegalArgumentException("Passwords do not match");
     }
 
-    @Override
-    public void sendPasswordResetEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
-        String token = tokenService.generateResetTokenForUser(user);
-        // Create password reset link
-        String resetLink = "https://localhost:8088/reset-password?token=" + token;
-        ResetPasswordEmailDto resetPasswordEmailDto = userResetPasswordUtils.sendResetPasswordEmail(user,resetLink);
-        userResetPasswordProducer.sendResetPasswordQueue(resetPasswordEmailDto);
+    if (tokenService.isTokenValid(user, token)) {
+        tokenService.resetPassword(passwordResetDto.getNewPassword(), token, user.getEmail());
+        user.setResetPasswordToken(null);
     }
+}
 
     @Override
-    public void resetPassword(String token, String newPassword) {
+    public boolean isTokenValid(String token) {
         User user = userRepository.findByResetPasswordToken(token)
-                        .orElseThrow(()-> new UserNotFoundException("User not found with token: " + token));
-        if (tokenService.isTokenValid(user,token)){
-            tokenService.resetPassword(newPassword,token, user.getEmail());
-        }
+                .orElseThrow(() -> new UserNotFoundException("User not found with token: " + token));
+        return tokenService.isTokenValid(user, token);
     }
 
 

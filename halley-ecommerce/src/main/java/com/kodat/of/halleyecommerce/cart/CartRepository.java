@@ -17,7 +17,9 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     Optional<Cart> findByUser_Email(String username);
     Optional<Cart> findByUser(User user);
     Optional<Cart> findByCartToken(String cartToken);
+
     List<Cart> findAllByCartTokenIsNotNullAndCreatedAtBefore(LocalDateTime createdAt);
+
     @Modifying
     @Query("DELETE FROM Cart c WHERE c.cartToken IN :cartTokens")
     void deleteAllByCartTokens(@Param("cartTokens") List<String> expiredCartTokens);

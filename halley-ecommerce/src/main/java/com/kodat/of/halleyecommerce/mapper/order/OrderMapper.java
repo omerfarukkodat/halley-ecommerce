@@ -1,8 +1,10 @@
 package com.kodat.of.halleyecommerce.mapper.order;
 
+import com.kodat.of.halleyecommerce.address.Address;
 import com.kodat.of.halleyecommerce.cart.CartItem;
 import com.kodat.of.halleyecommerce.dto.order.OrderResponseDto;
 import com.kodat.of.halleyecommerce.dto.order.OrderSummaryDto;
+import com.kodat.of.halleyecommerce.dto.order.UserOrderSummaryDto;
 import com.kodat.of.halleyecommerce.order.Order;
 import com.kodat.of.halleyecommerce.order.OrderItem;
 import com.kodat.of.halleyecommerce.order.enums.Status;
@@ -30,7 +32,6 @@ public class OrderMapper {
     }
 
     public static OrderResponseDto toOrderResponseDto(Order order) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM EEEE, HH:mm", Locale.forLanguageTag("tr"));
 
         return OrderResponseDto.builder()
                 .id(order.getId())
@@ -39,7 +40,6 @@ public class OrderMapper {
                 .shippingCost(order.getShippingCost())
                 .finalPrice(order.getFinalPrice())
                 .status(order.getStatus())
-                .createdAt(order.getCreatedAt().format(formatter))
                 .build();
     }
 
@@ -71,6 +71,19 @@ public class OrderMapper {
                 .shippingCost(order.getShippingCost())
                 .totalPrice(order.getTotalPrice())
                 .finalPrice(order.getFinalPrice())
+                .build();
+    }
+
+    public static UserOrderSummaryDto toUserOrderSummaryDto(Order order) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM EEEE, HH:mm", Locale.forLanguageTag("tr"));
+        return UserOrderSummaryDto.builder()
+                .id(order.getId())
+                .orderItems(OrderItemMapper.toOrderItemDtoList(order.getOrderItems()))
+                .totalPrice(order.getTotalPrice())
+                .shippingCost(order.getShippingCost())
+                .finalPrice(order.getFinalPrice())
+                .status(order.getStatus())
+                .createdAt(order.getCreatedAt().format(formatter))
                 .build();
     }
 

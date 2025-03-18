@@ -11,13 +11,13 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-@EnableRedisRepositories
 public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory();
     }
+
     @Bean
     public RedisTemplate<String, CartDto> cartDtoRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, CartDto> template = new RedisTemplate<>();

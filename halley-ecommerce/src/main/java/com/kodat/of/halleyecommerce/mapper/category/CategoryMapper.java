@@ -13,22 +13,24 @@ public class CategoryMapper {
                 .categoryName(category.getCategoryName())
                 .parentId(category.getParent() != null ? category.getParent().getId() : null)
                 .mainCategoryName(category.getParent() != null ? category.getParent().getCategoryName() : null)
+                .imageUrl(category.getImageUrl())
                 .slug(category.getSlug())
                 .build();
     }
 
     public static Category toCategory(CategoryDto categoryDto , Category parentCategory ,String slug) {
         return Category.builder()
-                .id(categoryDto.getCategoryId())
                 .categoryName(categoryDto.getCategoryName())
                 .parent(parentCategory)
                 .slug(slug)
+                .ImageUrl(categoryDto.getImageUrl())
                 .build();
     }
 
     public static Category updateCategoryFromDto(CategoryDto categoryDto, Category exsistingCategory , String slug , Category parentCategory) {
         exsistingCategory.setCategoryName(categoryDto.getCategoryName());
         exsistingCategory.setSlug(slug);
+        exsistingCategory.setImageUrl(categoryDto.getImageUrl());
         if (parentCategory != null) {
             exsistingCategory.setParent(parentCategory);
         }

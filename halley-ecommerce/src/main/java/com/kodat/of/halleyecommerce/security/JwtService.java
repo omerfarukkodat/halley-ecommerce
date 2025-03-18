@@ -25,21 +25,19 @@ public class JwtService {
 
 
     public String extractUsername(String token) {
-        return extractClaim(token , Claims::getSubject);
+        return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>() , userDetails);
-    }
-
-    public boolean isTokenValid(String token , UserDetails userDetails){
+    public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    public String generateToken(HashMap<String, Object> claims, UserDetails userDetails) {
+        return buildToken(claims, userDetails, jwtExpiration);
+    }
 
-
-    private <T> T extractClaim(String token, Function<Claims,T> claimsResolver) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -53,16 +51,12 @@ public class JwtService {
 
     }
 
+
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64URL.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-
-
-    public String generateToken(HashMap<String, Object> claims, UserDetails userDetails) {
-        return buildToken(claims,userDetails,jwtExpiration);
-    }
 
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long jwtExpiration) {
 
@@ -75,8 +69,8 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+jwtExpiration))
-                .claim("authorities",authorities)
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .claim("authorities", authorities)
                 .signWith(getSignInKey())
                 .compact();
     }
@@ -86,7 +80,7 @@ public class JwtService {
     }
 
     private Date extractExpiration(String token) {
-        return extractClaim(token,Claims::getExpiration);
+        return extractClaim(token, Claims::getExpiration);
     }
 
 

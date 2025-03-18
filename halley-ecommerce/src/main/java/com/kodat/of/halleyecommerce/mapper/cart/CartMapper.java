@@ -16,12 +16,19 @@ public interface CartMapper {
     CartMapper INSTANCE = Mappers.getMapper(CartMapper.class);
 
     CartDto toCartDto(Cart cart);
+
     Cart toCart(CartDto cartDto);
+
     CartItem toCartItem(CartItemDto cartItemDto);
+
     CartItemDto toCartItemDto(CartItem cartItem);
+
     ProductResponseDto toProductResponseDto(Product product);
+
     Product toProduct(ProductResponseDto productResponseDto);
+
     List<CartItemDto> toCartItemDtoList(List<CartItem> cartItemList);
+
     List<CartItem> toCartItemList(List<CartItemDto> cartItemDtoList);
 
 }

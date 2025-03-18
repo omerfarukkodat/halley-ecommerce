@@ -1,5 +1,6 @@
 package com.kodat.of.halleyecommerce.user;
 
+import com.kodat.of.halleyecommerce.dto.user.PasswordResetDto;
 import com.kodat.of.halleyecommerce.dto.user.UserProfileDto;
 import org.springframework.security.core.Authentication;
 
@@ -10,5 +11,7 @@ public interface UserService {
 
     void sendPasswordResetEmail(String email);
 
-    void resetPassword(String token, String newPassword);
+    void resetPassword(String token, PasswordResetDto passwordResetDto);
+
+    boolean isTokenValid(String token);
 }

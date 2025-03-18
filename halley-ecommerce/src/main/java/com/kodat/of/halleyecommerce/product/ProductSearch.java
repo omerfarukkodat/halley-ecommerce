@@ -15,6 +15,13 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class ProductSearch {
     @Id
     private String id;
-    @Field(type = FieldType.Text)
+
+    @Field(type = FieldType.Text , analyzer = "standard")
     private String name;
+
+    @Field(type = FieldType.Text, analyzer = "standard")
+    private String description;
+
+    @Field(type = FieldType.Text,analyzer = "standard")
+    private String brandName;
 }

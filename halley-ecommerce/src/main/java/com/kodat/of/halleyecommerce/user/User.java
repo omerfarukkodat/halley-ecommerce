@@ -26,30 +26,42 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String firstName;
+
     private String lastName;
+
     @Column(unique = true)
     private String email;
+
     @Column(nullable = false)
     private String password;
+
     private boolean enabled;
+
     private String phone;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
     private boolean accountLocked;
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true )
     private Cart cart;
+
     private String resetPasswordToken;
+
     private Instant resetPasswordExpiryDate;
 
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp()
     private LocalDate creationDate;
+
     @Column(nullable = false)
     @UpdateTimestamp()
     private LocalDate lastUpdateDate;
